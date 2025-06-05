@@ -1,0 +1,43 @@
+﻿<Page x:Class="Among_Us_ModManeger.Pages.MainMenuPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:local="clr-namespace:Among_Us_ModManeger.Pages"
+      Title="MainMenuPage">
+
+    <Grid Background="White" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Among Us MOD Manager"
+                   FontSize="28"
+                   FontWeight="Bold"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Margin="0,0,0,20"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Button Content="Modを新しく導入する"
+                    Width="250"
+                    Height="50"
+                    FontSize="16"
+                    Click="Mod_New_Click"
+                    Margin="0,0,20,0"/>
+            <TextBlock Text="新しくAmong UsにModを導入する方はこちらからどうぞ。"
+                       FontSize="16"
+                       VerticalAlignment="Center"
+                       TextWrapping="NoWrap"/>
+        </StackPanel>
+
+        <Button Grid.Row="0"
+                Content="お知らせ"
+                Width="100"
+                Height="30"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Click="Notice_Click"/>
+    </Grid>
+</Page>

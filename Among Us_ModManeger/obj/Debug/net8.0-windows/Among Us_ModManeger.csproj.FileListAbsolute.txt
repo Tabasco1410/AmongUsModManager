@@ -1,0 +1,26 @@
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\bin\Debug\net8.0-windows\Among Us_ModManeger.exe
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\bin\Debug\net8.0-windows\Among Us_ModManeger.deps.json
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\bin\Debug\net8.0-windows\Among Us_ModManeger.runtimeconfig.json
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\bin\Debug\net8.0-windows\Among Us_ModManeger.dll
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\bin\Debug\net8.0-windows\Among Us_ModManeger.pdb
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\MainWindow.g.cs
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\App.g.cs
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\Among Us_ModManeger_MarkupCompile.cache
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\MainWindow.baml
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\Among Us_ModManeger.g.resources
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\Among Us_ModManeger.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\Among Us_ModManeger.AssemblyInfoInputs.cache
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\Among Us_ModManeger.AssemblyInfo.cs
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\Among Us_ModManeger.csproj.CoreCompileInputs.cache
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\Among Us_ModManeger.dll
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\refint\Among Us_ModManeger.dll
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\Among Us_ModManeger.pdb
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\Among Us_ModManeger.genruntimeconfig.cache
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\ref\Among Us_ModManeger.dll
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\Among Us_ModManeger_MarkupCompile.lref
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\pages\MainMenuPage.g.cs
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\pages\ModSelectPage.g.cs
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\pages\MainMenuPage.baml
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\pages\ModSelectPage.baml
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\pages\TownOfHos-K.g.cs
+C:\Users\2023016043\Source\Repos\Among Us_ModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\pages\TownOfHos-K.baml

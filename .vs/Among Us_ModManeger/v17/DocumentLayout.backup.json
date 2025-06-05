@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\2023016043\\Source\\Repos\\Among Us_ModManeger\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\source\\repos\\among us_modmaneger\\among us_modmaneger\\pages\\modselectpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\modselectpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\source\\repos\\among us_modmaneger\\among us_modmaneger\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\source\\repos\\among us_modmaneger\\among us_modmaneger\\pages\\mainmenupage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\mainmenupage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\2023016043\\Source\\Repos\\Among Us_ModManeger\\Among Us_ModManeger\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "Among Us_ModManeger\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\2023016043\\Source\\Repos\\Among Us_ModManeger\\Among Us_ModManeger\\MainWindow.xaml",
+              "RelativeToolTip": "Among Us_ModManeger\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-06-05T12:37:17.548Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ModSelectPage.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\2023016043\\Source\\Repos\\Among Us_ModManeger\\Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
+              "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
+              "ToolTip": "C:\\Users\\2023016043\\Source\\Repos\\Among Us_ModManeger\\Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
+              "RelativeToolTip": "Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAswAcAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-05T13:43:45.866Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "MainMenuPage.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\2023016043\\Source\\Repos\\Among Us_ModManeger\\Among Us_ModManeger\\pages\\MainMenuPage.xaml.cs",
+              "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\MainMenuPage.xaml.cs",
+              "ToolTip": "C:\\Users\\2023016043\\Source\\Repos\\Among Us_ModManeger\\Among Us_ModManeger\\pages\\MainMenuPage.xaml.cs",
+              "RelativeToolTip": "Among Us_ModManeger\\pages\\MainMenuPage.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-05T13:44:35.917Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
