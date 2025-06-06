@@ -19,18 +19,22 @@
 
             <StackPanel>
                 <Button Content="TownOfHost（未実装）"
-                        Width="250"
-                        Height="40"
-                        Margin="0,5"/>
+                Width="250"
+                Height="40"
+                Margin="0,5"
+                Click="NotImplemented_Click"/>
                 <Button Content="TownOfHost-K"
                         Width="250"
                         Height="40"
                         Margin="0,5"
                         Click="TownOfHostK_Click"/>
+
                 <Button Content="SuperNewRoles（未実装）"
-                        Width="250"
-                        Height="40"
-                        Margin="0,5"/>
+                Width="250"
+                 Height="40"
+                Margin="0,5"
+                 Click="NotImplemented_Click"/>
+        
                 <Button Content="GitHubのURLから追加（未実装）"
                         Width="250"
                         Height="40"
