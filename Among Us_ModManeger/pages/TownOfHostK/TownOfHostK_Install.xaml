@@ -17,10 +17,17 @@
                        FontWeight="Bold"
                        Margin="0,0,0,10"/>
             <TextBlock x:Name="IntroTextBlock"
+<<<<<<< HEAD
                        Text="Modの導入を開始する場合、「インストール開始」ボタンを押してください。"
                        FontSize="16"/>
             <TextBlock x:Name="FinishTextBlock"
                        Text="Modのインストールが完了しました。"
+=======
+                       Text="以下の状態を確認し、「インストール開始」ボタンを押してください。"
+                       FontSize="16"/>
+            <TextBlock x:Name="FinishTextBlock"
+                       Text="インストールが完了しました。「ホームに戻る」ボタンで戻ってください。"
+>>>>>>> f953aa75bb515ca4925513e616f25d5353101627
                        FontSize="16"
                        Visibility="Collapsed"
                        Margin="0,10,0,0"/>

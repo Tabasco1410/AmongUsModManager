@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 ﻿using Among_Us_ModManeger.Pages.TownOfHostK;
+=======
+﻿using Among_Us_ModManeger.Pages.TownOfHostK;  
+using System.IO;
+>>>>>>> f953aa75bb515ca4925513e616f25d5353101627
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
@@ -7,6 +12,8 @@ namespace Among_Us_ModManeger.Pages
 {
     public partial class ModSelectPage : Page
     {
+    // ...続き...
+
         public ModSelectPage()
         {
             InitializeComponent();
