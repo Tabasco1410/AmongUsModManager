@@ -19,14 +19,21 @@ namespace Among_Us_ModManeger.Pages.TownOfHostK
             StatusTextBlock.Text = "インストールを開始します...";
             LogTextBox.Clear();
             ((Button)sender).IsEnabled = false;
-
             try
             {
                 await InstallProcessAsync();
                 StatusTextBlock.Text = "インストールが完了しました。";
                 Log("すべての処理が正常に終了しました。");
                 ReturnHomeButton.Visibility = Visibility.Visible;
+
+                InstallButton.Visibility = Visibility.Collapsed;
+                BackButton.Visibility = Visibility.Collapsed;
+
+                IntroTextBlock.Visibility = Visibility.Collapsed;
+                FinishTextBlock.Visibility = Visibility.Visible;
             }
+
+
             catch (Exception ex)
             {
                 StatusTextBlock.Text = "エラーが発生しました。";

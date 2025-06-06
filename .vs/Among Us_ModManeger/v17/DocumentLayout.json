@@ -3,28 +3,36 @@
   "WorkspaceRootPath": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\pages\\townofhostk\\townofhostk_install.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\townofhostk\\townofhostk_install.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\app.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\pages\\modselectpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\modselectpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\pages\\townofhostk\\townofhostk_install.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
       "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\townofhostk\\townofhostk_install.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\pages\\townofhostk\\townofhostk.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\townofhostk\\townofhostk.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\pages\\townofhostk\\townofhostk_install.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\townofhostk\\townofhostk_install.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\pages\\townofhostk\\townofhostk.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\townofhostk\\townofhostk.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\pages\\modselectpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\modselectpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\pages\\townofhostk\\townofhostk.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\townofhostk\\townofhostk.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\pages\\modselectpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\modselectpage.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\pages\\modselectpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|solutionrelative:among us_modmaneger\\pages\\modselectpage.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4E4867C4-B27D-4B1F-8546-F058DAFFB51E}|Among Us_ModManeger\\Among Us_ModManeger.csproj|c:\\users\\2023016043\\documents\\github\\amongusmodmaneger\\among us_modmaneger\\obj\\debug\\net8.0-windows\\pages\\townofhost-k\\townofhos-k.g.i.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -50,11 +58,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "MainWindow.xaml",
               "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\MainWindow.xaml",
               "RelativeDocumentMoniker": "Among Us_ModManeger\\MainWindow.xaml",
@@ -66,7 +74,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "TownOfHostK_Install.xaml",
               "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK_Install.xaml",
               "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK_Install.xaml",
@@ -78,20 +86,71 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ModSelectPage.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
+              "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
+              "ToolTip": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
+              "RelativeToolTip": "Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-05T13:43:45.866Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "App.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\App.xaml.cs",
+              "RelativeDocumentMoniker": "Among Us_ModManeger\\App.xaml.cs",
+              "ToolTip": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\App.xaml.cs",
+              "RelativeToolTip": "Among Us_ModManeger\\App.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-06T09:50:18.034Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "TownOfHostK.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK.xaml.cs",
+              "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK.xaml.cs",
+              "ToolTip": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK.xaml.cs",
+              "RelativeToolTip": "Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK.xaml.cs",
+              "ViewState": "AgIAADcAAAAAAAAAAAAkwEgAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-05T21:24:31.641Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "App.xaml",
+              "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\App.xaml",
+              "RelativeDocumentMoniker": "Among Us_ModManeger\\App.xaml",
+              "ToolTip": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\App.xaml",
+              "RelativeToolTip": "Among Us_ModManeger\\App.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2025-06-06T09:50:11.575Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "TownOfHostK_Install.xaml.cs",
               "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK_Install.xaml.cs",
               "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK_Install.xaml.cs",
               "ToolTip": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK_Install.xaml.cs",
               "RelativeToolTip": "Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK_Install.xaml.cs",
-              "ViewState": "AgIAAD0AAAAAAAAAAAAowEoAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAxwCIAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-06-06T02:45:44.438Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "TownOfHostK.xaml",
               "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK.xaml",
               "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK.xaml",
@@ -103,20 +162,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "TownOfHostK.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK.xaml.cs",
-              "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK.xaml.cs",
-              "ToolTip": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK.xaml.cs",
-              "RelativeToolTip": "Among Us_ModManeger\\pages\\TownOfHostK\\TownOfHostK.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEgAAABRAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-05T21:24:31.641Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 7,
               "Title": "ModSelectPage.xaml",
               "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\ModSelectPage.xaml",
               "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\ModSelectPage.xaml",
@@ -127,19 +173,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ModSelectPage.xaml.cs",
-              "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
-              "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
-              "ToolTip": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
-              "RelativeToolTip": "Among Us_ModManeger\\pages\\ModSelectPage.xaml.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAADwvxUAAABhAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-06-05T13:43:45.866Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
               "Title": "TownOfHos-K.g.i.cs",
               "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\obj\\Debug\\net8.0-windows\\pages\\TownOfHost-K\\TownOfHos-K.g.i.cs",
               "RelativeDocumentMoniker": "Among Us_ModManeger\\obj\\Debug\\net8.0-windows\\pages\\TownOfHost-K\\TownOfHos-K.g.i.cs",
@@ -151,7 +185,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 10,
               "Title": "MainMenuPage.xaml",
               "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\MainMenuPage.xaml",
               "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\MainMenuPage.xaml",
@@ -162,7 +196,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 11,
               "Title": "MainMenuPage.xaml.cs",
               "DocumentMoniker": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\pages\\MainMenuPage.xaml.cs",
               "RelativeDocumentMoniker": "Among Us_ModManeger\\pages\\MainMenuPage.xaml.cs",

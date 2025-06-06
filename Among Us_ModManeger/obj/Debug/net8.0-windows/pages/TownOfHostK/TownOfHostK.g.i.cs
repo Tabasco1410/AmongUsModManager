@@ -68,7 +68,7 @@ namespace Among_Us_ModManeger.Pages.TownOfHostK {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Among Us_ModManeger;component/pages/townofhostk/townofhostk.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Among Us_ModManeger;V1.0.0.0;component/pages/townofhostk/townofhostk.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\pages\TownOfHostK\TownOfHostK.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
