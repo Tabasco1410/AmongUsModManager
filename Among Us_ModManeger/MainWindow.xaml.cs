@@ -12,5 +12,10 @@ namespace Among_Us_ModManeger
             // アプリ起動時に最初のページへ遷移
             MainFrame.Navigate(new Pages.MainMenuPage());
         }
+
+        private void MainFrame_Navigated(object sender, NavigationEventArgs e)
+        {
+
+        }
     }
 }

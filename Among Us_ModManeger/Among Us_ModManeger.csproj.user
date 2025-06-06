@@ -13,7 +13,10 @@
     <Compile Update="pages\MainMenuPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="pages\TownOfHos-K.xaml.cs">
+    <Compile Update="pages\TownOfHostK\TownOfHostK.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="pages\TownOfHostK\TownOfHostK_Install.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

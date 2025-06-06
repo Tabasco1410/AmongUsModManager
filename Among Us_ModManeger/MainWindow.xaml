@@ -6,6 +6,6 @@
 
     <!-- ページを切り替えるためのフレーム -->
     <Frame x:Name="MainFrame"
-           NavigationUIVisibility="Hidden"
+           NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated"
            />
 </Window>

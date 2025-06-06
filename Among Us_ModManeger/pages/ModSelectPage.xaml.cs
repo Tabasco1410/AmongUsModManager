@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using Among_Us_ModManeger.Pages.TownOfHostK;  
 
 namespace Among_Us_ModManeger.Pages
 {
@@ -18,14 +19,12 @@ namespace Among_Us_ModManeger.Pages
 
         private void TownOfHostK_Click(object sender, RoutedEventArgs e)
         {
-            // ハイフンは使えないのでクラス名はTownOfHostK
-            NavigationService?.Navigate(new TownOfHostK());
+            NavigationService?.Navigate(new Among_Us_ModManeger.Pages.TownOfHostK.TownOfHostK());
         }
 
         private void OpenUrlInput_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("ここでGitHubのURL入力画面に進みます（未実装）。");
-            // NavigationService.Navigate(new UrlInputPage()); ← 実装予定ならここを使う
         }
     }
 }

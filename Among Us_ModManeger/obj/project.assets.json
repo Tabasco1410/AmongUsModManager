@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\2023016043\\Source\\Repos\\Among Us_ModManeger\\Among Us_ModManeger\\Among Us_ModManeger.csproj",
+      "projectUniqueName": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\Among Us_ModManeger.csproj",
       "projectName": "Among Us_ModManeger",
-      "projectPath": "C:\\Users\\2023016043\\Source\\Repos\\Among Us_ModManeger\\Among Us_ModManeger\\Among Us_ModManeger.csproj",
+      "projectPath": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\Among Us_ModManeger.csproj",
       "packagesPath": "C:\\Users\\2023016043\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\2023016043\\Source\\Repos\\Among Us_ModManeger\\Among Us_ModManeger\\obj\\",
+      "outputPath": "C:\\Users\\2023016043\\Documents\\GitHub\\AmongUsModManeger\\Among Us_ModManeger\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

@@ -12,13 +12,13 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" VerticalAlignment="Top">
-            <TextBlock Text="導入可能な有名Mod一覧"
+            <TextBlock Text="導入可能なMod一覧"
                        FontSize="24"
                        FontWeight="Bold"
                        Margin="0,0,0,20"/>
 
             <StackPanel>
-                <Button Content="TownOfHost"
+                <Button Content="TownOfHost（未実装）"
                         Width="250"
                         Height="40"
                         Margin="0,5"/>
@@ -27,11 +27,11 @@
                         Height="40"
                         Margin="0,5"
                         Click="TownOfHostK_Click"/>
-                <Button Content="SuperNewRoles (SNR)"
+                <Button Content="SuperNewRoles（未実装）"
                         Width="250"
                         Height="40"
                         Margin="0,5"/>
-                <Button Content="GitHubのURLから追加"
+                <Button Content="GitHubのURLから追加（未実装）"
                         Width="250"
                         Height="40"
                         Margin="0,30,0,0"
