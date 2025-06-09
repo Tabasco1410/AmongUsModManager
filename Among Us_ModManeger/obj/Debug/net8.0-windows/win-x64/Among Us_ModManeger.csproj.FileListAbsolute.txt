@@ -489,3 +489,4 @@ C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\ref\Among Us_ModManeger.dll
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\Mod_from_zip\Put_Zip_File.g.cs
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\Mod_from_zip\Put_Zip_File.baml
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Among Us_ModManeger_Content.g.cs
