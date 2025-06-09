@@ -10,7 +10,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-    <TextBlock Grid.Row="0"
+        <TextBlock Grid.Row="0"
                    Text="Among Us MOD Manager"
                    FontSize="28"
                    FontWeight="Bold"
@@ -18,7 +18,7 @@
                    VerticalAlignment="Top"
                    Margin="0,0,0,20"/>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,25,0,0" Grid.RowSpan="2">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
             <Button Content="Modを新しく導入する"
                     Width="250"
                     Height="50"
@@ -31,6 +31,7 @@
                        TextWrapping="NoWrap"/>
         </StackPanel>
 
+        <!-- 通知メッセージとボタンを横並びで配置 -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0">
             <TextBlock x:Name="NoticeText"
                        Text="新しいお知らせがあります！"
@@ -45,38 +46,6 @@
                     Height="30"
                     Click="Notice_Click"/>
         </StackPanel>
-
-        <TextBlock Grid.Row="0"
-                   FontSize="20"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Top"
-                   Margin="0,44,0,0"
-                   Grid.RowSpan="3">
-            <Run Language="ja-jp" Text="Modを導入する"/>
-        </TextBlock>
-
-        <TextBlock Grid.Row="2"
-                   FontSize="20"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Top"
-                   Margin="0,100,0,0">
-            <Run Text="Modを"/>
-            <Run Language="ja-jp" Text="アップデートする"/>
-        </TextBlock>
-
-        <TextBlock x:Name="VersionText"
-           Grid.Row="2"
-           HorizontalAlignment="Right"
-           VerticalAlignment="Bottom"
-           Margin="0,0,10,10"
-           FontSize="12"
-           Foreground="Gray"
-           Text="バージョン取得中..."
-           ToolTipService.InitialShowDelay="10"
-           ToolTipService.ShowDuration="5000"/>
-
 
     </Grid>
 </Page>

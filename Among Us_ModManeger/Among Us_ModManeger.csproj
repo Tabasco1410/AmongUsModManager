@@ -21,4 +21,8 @@
 		<Folder Include="Resources\" />
 	</ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Updates\" />
+  </ItemGroup>
+
 </Project>

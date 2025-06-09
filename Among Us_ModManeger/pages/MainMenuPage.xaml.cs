@@ -7,31 +7,19 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
+using System.Windows.Navigation;
 
 namespace Among_Us_ModManeger.Pages
 {
     public partial class MainMenuPage : Page
     {
         private const string NewsUrl = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManeger/main/News.json";
-
-        private static readonly string AppDataFolder = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "AmongUsModManeger");
-
-        private static readonly string LastReadNewsFile = Path.Combine(AppDataFolder, "last_read_news.txt");
+        private const string LastReadNewsFile = "last_read_news.txt"; // 実行フォルダに保存
 
         public MainMenuPage()
         {
             InitializeComponent();
-
-            if (!Directory.Exists(AppDataFolder))
-            {
-                Directory.CreateDirectory(AppDataFolder);
-            }
-
             _ = CheckNewsAsync();
-            _ = LoadVersionAsync();
         }
 
         private async Task CheckNewsAsync()
@@ -51,6 +39,8 @@ namespace Among_Us_ModManeger.Pages
                 if (newsList != null)
                 {
                     var now = DateTime.Now;
+
+                    // 未来日時のニュースを除外
                     newsList = newsList.Where(n => n.Date <= now).OrderByDescending(n => n.Date).ToList();
                 }
 
@@ -67,25 +57,27 @@ namespace Among_Us_ModManeger.Pages
 
                     if (latestNewsDate > lastRead)
                     {
+                        // お知らせテキストとバッジを表示
                         NoticeText.Visibility = Visibility.Visible;
                         NoticeBadge.Visibility = Visibility.Visible;
                     }
                     else
                     {
+                        // 既読ならお知らせ非表示、バッジは表示
                         NoticeText.Visibility = Visibility.Collapsed;
                         NoticeBadge.Visibility = Visibility.Visible;
                     }
                 }
                 else
                 {
+                    // 有効なニュースなし（未来のみ、または空）
                     NoticeText.Visibility = Visibility.Collapsed;
                     NoticeBadge.Visibility = Visibility.Visible;
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.Message);
-
+                // エラー時は通知テキスト非表示、バッジ表示
                 NoticeText.Visibility = Visibility.Collapsed;
                 NoticeBadge.Visibility = Visibility.Visible;
             }
@@ -98,6 +90,7 @@ namespace Among_Us_ModManeger.Pages
 
         private void Notice_Click(object sender, RoutedEventArgs e)
         {
+            // お知らせ画面へ遷移する前に「既読」として日時保存
             File.WriteAllText(LastReadNewsFile, DateTime.Now.ToString("s"));
             NoticeText.Visibility = Visibility.Collapsed;
 
@@ -109,30 +102,6 @@ namespace Among_Us_ModManeger.Pages
             public DateTime Date { get; set; }
             public string Title { get; set; }
             public string Content { get; set; }
-        }
-
-        private async Task LoadVersionAsync()
-        {
-            await Dispatcher.InvokeAsync(() =>
-            {
-                VersionText.Text = $" {AppVersion.Version}";
-
-                // 改行を反映する TextBlock を ToolTip に設定
-                var tooltip = new TextBlock
-                {
-                    TextWrapping = TextWrapping.Wrap,
-                    Width = 250
-                };
-
-                var lines = AppVersion.Notes.Split('\n');
-                foreach (var line in lines)
-                {
-                    tooltip.Inlines.Add(new Run(line));
-                    tooltip.Inlines.Add(new LineBreak());
-                }
-
-                VersionText.ToolTip = tooltip;
-            });
         }
     }
 }

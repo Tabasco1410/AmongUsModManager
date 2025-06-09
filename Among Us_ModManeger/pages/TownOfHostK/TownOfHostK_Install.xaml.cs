@@ -37,11 +37,20 @@ namespace Among_Us_ModManeger.Pages.TownOfHostK
                 StatusTextBlock.Text = "インストールが完了しました。";
                 Log("すべての処理が正常に終了しました。");
                 ReturnHomeButton.Visibility = Visibility.Visible;
+<<<<<<< HEAD
                 InstallButton.Visibility = Visibility.Collapsed;
                 BackButton.Visibility = Visibility.Collapsed;
+=======
+
+                InstallButton.Visibility = Visibility.Collapsed;
+                BackButton.Visibility = Visibility.Collapsed;
+
+>>>>>>> f953aa75bb515ca4925513e616f25d5353101627
                 IntroTextBlock.Visibility = Visibility.Collapsed;
                 FinishTextBlock.Visibility = Visibility.Visible;
             }
+
+
             catch (Exception ex)
             {
                 StatusTextBlock.Text = "エラーが発生しました。";

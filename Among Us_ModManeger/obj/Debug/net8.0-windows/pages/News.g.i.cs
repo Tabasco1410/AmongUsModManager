@@ -84,7 +84,7 @@ namespace Among_Us_ModManeger.Pages {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Among Us_ModManeger;V1.0.0.0;component/pages/news.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Among Us_ModManeger;component/pages/news.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\Pages\News.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
