@@ -1,0 +1,12 @@
+﻿<Page x:Class="Among_Us_ModManeger.Pages.Mod_from_zip.SelectZipFile"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="SelectZipFile">
+
+    <Grid Background="LightGray">
+        <TextBlock Text=".zipファイル導入画面"
+                   FontSize="20"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+    </Grid>
+</Page>

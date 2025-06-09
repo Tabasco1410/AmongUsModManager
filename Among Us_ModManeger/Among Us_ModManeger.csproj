@@ -13,12 +13,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- Updates フォルダ内のファイルをビルド対象から外す -->
-		<None Remove="Updates\AppUpdate.json" />
+	  <Compile Remove="Resources\**" />
+	  <EmbeddedResource Remove="Resources\**" />
+	  <None Remove="Resources\**" />
+	  <Page Remove="Resources\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Resources\" />
+		<!-- Updates フォルダ内のファイルをビルド対象から外す -->
+		<None Remove="Updates\AppUpdate.json" />
 	</ItemGroup>
 
   <ItemGroup>

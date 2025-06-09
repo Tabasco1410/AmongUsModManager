@@ -15,13 +15,10 @@
     <Compile Update="Pages\MainMenuPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="pages\Mod_from_zip\SelectZipFile.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Pages\News.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Pages\TownOfHostK\TownOfHostK.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Pages\TownOfHostK\TownOfHostK_Install.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
