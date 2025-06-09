@@ -30,22 +30,28 @@
                        VerticalAlignment="Center"
                        TextWrapping="NoWrap"/>
         </StackPanel>
-
-        <!-- 通知メッセージとボタンを横並びで配置 -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,0,0">
             <TextBlock x:Name="NoticeText"
-                       Text="新しいお知らせがあります！"
-                       Foreground="Red"
-                       FontWeight="Bold"
-                       VerticalAlignment="Center"
-                       Margin="0,0,10,0"
-                       Visibility="Collapsed"/>
+                   Text="新しいお知らせがあります！"
+                   Foreground="Red"
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Margin="0,0,10,0"
+                   Visibility="Collapsed"/>
             <Button x:Name="NoticeBadge"
-                    Content="お知らせ"
-                    Width="100"
-                    Height="30"
-                    Click="Notice_Click"/>
+                Content="お知らせ"
+                Width="100"
+                Height="30"
+                Click="Notice_Click"/>
         </StackPanel>
 
+        <TextBlock x:Name="VersionText"
+               Grid.Row="2"
+               HorizontalAlignment="Right"
+               VerticalAlignment="Bottom"
+               Margin="0,0,10,10"
+               FontSize="12"
+               Foreground="Gray"
+               Text="バージョン取得中..." />
     </Grid>
 </Page>

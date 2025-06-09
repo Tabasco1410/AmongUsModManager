@@ -1,5 +1,0 @@
-C:\Users\2023016043\Documents\Among UsModManeger\Release\Among Us_ModManeger.exe
-C:\Users\2023016043\Documents\Among UsModManeger\Release\Among Us_ModManeger.dll
-C:\Users\2023016043\Documents\Among UsModManeger\Release\Among Us_ModManeger.deps.json
-C:\Users\2023016043\Documents\Among UsModManeger\Release\Among Us_ModManeger.runtimeconfig.json
-C:\Users\2023016043\Documents\Among UsModManeger\Release\Among Us_ModManeger.pdb

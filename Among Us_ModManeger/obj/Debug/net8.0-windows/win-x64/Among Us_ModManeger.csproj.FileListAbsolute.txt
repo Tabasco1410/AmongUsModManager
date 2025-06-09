@@ -1,3 +1,15 @@
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\MainWindow.baml
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\MainMenuPage.baml
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\Mod_from_zip\SelectZipFile.baml
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\News.baml
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\MainWindow.g.cs
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\MainMenuPage.g.cs
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\ModSelectPage.g.cs
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\Mod_from_zip\SelectZipFile.g.cs
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\News.g.cs
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\App.g.cs
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Among Us_ModManeger_MarkupCompile.cache
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Among Us_ModManeger_MarkupCompile.lref
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\bin\Debug\net8.0-windows\win-x64\Among Us_ModManeger.exe
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\bin\Debug\net8.0-windows\win-x64\Among Us_ModManeger.deps.json
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\bin\Debug\net8.0-windows\win-x64\Among Us_ModManeger.runtimeconfig.json
@@ -462,21 +474,7 @@ C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\bin\Debug
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\bin\Debug\net8.0-windows\win-x64\zh-Hant\UIAutomationTypes.resources.dll
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\bin\Debug\net8.0-windows\win-x64\zh-Hant\WindowsBase.resources.dll
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\bin\Debug\net8.0-windows\win-x64\zh-Hant\WindowsFormsIntegration.resources.dll
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\MainWindow.baml
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Pages\MainMenuPage.baml
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Pages\News.baml
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Pages\TownOfHostK\TownOfHostK.baml
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Pages\TownOfHostK\TownOfHostK_Install.baml
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\MainWindow.g.cs
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Pages\MainMenuPage.g.cs
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Pages\ModSelectPage.g.cs
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Pages\News.g.cs
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Pages\TownOfHostK\TownOfHostK.g.cs
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Pages\TownOfHostK\TownOfHostK_Install.g.cs
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\App.g.cs
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Among Us_ModManeger_MarkupCompile.cache
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Among Us_ModManeger_MarkupCompile.lref
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Pages\ModSelectPage.baml
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\ModSelectPage.baml
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Among Us_ModManeger.g.resources
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Among Us_ModManeger.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Among Us_ModManeger.AssemblyInfoInputs.cache
@@ -489,6 +487,5 @@ C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Among Us_ModManeger.pdb
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\Among Us_ModManeger.genruntimeconfig.cache
 C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\ref\Among Us_ModManeger.dll
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\Mod_from_zip\Select_zipFile.g.cs
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\Mod_from_zip\SelectZipFile.baml
-C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\Mod_from_zip\SelectZipFile.g.cs
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\Mod_from_zip\Put_Zip_File.g.cs
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\pages\Mod_from_zip\Put_Zip_File.baml

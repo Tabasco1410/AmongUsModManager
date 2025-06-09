@@ -15,6 +15,9 @@
     <Compile Update="Pages\MainMenuPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="pages\Mod_from_zip\Put_Zip_File.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="pages\Mod_from_zip\SelectZipFile.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

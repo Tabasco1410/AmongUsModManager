@@ -1,26 +1,30 @@
-    using Among_Us_ModManeger.Pages;               // MainMenuPageの名前空間
-    using Among_Us_ModManeger.Pages.Mod_from_zip; // SelectZipFileの名前空間
-    using System.Windows;
-    using System.Windows.Controls;
-    using System.Windows.Navigation;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Navigation;
 
-    namespace Among_Us_ModManeger.Pages
+namespace Among_Us_ModManeger.Pages
+{
+    public partial class ModSelectPage : Page
     {
-        public partial class ModSelectPage : Page
+        public ModSelectPage()
         {
-            public ModSelectPage()
-            {
-                InitializeComponent();
-            }
+            InitializeComponent();
+            // ページ読み込み完了時に次ページへ遷移させている、ボタン出すときはまた変える
+            this.Loaded += ModSelectPage_Loaded;
+        }
 
-            private void BackToMain_Click(object sender, RoutedEventArgs e)
-            {
-                NavigationService?.Navigate(new MainMenuPage());
-            }
+        private void ModSelectPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            var nextPage = new Mod_from_zip.SelectZipFile();
+            this.NavigationService?.Navigate(nextPage);
+        }
 
-            private void ZipInstall_Click(object sender, RoutedEventArgs e)
+        private void BackToMain_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.NavigationService != null && this.NavigationService.CanGoBack)
             {
-                NavigationService?.Navigate(new SelectZipFile());
+                this.NavigationService.GoBack();
             }
         }
     }
+}

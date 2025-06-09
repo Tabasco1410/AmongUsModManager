@@ -1,26 +1,130 @@
-﻿using Among_Us_ModManeger.Pages;               // MainMenuPageの名前空間
-using Among_Us_ModManeger.Pages.Mod_from_zip; // SelectZipFileの名前空間
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 
 namespace Among_Us_ModManeger.Pages
 {
-    public partial class ModSelectPage : Page
+    public partial class MainMenuPage : Page
     {
-        public ModSelectPage()
+        private const string NewsUrl = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManeger/main/News.json";
+
+        private static readonly string AppDataFolder = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "AmongUsModManeger");
+
+        private static readonly string LastReadNewsFile = Path.Combine(AppDataFolder, "last_read_news.txt");
+
+        public MainMenuPage()
         {
             InitializeComponent();
+
+            if (!Directory.Exists(AppDataFolder))
+            {
+                Directory.CreateDirectory(AppDataFolder);
+            }
+
+            // ニュースをチェックして表示状態を更新
+            _ = CheckNewsAsync();
+
+            // バージョン情報の表示
+            _ = LoadVersionAsync();
         }
 
-        private void BackToMain_Click(object sender, RoutedEventArgs e)
+        private async Task CheckNewsAsync()
         {
-            NavigationService?.Navigate(new MainMenuPage());
+            try
+            {
+                using HttpClient client = new();
+                var json = await client.GetStringAsync(NewsUrl);
+
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var newsList = JsonSerializer.Deserialize<List<NewsItem>>(json, options);
+
+                if (newsList != null)
+                {
+                    var now = DateTime.Now;
+                    newsList = newsList.Where(n => n.Date <= now).OrderByDescending(n => n.Date).ToList();
+                }
+
+                if (newsList?.Count > 0)
+                {
+                    var latestNewsDate = newsList[0].Date;
+
+                    DateTime lastRead = DateTime.MinValue;
+                    if (File.Exists(LastReadNewsFile))
+                    {
+                        string stored = File.ReadAllText(LastReadNewsFile);
+                        DateTime.TryParse(stored, out lastRead);
+                    }
+
+                    if (latestNewsDate > lastRead)
+                    {
+                        NoticeText.Visibility = Visibility.Visible;
+                        NoticeBadge.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        NoticeText.Visibility = Visibility.Collapsed;
+                        NoticeBadge.Visibility = Visibility.Visible;
+                    }
+                }
+                else
+                {
+                    NoticeText.Visibility = Visibility.Collapsed;
+                    NoticeBadge.Visibility = Visibility.Visible;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+
+                NoticeText.Visibility = Visibility.Collapsed;
+                NoticeBadge.Visibility = Visibility.Visible;
+            }
         }
 
-        private void ZipInstall_Click(object sender, RoutedEventArgs e)
+        private void Mod_New_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService?.Navigate(new SelectZipFile());
+            NavigationService?.Navigate(new ModSelectPage());
+        }
+
+        private void Notice_Click(object sender, RoutedEventArgs e)
+        {
+            File.WriteAllText(LastReadNewsFile, DateTime.Now.ToString("s"));
+            NoticeText.Visibility = Visibility.Collapsed;
+
+            NavigationService?.Navigate(new News());
+        }
+
+        public class NewsItem
+        {
+            public DateTime Date { get; set; }
+            public string Title { get; set; }
+            public string Content { get; set; }
+        }
+
+        private async Task LoadVersionAsync()
+        {
+            await Dispatcher.InvokeAsync(() =>
+            {
+                VersionText.Text = $"バージョン: {AppVersion.Version}";
+                VersionText.ToolTip = new TextBlock
+                {
+                    Text = AppVersion.Notes,
+                    TextWrapping = TextWrapping.Wrap,
+                    Width = 250
+                };
+            });
         }
     }
 }

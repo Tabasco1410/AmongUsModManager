@@ -8,10 +8,10 @@ public class VersionFetcher
 {
     public class ModUpdateData
     {
-        public string? GitHubUrl { get; set; }
+        public string GitHubUrl { get; set; }
     }
 
-    public static async Task<string?> GetRedirectedVersionAsync(string url)
+    public static async Task<string> GetRedirectedVersionAsync(string url)
     {
         var handler = new HttpClientHandler { AllowAutoRedirect = false };
         using var client = new HttpClient(handler);
@@ -19,7 +19,7 @@ public class VersionFetcher
 
         if ((int)response.StatusCode >= 300 && (int)response.StatusCode < 400)
         {
-            string? location = response.Headers.Location?.ToString();
+            string location = response.Headers.Location?.ToString();
             if (!string.IsNullOrEmpty(location))
             {
                 int index = location.LastIndexOf("/tag/");
@@ -51,7 +51,7 @@ public class VersionFetcher
             return;
         }
 
-        string? version = await GetRedirectedVersionAsync(data.GitHubUrl);
+        string version = await GetRedirectedVersionAsync(data.GitHubUrl);
         if (version != null)
         {
             Console.WriteLine($"取得したバージョン: {version}");
