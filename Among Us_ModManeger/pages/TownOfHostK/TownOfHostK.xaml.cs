@@ -70,8 +70,7 @@ namespace Among_Us_ModManeger.Pages.TownOfHostK
             }
 
             SaveConfig(exePath, folderName);
-            MessageBox.Show("フォルダ名設定を保存しました。インストール画面へ移動します。", "Amog Us ModManeger", MessageBoxButton.OK, MessageBoxImage.Information);
-
+            
             // TODO: 次の画面への遷移などがあればここで行う
             NavigationService?.Navigate(new TownOfHostK_Install());
 

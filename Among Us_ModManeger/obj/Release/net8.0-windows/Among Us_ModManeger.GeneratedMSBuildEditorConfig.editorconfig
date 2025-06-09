@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Among_Us_ModManeger
-build_property.ProjectDir = C:\Users\2023016043\Documents\GitHub\AmongUsModManeger\Among Us_ModManeger\
+build_property.ProjectDir = C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

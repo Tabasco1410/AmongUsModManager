@@ -1,0 +1,20 @@
+﻿Among Us_ModManeger
+1.0.0.0
+
+winexe
+C#
+.cs
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Release\net8.0-windows\win-x64\
+Among_Us_ModManeger
+none
+false
+TRACE;RELEASE;NET;NET8_0;NETCOREAPP
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\App.xaml
+6-703192923
+
+13-763684291
+198-1020516963
+MainWindow.xaml;Pages\MainMenuPage.xaml;Pages\ModSelectPage.xaml;Pages\News.xaml;Pages\TownOfHostK\TownOfHostK.xaml;Pages\TownOfHostK\TownOfHostK_Install.xaml;
+
+False
+

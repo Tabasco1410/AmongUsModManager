@@ -4,17 +4,17 @@
 winexe
 C#
 .cs
-C:\Users\2023016043\Documents\GitHub\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\
 Among_Us_ModManeger
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP
-C:\Users\2023016043\Documents\GitHub\AmongUsModManeger\Among Us_ModManeger\App.xaml
-51827090729
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\App.xaml
+6-703192923
 
-10-25283336
+13-148901575
 198-1020516963
-MainWindow.xaml;pages\MainMenuPage.xaml;pages\ModSelectPage.xaml;pages\TownOfHostK\TownOfHostK.xaml;pages\TownOfHostK\TownOfHostK_Install.xaml;
+MainWindow.xaml;Pages\MainMenuPage.xaml;Pages\ModSelectPage.xaml;Pages\News.xaml;Pages\TownOfHostK\TownOfHostK.xaml;Pages\TownOfHostK\TownOfHostK_Install.xaml;
 
 True
 

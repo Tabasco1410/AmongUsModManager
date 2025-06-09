@@ -1,0 +1,2 @@
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\bin\Release\net8.0-windows\win-x64\publish\Among Us_ModManeger.pdb
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\bin\Release\net8.0-windows\win-x64\publish\Among Us_ModManeger.exe

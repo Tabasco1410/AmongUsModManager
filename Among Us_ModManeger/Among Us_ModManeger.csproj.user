@@ -1,22 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup />
+  <PropertyGroup>
+    <_LastSelectedProfileId>C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\Properties\PublishProfiles\GItHubRelease用.pubxml</_LastSelectedProfileId>
+  </PropertyGroup>
   <ItemGroup>
     <ApplicationDefinition Update="App.xaml">
       <SubType>Designer</SubType>
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
-    <Compile Update="pages\ModSelectPage.xaml.cs">
+    <Compile Update="Pages\ModSelectPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="pages\MainMenuPage.xaml.cs">
+    <Compile Update="Pages\MainMenuPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="pages\TownOfHostK\TownOfHostK.xaml.cs">
+    <Compile Update="Pages\News.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="pages\TownOfHostK\TownOfHostK_Install.xaml.cs">
+    <Compile Update="Pages\TownOfHostK\TownOfHostK.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Pages\TownOfHostK\TownOfHostK_Install.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
