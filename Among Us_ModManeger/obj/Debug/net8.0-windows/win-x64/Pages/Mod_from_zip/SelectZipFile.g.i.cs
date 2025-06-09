@@ -52,7 +52,7 @@ namespace Among_Us_ModManeger.Pages.Mod_from_zip {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/Among Us_ModManeger;component/pages/mod_from_zip/selectzipfile.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/Among Us_ModManeger;V1.0.0.0;component/pages/mod_from_zip/selectzipfile.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\..\..\pages\Mod_from_zip\SelectZipFile.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);
