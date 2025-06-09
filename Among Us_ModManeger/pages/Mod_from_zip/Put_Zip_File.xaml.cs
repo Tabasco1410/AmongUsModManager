@@ -5,159 +5,172 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;
+using Among_Us_ModManeger.Pages;
 
 namespace Among_Us_ModManeger.Pages.PutZipFile
 {
     public partial class Put_Zip_File : Page
     {
-        private readonly string configFolderPath =
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AmongUsModManeger");
-        private readonly string configFilePath;
+        private string sourceFolderPath;  // Among Us.exeが入っているフォルダのパス
+        private string zipFilePath;       // 展開するZIPファイルのパス
+        private string installFolderName; // コピー先のフォルダ名
 
-        public Put_Zip_File()
+        public Put_Zip_File(string sourceFolderPath, string zipFilePath, string installFolderName)
         {
             InitializeComponent();
-            configFilePath = Path.Combine(configFolderPath, "Mods_Config.json");
+
+            this.sourceFolderPath = sourceFolderPath;
+            this.zipFilePath = zipFilePath;
+            this.installFolderName = installFolderName;
 
             Loaded += Put_Zip_File_Loaded;
         }
 
         private async void Put_Zip_File_Loaded(object sender, RoutedEventArgs e)
         {
-            InstallProgressBar.Value = 0;
-            StatusTextBlock.Text = "インストールを開始します...";
-            LogTextBox.Clear();
+            await InstallModAsync();
+        }
 
+        private async Task InstallModAsync()
+        {
             try
             {
-                await Task.Delay(300); // 見た目の準備のためちょっと待つ
-                await InstallZipAsync();
-                StatusTextBlock.Text = "インストールが完了しました。";
+                StatusTextBlock.Text = "準備中...";
+                LogTextBox.Text = "";
+
+                string appBaseDir = Path.GetDirectoryName(sourceFolderPath.TrimEnd(Path.DirectorySeparatorChar));
+                string destDir = Path.Combine(appBaseDir, installFolderName);
+
+                Log($"コピー先パスを設定: {destDir}");
+                await Task.Delay(300);
+
+                if (Directory.Exists(destDir))
+                {
+                    Log("既存のフォルダを削除中...");
+                    Directory.Delete(destDir, true);
+                    Log("削除完了");
+                    await Task.Delay(300);
+                }
+
+                Log("Among Us.exeが入っているフォルダをコピーしています...");
+                CopyDirectory(sourceFolderPath, destDir);
+                Log("コピー完了");
+                await Task.Delay(300);
+
+                string tempExtractDir = Path.Combine(Path.GetTempPath(), "AmongUsModTemp");
+                if (Directory.Exists(tempExtractDir))
+                {
+                    Log("一時フォルダを削除中...");
+                    Directory.Delete(tempExtractDir, true);
+                    Log("削除完了");
+                }
+                Directory.CreateDirectory(tempExtractDir);
+                Log($"一時フォルダを作成: {tempExtractDir}");
+                await Task.Delay(300);
+
+                Log("ZIPファイルを展開中...");
+                // ZIPファイルを展開
+                ZipFile.ExtractToDirectory(zipFilePath, tempExtractDir);
+                Log("展開完了");
+
+                // 展開直後のルートフォルダを判定
+                var extractedRootDirs = Directory.GetDirectories(tempExtractDir);
+
+                string rootFolderToCopy;
+                if (extractedRootDirs.Length == 1)
+                {
+                    rootFolderToCopy = extractedRootDirs[0];
+                    Log($"展開先のルートフォルダ: {rootFolderToCopy}");
+                }
+                else
+                {
+                    rootFolderToCopy = tempExtractDir;
+                    Log("展開先に複数フォルダやファイルがあります。");
+                }
+
+                // コピー先に中身を上書きコピー
+                CopyDirectory(rootFolderToCopy, destDir, overwrite: true);
+                Log("上書きコピー完了");
+
+                // BepInExフォルダ検出＆コピー
+                string? bepInExPath = FindBepInExFolder(rootFolderToCopy);
+                if (bepInExPath != null)
+                {
+                    Log($"BepInExフォルダを発見: {bepInExPath}");
+                    string targetBepInExDir = Path.Combine(destDir, "BepInEx");
+                    CopyDirectory(bepInExPath, targetBepInExDir, overwrite: true);
+                    Log("BepInExのコピー完了");
+                }
+                else
+                {
+                    Log("BepInExフォルダはZIPに含まれていません。");
+                }
+
+                Directory.Delete(tempExtractDir, true);
+                Log("一時フォルダを削除しました");
+
+                InstallProgressBar.Value = 100;
+                StatusTextBlock.Text = "インストール完了";
                 FinishTextBlock.Visibility = Visibility.Visible;
-                IntroTextBlock.Visibility = Visibility.Collapsed;
                 ReturnHomeButton.Visibility = Visibility.Visible;
+                Log("インストールが完了しました。");
             }
             catch (Exception ex)
             {
-                StatusTextBlock.Text = "エラーが発生しました。";
-                Log($"エラー詳細: {ex.Message}");
+                StatusTextBlock.Text = "エラー発生";
+                Log($"エラー: {ex.Message}");
             }
         }
 
-        private async Task InstallZipAsync()
+        private string? FindBepInExFolder(string rootDir)
         {
-            UpdateProgress(5, "設定読み込み中...");
-
-            var config = LoadModConfig();
-            if (config == null)
-                throw new Exception("設定ファイルが見つかりません。");
-
-            if (!File.Exists(config.ZipPath))
-                throw new Exception("指定されたZIPファイルが存在しません。");
-
-            if (string.IsNullOrEmpty(config.ExtractTo))
-                throw new Exception("展開先のパスが指定されていません。");
-
-            UpdateProgress(20, "ZIPを展開中...");
-
-            string tempExtract = Path.Combine(Path.GetTempPath(), "PutZip_Temp");
-            if (Directory.Exists(tempExtract)) Directory.Delete(tempExtract, true);
-
-            await ExtractZipAsync(config.ZipPath, tempExtract);
-
-            UpdateProgress(60, "ファイルをコピー中...");
-
-            if (Directory.Exists(config.ExtractTo))
-                Directory.Delete(config.ExtractTo, true);
-
-            await CopyDirectoryAsync(tempExtract, config.ExtractTo);
-
-            UpdateProgress(90, "処理中...");
-
-            await Task.Run(() => Directory.Delete(tempExtract, true));
-
-            UpdateProgress(100, "完了しました！");
+            foreach (var dir in Directory.GetDirectories(rootDir))
+            {
+                if (Path.GetFileName(dir).Equals("BepInEx", StringComparison.OrdinalIgnoreCase))
+                {
+                    return dir;
+                }
+                else
+                {
+                    string? found = FindBepInExFolder(dir);
+                    if (found != null)
+                        return found;
+                }
+            }
+            return null;
         }
 
-        private async Task ExtractZipAsync(string zipPath, string extractPath)
+        private void CopyDirectory(string sourceDir, string destDir, bool overwrite = false)
         {
-            await Task.Run(() =>
+            var dir = new DirectoryInfo(sourceDir);
+            if (!dir.Exists)
+                throw new DirectoryNotFoundException($"ソースディレクトリが見つかりません: {sourceDir}");
+
+            Directory.CreateDirectory(destDir);
+
+            foreach (var file in dir.GetFiles())
             {
-                ZipFile.ExtractToDirectory(zipPath, extractPath);
-            });
-        }
-
-        private async Task CopyDirectoryAsync(string source, string destination)
-        {
-            Directory.CreateDirectory(destination);
-            Log($"ディレクトリ作成: {destination}");
-
-            var files = Directory.GetFiles(source);
-            int totalFiles = files.Length;
-            int copiedFiles = 0;
-
-            foreach (var file in files)
-            {
-                string destFile = Path.Combine(destination, Path.GetFileName(file));
-                await Task.Run(() => File.Copy(file, destFile, true));
-                copiedFiles++;
-                Log($"コピー: {file} → {destFile}");
-
-                double progress = 60 + 30 * copiedFiles / totalFiles;
-                UpdateProgress(progress, $"ファイルをコピー中... {copiedFiles}/{totalFiles}");
+                string targetFilePath = Path.Combine(destDir, file.Name);
+                file.CopyTo(targetFilePath, overwrite);
             }
 
-            foreach (var dir in Directory.GetDirectories(source))
+            foreach (var subDir in dir.GetDirectories())
             {
-                string destDir = Path.Combine(destination, Path.GetFileName(dir));
-                await CopyDirectoryAsync(dir, destDir);
+                string newDestDir = Path.Combine(destDir, subDir.Name);
+                CopyDirectory(subDir.FullName, newDestDir, overwrite);
             }
-        }
-
-        private void UpdateProgress(double percent, string message)
-        {
-            Dispatcher.InvokeAsync(() =>
-            {
-                InstallProgressBar.Value = percent;
-                StatusTextBlock.Text = message;
-                Log(message);
-            });
         }
 
         private void Log(string message)
         {
-            Dispatcher.InvokeAsync(() =>
-            {
-                LogTextBox.AppendText($"{DateTime.Now:HH:mm:ss} - {message}\n");
-                LogTextBox.ScrollToEnd();
-            });
-        }
-
-        private ModZipConfig? LoadModConfig()
-        {
-            try
-            {
-                var configPath = Path.Combine(configFolderPath, "PutZip_Config.json");
-                if (!File.Exists(configPath)) return null;
-
-                var json = File.ReadAllText(configPath);
-                return System.Text.Json.JsonSerializer.Deserialize<ModZipConfig>(json);
-            }
-            catch
-            {
-                return null;
-            }
+            LogTextBox.AppendText($"{DateTime.Now:HH:mm:ss} {message}\n");
+            LogTextBox.ScrollToEnd();
         }
 
         private void ReturnHomeButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new MainMenuPage());
+            NavigationService?.Navigate(new MainMenuPage());
         }
 
-        private class ModZipConfig
-        {
-            public string? ZipPath { get; set; }
-            public string? ExtractTo { get; set; }
-        }
     }
 }

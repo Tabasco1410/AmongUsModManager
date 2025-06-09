@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Among Us_ModManeger")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+17c18442a4e2509fbf4176f3c0523f7007106de6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2a75d1978b32b65f253d7f38a0018740528403e3")]
 [assembly: System.Reflection.AssemblyProductAttribute("Among Us_ModManeger")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Among Us_ModManeger")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
