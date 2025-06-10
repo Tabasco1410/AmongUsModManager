@@ -11,5 +11,5 @@
 （TownOfHost-Kを使用してテストを行いました
 
 
-## DiscordServer
-作成中・・・
+## DiscordServer（仮）
+https://discord.gg/ZQPhp8s36g
