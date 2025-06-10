@@ -22,7 +22,6 @@ namespace Among_Us_ModManeger.Pages
         public MainMenuPage()
         {
             InitializeComponent();
-
             LogOutput.Write("MainMenuPage: 初期化開始");
 
             if (!Directory.Exists(AppDataFolder))
@@ -133,27 +132,8 @@ namespace Among_Us_ModManeger.Pages
 
             if (string.IsNullOrWhiteSpace(amongUsPath) || !File.Exists(amongUsPath))
             {
-                LogOutput.Write("Among Us.exeのパスが未設定または存在しないため選択ダイアログを表示");
-                var dialog = new OpenFileDialog
-                {
-                    Title = "Among Us.exe を選択してください",
-                    Filter = "Among Us (*.exe)|Among Us.exe"
-                };
-
-                if (dialog.ShowDialog() == true)
-                {
-                    amongUsPath = dialog.FileName;
-                    var config = new VanillaConfig { ExePath = amongUsPath };
-                    var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
-                    File.WriteAllText(VanillaConfigPath, json);
-
-                    LogOutput.Write($"Among Us.exe パス選択完了: {amongUsPath}");
-                }
-                else
-                {
-                    LogOutput.Write("Among Us.exe の選択がキャンセルされました");
-                    return;
-                }
+                LogOutput.Write("Among Us.exe が未設定または無効のため、ゲームフォルダの読み込みをスキップ");
+                return;
             }
 
             var root = Directory.GetParent(amongUsPath)?.Parent;
@@ -168,14 +148,13 @@ namespace Among_Us_ModManeger.Pages
                                    .ToList();
 
             LogOutput.Write($"検出されたゲームフォルダ数: {folders.Count}");
-
             GameFolderList.Items.Clear();
 
             foreach (var folder in folders)
             {
                 var panel = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 0, 0, 5) };
-
                 var folderName = Path.GetFileName(folder);
+
                 panel.Children.Add(new TextBlock
                 {
                     Text = folderName,
@@ -184,41 +163,25 @@ namespace Among_Us_ModManeger.Pages
                     Margin = new Thickness(0, 0, 10, 0)
                 });
 
-                var launchButton = new Button { Content = "起動", Width = 80, Margin = new Thickness(0, 0, 5, 0) };
-                launchButton.Click += (_, _) =>
-                {
-                    var exe = Path.Combine(folder, "Among Us.exe");
-                    if (File.Exists(exe))
-                    {
-                        LogOutput.Write($"起動ボタン押下: {exe}");
-                        Process.Start(new ProcessStartInfo(exe) { UseShellExecute = true });
-                    }
-                    else
-                    {
-                        LogOutput.Write($"起動失敗: ファイルが存在しません {exe}");
-                        MessageBox.Show("実行ファイルが見つかりません。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                };
-                panel.Children.Add(launchButton);
+                var exe = Path.Combine(folder, "Among Us.exe");
 
-                var openFolderButton = new Button { Content = "フォルダを開く", Width = 100, Margin = new Thickness(0, 0, 5, 0) };
-                openFolderButton.Click += (_, _) =>
+                panel.Children.Add(CreateButton("起動", 80, () =>
+                {
+                    if (File.Exists(exe))
+                        Process.Start(new ProcessStartInfo(exe) { UseShellExecute = true });
+                    else
+                        MessageBox.Show("実行ファイルが見つかりません。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                }));
+
+                panel.Children.Add(CreateButton("フォルダを開く", 100, () =>
                 {
                     if (Directory.Exists(folder))
-                    {
-                        LogOutput.Write($"フォルダを開くボタン押下: {folder}");
                         Process.Start(new ProcessStartInfo("explorer.exe", $"\"{folder}\"") { UseShellExecute = true });
-                    }
                     else
-                    {
-                        LogOutput.Write($"フォルダ開けず: フォルダが存在しません {folder}");
                         MessageBox.Show("フォルダが存在しません。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
-                };
-                panel.Children.Add(openFolderButton);
+                }));
 
-                var renameButton = new Button { Content = "名前変更", Width = 80, Margin = new Thickness(0, 0, 5, 0) };
-                renameButton.Click += (_, _) =>
+                panel.Children.Add(CreateButton("名前変更", 80, () =>
                 {
                     var input = Microsoft.VisualBasic.Interaction.InputBox("新しいフォルダ名を入力してください:", "名前変更", folderName);
                     if (!string.IsNullOrWhiteSpace(input))
@@ -226,51 +189,61 @@ namespace Among_Us_ModManeger.Pages
                         var newPath = Path.Combine(root.FullName, input);
                         if (!Directory.Exists(newPath))
                         {
-                            LogOutput.Write($"名前変更: {folderName} → {input}");
                             Directory.Move(folder, newPath);
-                            LoadGameFolders(); // 更新
+                            LoadGameFolders();
                         }
                         else
                         {
-                            LogOutput.Write($"名前変更失敗: すでに存在するフォルダ名 {input}");
                             MessageBox.Show("その名前のフォルダは既に存在します。");
                         }
                     }
-                    else
-                    {
-                        LogOutput.Write("名前変更キャンセルまたは空文字入力");
-                    }
-                };
-                panel.Children.Add(renameButton);
+                }));
 
-                var deleteButton = new Button { Content = "削除", Width = 80 };
-                deleteButton.Click += (_, _) =>
+                panel.Children.Add(CreateButton("削除", 80, () =>
                 {
                     if (MessageBox.Show($"{folderName} を本当に削除しますか？", "確認", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     {
-                        try
-                        {
-                            Directory.Delete(folder, true);
-                            LogOutput.Write($"フォルダ削除成功: {folderName}");
-                            LoadGameFolders(); // 更新
-                        }
-                        catch (Exception ex)
-                        {
-                            LogOutput.Write($"フォルダ削除失敗: {folderName} - {ex.Message}");
-                            MessageBox.Show($"削除に失敗しました: {ex.Message}");
-                        }
+                        Directory.Delete(folder, true);
+                        LoadGameFolders();
                     }
-                    else
-                    {
-                        LogOutput.Write("フォルダ削除キャンセル");
-                    }
-                };
-                panel.Children.Add(deleteButton);
+                }));
 
                 GameFolderList.Items.Add(panel);
             }
 
             LogOutput.Write("LoadGameFolders: ゲームフォルダ読み込み完了");
+        }
+
+        private Button CreateButton(string content, double width, Action onClick)
+        {
+            var button = new Button { Content = content, Width = width, Margin = new Thickness(0, 0, 5, 0) };
+            button.Click += (_, _) => onClick();
+            return button;
+        }
+
+        private void SelectExeButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Title = "Among Us.exe を選択してください",
+                Filter = "Among Us (*.exe)|Among Us.exe"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var amongUsPath = dialog.FileName;
+                var config = new VanillaConfig { ExePath = amongUsPath };
+                var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(VanillaConfigPath, json);
+
+                LogOutput.Write($"Among Us.exe パス選択完了: {amongUsPath}");
+
+                LoadGameFolders();
+            }
+            else
+            {
+                LogOutput.Write("Among Us.exe の選択がキャンセルされました");
+            }
         }
 
         private class VanillaConfig

@@ -7,12 +7,10 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <!-- タイトル -->
+            <RowDefinition Height="*"/>
+            <!-- 入力項目 -->
             <RowDefinition Height="Auto"/>
-            <!-- 拡大表示ブロック -->
-            <RowDefinition Height="*" />
-            <!-- スペース -->
-            <RowDefinition Height="Auto"/>
-            <!-- インストール・戻る -->
+            <!-- ボタン -->
         </Grid.RowDefinitions>
 
         <!-- タイトル -->
@@ -23,41 +21,67 @@
                    Margin="0,0,0,20"
                    Grid.Row="0"/>
 
-        <!-- 拡大表示ブロック -->
+        <!-- 入力項目 -->
         <StackPanel Grid.Row="1" Margin="0,0,0,20">
-            <StackPanel.LayoutTransform>
-                <ScaleTransform ScaleX="1.3" ScaleY="1.3" />
-            </StackPanel.LayoutTransform>
 
             <!-- ZIPファイル選択 -->
-            <StackPanel Orientation="Horizontal" Margin="0,10">
-                <TextBlock Text="MOD ZIPファイル：" VerticalAlignment="Center"/>
-                <TextBox Name="ZipFilePathTextBox" Width="400" Margin="10,0" IsReadOnly="True"
-                         TextChanged="ZipFilePathTextBox_TextChanged"/>
-                <Button Content="参照" Click="SelectZipFile_Click" Width="70"/>
-            </StackPanel>
+            <Grid Margin="0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="MOD ZIPファイル：" VerticalAlignment="Center" Grid.Column="0"/>
+                <TextBox Name="ZipFilePathTextBox" Grid.Column="1" Margin="10,0"
+                         IsReadOnly="True" TextChanged="ZipFilePathTextBox_TextChanged"
+                         VerticalAlignment="Center"/>
+                <Button Content="参照" Grid.Column="2" Width="70" Click="SelectZipFile_Click"/>
+            </Grid>
 
             <!-- Among Us.exe選択 -->
-            <StackPanel Orientation="Horizontal" Margin="0,10">
-                <TextBlock Text="Among Us.exe：" VerticalAlignment="Center"/>
-                <TextBox Name="ExePathTextBox" Width="400" Margin="10,0"
-                         TextChanged="ExePathTextBox_TextChanged"/>
-                <Button Content="参照" Click="SelectExeFile_Click" Width="70"/>
-            </StackPanel>
+            <Grid Margin="0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Among Us.exe：" VerticalAlignment="Center" Grid.Column="0"/>
+                <TextBox Name="ExePathTextBox" Grid.Column="1" Margin="10,0"
+                         TextChanged="ExePathTextBox_TextChanged"
+                         VerticalAlignment="Center"/>
+                <Button Content="参照" Grid.Column="2" Width="70" Click="SelectExeFile_Click"/>
+            </Grid>
 
             <!-- コピー後のフォルダ名 -->
-            <StackPanel Orientation="Horizontal" Margin="0,10">
-                <TextBlock Text="コピー後のフォルダ名：" VerticalAlignment="Center"/>
-                <TextBox Name="CopyFolderNameTextBox" Width="200" Margin="10,0"
+            <Grid Margin="0,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="コピー後のフォルダ名：" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"/>
+                <TextBox Name="CopyFolderNameTextBox" Grid.Row="0" Grid.Column="1" Margin="10,0"
                          GotFocus="CopyFolderNameTextBox_GotFocus"
                          LostFocus="CopyFolderNameTextBox_LostFocus"
-                         TextChanged="CopyFolderNameTextBox_TextChanged"/>
-                <TextBlock Name="ErrorTextBlock" Foreground="Red" Margin="10,0" VerticalAlignment="Center"/>
-            </StackPanel>
+                         TextChanged="CopyFolderNameTextBox_TextChanged"
+                         VerticalAlignment="Center"/>
+                <TextBlock Name="ErrorTextBlock" Foreground="Red" Margin="10,0"
+                           VerticalAlignment="Center" Grid.Row="0" Grid.Column="2"/>
+
+                <TextBlock Text="ファイル名はModの名前にすることをオススメします"
+                           Foreground="Gray" Margin="10,2,0,0"
+                           FontSize="12" Grid.Row="1" Grid.Column="1"/>
+            </Grid>
+
         </StackPanel>
 
-        <!-- インストール・戻るボタン -->
-        <Grid Grid.Row="3">
+        <!-- ボタン類 -->
+        <Grid Grid.Row="2" Margin="0,10,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>

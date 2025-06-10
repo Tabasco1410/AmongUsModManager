@@ -13,6 +13,7 @@ namespace Among_Us_ModManeger.Pages.Mod_from_zip
         private readonly string configFolderPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AmongUsModManeger");
         private readonly string configFilePath;
+        private readonly string vanillaConfigPath;
 
         private string zipPath = string.Empty;
         private string exePath = string.Empty;
@@ -22,6 +23,34 @@ namespace Among_Us_ModManeger.Pages.Mod_from_zip
         {
             InitializeComponent();
             configFilePath = Path.Combine(configFolderPath, "PutZip_Config.json");
+            vanillaConfigPath = Path.Combine(configFolderPath, "Vanilla_Config.json");
+
+            LoadVanillaExePath();
+        }
+
+        private void LoadVanillaExePath()
+        {
+            try
+            {
+                if (File.Exists(vanillaConfigPath))
+                {
+                    string json = File.ReadAllText(vanillaConfigPath);
+                    using JsonDocument doc = JsonDocument.Parse(json);
+                    if (doc.RootElement.TryGetProperty("ExePath", out JsonElement exeElement))
+                    {
+                        string path = exeElement.GetString() ?? "";
+                        if (File.Exists(path))
+                        {
+                            exePath = path;
+                            ExePathTextBox.Text = exePath;
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                // 読み込みに失敗しても無視
+            }
         }
 
         private void SelectZipFile_Click(object sender, RoutedEventArgs e)
@@ -76,7 +105,8 @@ namespace Among_Us_ModManeger.Pages.Mod_from_zip
                          File.Exists(exePath) &&
                          !string.IsNullOrWhiteSpace(copyFolderName);
 
-            if (!string.IsNullOrWhiteSpace(copyFolderName) && copyFolderName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+            if (!string.IsNullOrWhiteSpace(copyFolderName) &&
+                copyFolderName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
             {
                 ErrorTextBlock.Text = "無効な文字が含まれています。";
                 InstallButton.IsEnabled = false;
@@ -92,7 +122,7 @@ namespace Among_Us_ModManeger.Pages.Mod_from_zip
         {
             try
             {
-                string sourceFolder = Path.GetDirectoryName(exePath)!;  // フォルダパスに変換
+                string sourceFolder = Path.GetDirectoryName(exePath)!;
                 NavigationService.Navigate(new Pages.PutZipFile.Put_Zip_File(sourceFolder, zipPath, copyFolderName));
             }
             catch (Exception ex)
@@ -101,16 +131,9 @@ namespace Among_Us_ModManeger.Pages.Mod_from_zip
             }
         }
 
-
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.GoBack();
-        }
-
-        private class ModZipConfig
-        {
-            public string? ZipPath { get; set; }
-            public string? ExtractTo { get; set; }
+            NavigationService.Navigate(new Pages.MainMenuPage());
         }
 
         private void CopyFolderNameTextBox_GotFocus(object sender, RoutedEventArgs e)
