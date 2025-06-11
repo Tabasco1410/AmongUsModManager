@@ -1,5 +1,7 @@
 # AmongUsModManeger
 
+最新リリースは[こちら](https://github.com/Tabasco1410/AmongUsModManeger/releases/latest)
+
 ## 利用規約
 LICENSE.txtをご覧ください。
 インストーラーでも表示されます。
@@ -10,7 +12,7 @@ LICENSE.txtをご覧ください。
 <br>・Among Usファイルの管理
 
 ## Steam版、BepInExを使用したmodでの動作確認済み
-（TownOfHost-Kを使用してテストを行いました
+（TownOfHost-Kを使用してテストを行いました）
 
 
 ## DiscordServer（仮）
