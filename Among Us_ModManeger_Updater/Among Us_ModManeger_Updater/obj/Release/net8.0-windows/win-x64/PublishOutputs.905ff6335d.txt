@@ -1,0 +1,7 @@
+C:\Users\2023016043\Documents\Among UsModManeger\Release\Among Us_ModManeger_Updater.pdb
+C:\Users\2023016043\Documents\Among UsModManeger\Release\D3DCompiler_47_cor3.dll
+C:\Users\2023016043\Documents\Among UsModManeger\Release\PenImc_cor3.dll
+C:\Users\2023016043\Documents\Among UsModManeger\Release\PresentationNative_cor3.dll
+C:\Users\2023016043\Documents\Among UsModManeger\Release\vcruntime140_cor3.dll
+C:\Users\2023016043\Documents\Among UsModManeger\Release\wpfgfx_cor3.dll
+C:\Users\2023016043\Documents\Among UsModManeger\Release\Among Us_ModManeger_Updater.exe
