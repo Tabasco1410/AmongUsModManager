@@ -1,6 +1,8 @@
 # AmongUsModManeger
 
-## Ver 1.0 Release!
+## 利用規約
+LICENSE.txtをご覧ください。
+インストーラーでも表示されます。
 
 ## 機能
 ・.zipファイルからのAmong UsのModの新規導入の自動化
