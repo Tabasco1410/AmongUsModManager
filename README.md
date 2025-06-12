@@ -15,5 +15,4 @@ LICENSE.txtをご覧ください。
 （TownOfHost-Kを使用してテストを行いました）
 
 
-## DiscordServer（仮）
-https://discord.gg/ZQPhp8s36g
+## [DiscordServer](https://discord.gg/yjurSmjTxr)
