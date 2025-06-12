@@ -4,6 +4,18 @@
 
 ## 利用規約
 LICENSEをご覧ください。
+Among Us_ModManeger
+
+このソフトウェアは GNU General Public License v3.0 に基づいて公開されています。
+
+・自由に使用、再配布、改変できます。
+・ただし、改変して再配布する場合は、同じGPLv3ライセンスのもとで公開し、ソースコードも提供する必要があります。
+・本ソフトウェアの使用によって発生したいかなる損害に対しても、開発者は責任を負いません。
+
+詳しいライセンスの内容は、同梱の LICENSE ファイル、または下記を参照してください：
+https://www.gnu.org/licenses/gpl-3.0.txt
+
+Copyright (c) 2025 Tabasco1410
 
 ## 機能
 ・.zipファイルからのAmong UsのModの新規導入の自動化<br>
