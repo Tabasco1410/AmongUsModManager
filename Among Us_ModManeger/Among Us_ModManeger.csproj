@@ -5,7 +5,8 @@
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
 
-		<PublishSingleFile>true</PublishSingleFile>
+		<!-- 単一ファイル発行を無効にして、DLLなどを個別に出力 -->
+		<PublishSingleFile>false</PublishSingleFile>
 		<SelfContained>true</SelfContained>
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
@@ -14,10 +15,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Resources\**" />
-	  <EmbeddedResource Remove="Resources\**" />
-	  <None Remove="Resources\**" />
-	  <Page Remove="Resources\**" />
+		<Compile Remove="Resources\**" />
+		<EmbeddedResource Remove="Resources\**" />
+		<None Remove="Resources\**" />
+		<Page Remove="Resources\**" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -26,11 +27,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Icon_N.ico" />
+		<Content Include="Icon_N.ico" />
 	</ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Updates\" />
-  </ItemGroup>
 
 </Project>

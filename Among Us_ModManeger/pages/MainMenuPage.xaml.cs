@@ -9,12 +9,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
+using Among_Us_ModManeger.Updates;
 
 namespace Among_Us_ModManeger.Pages
 {
     public partial class MainMenuPage : Page
     {
         private const string NewsUrl = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManeger/main/News.json";
+        private const string VersionUrl = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManeger/main/version.txt";
+
         private static readonly string AppDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AmongUsModManeger");
         private static readonly string LastReadNewsFile = Path.Combine(AppDataFolder, "last_read_news.txt");
         private static readonly string VanillaConfigPath = Path.Combine(AppDataFolder, "Vanilla_Config.json");
@@ -27,16 +30,42 @@ namespace Among_Us_ModManeger.Pages
             if (!Directory.Exists(AppDataFolder))
                 Directory.CreateDirectory(AppDataFolder);
 
-            _ = CheckNewsAsync();
-            _ = LoadVersionAsync();
-            LoadGameFolders();
+            _ = InitializeAsync();
 
             LogOutput.Write("MainMenuPage: 初期化完了");
+        }
+
+        private async Task InitializeAsync()
+        {
+            await LoadVersionAsync();
+            await CheckNewsAsync();
+            await CheckUpdateButtonAsync();
+            LoadGameFolders();
+        }
+
+        private async Task LoadVersionAsync()
+        {
+            LogOutput.Write("LoadVersionAsync: バージョン情報読み込み開始");
+
+            await Dispatcher.InvokeAsync(() =>
+            {
+                VersionText.Text = $"バージョン: {AppVersion.Version}";
+                VersionText.ToolTip = new TextBlock
+                {
+                    Text = AppVersion.Notes,
+                    TextWrapping = TextWrapping.Wrap,
+                    Width = 250
+                };
+                LogOutput.WriteVersion(AppVersion.Version, AppVersion.Notes);
+            });
+
+            LogOutput.Write("LoadVersionAsync: バージョン情報表示完了");
         }
 
         private async Task CheckNewsAsync()
         {
             LogOutput.Write("CheckNewsAsync: お知らせチェック開始");
+
             try
             {
                 using var client = new HttpClient();
@@ -45,12 +74,18 @@ namespace Among_Us_ModManeger.Pages
                 var newsList = JsonSerializer.Deserialize<List<NewsItem>>(json, options);
 
                 if (newsList != null)
-                    newsList = newsList.Where(n => n.Date <= DateTime.Now).OrderByDescending(n => n.Date).ToList();
+                {
+                    newsList = newsList.Where(n => n.Date <= DateTime.Now)
+                                       .OrderByDescending(n => n.Date)
+                                       .ToList();
+                }
 
                 if (newsList?.Count > 0)
                 {
                     var latestNewsDate = newsList[0].Date;
-                    DateTime lastRead = File.Exists(LastReadNewsFile) ? DateTime.Parse(File.ReadAllText(LastReadNewsFile)) : DateTime.MinValue;
+                    var lastRead = File.Exists(LastReadNewsFile)
+                        ? DateTime.Parse(File.ReadAllText(LastReadNewsFile))
+                        : DateTime.MinValue;
 
                     NoticeText.Visibility = latestNewsDate > lastRead ? Visibility.Visible : Visibility.Collapsed;
                     LogOutput.Write($"最新お知らせ日: {latestNewsDate}, 最終既読日: {lastRead}, 表示: {NoticeText.Visibility}");
@@ -64,7 +99,40 @@ namespace Among_Us_ModManeger.Pages
                 NoticeText.Visibility = Visibility.Collapsed;
                 NoticeBadge.Visibility = Visibility.Visible;
             }
+
             LogOutput.Write("CheckNewsAsync: お知らせチェック完了");
+        }
+
+        private async Task CheckUpdateButtonAsync()
+        {
+            try
+            {
+                string localVersion = AppVersion.Version;
+                bool updateAvailable = await AppUpdater.IsUpdateAvailableAsync(localVersion, VersionUrl);
+
+                if (updateAvailable)
+                {
+                    UpdateButton.Visibility = Visibility.Visible;
+                    LogOutput.Write("アップデートあり - Updateボタンを表示");
+                }
+                else
+                {
+                    UpdateButton.Visibility = Visibility.Collapsed;
+                    LogOutput.Write("アップデートなし");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogOutput.Write($"CheckUpdateButtonAsync: エラー - {ex.Message}");
+            }
+        }
+
+        private void UpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (MessageBox.Show("新しいバージョンがあります。アップデートしますか？", "アップデート確認", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                AppUpdater.StartUpdaterAndExit();
+            }
         }
 
         private void Mod_New_Click(object sender, RoutedEventArgs e)
@@ -81,28 +149,29 @@ namespace Among_Us_ModManeger.Pages
             NavigationService?.Navigate(new News());
         }
 
-        public class NewsItem
+        private void SelectExeButton_Click(object sender, RoutedEventArgs e)
         {
-            public DateTime Date { get; set; }
-            public string Title { get; set; }
-            public string Content { get; set; }
-        }
-
-        private async Task LoadVersionAsync()
-        {
-            LogOutput.Write("LoadVersionAsync: バージョン情報読み込み開始");
-            await Dispatcher.InvokeAsync(() =>
+            var dialog = new OpenFileDialog
             {
-                VersionText.Text = $"バージョン: {AppVersion.Version}";
-                VersionText.ToolTip = new TextBlock
-                {
-                    Text = AppVersion.Notes,
-                    TextWrapping = TextWrapping.Wrap,
-                    Width = 250
-                };
-                LogOutput.WriteVersion(AppVersion.Version, AppVersion.Notes);
-            });
-            LogOutput.Write("LoadVersionAsync: バージョン情報表示完了");
+                Title = "Among Us.exe を選択してください",
+                Filter = "Among Us (*.exe)|Among Us.exe"
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                var amongUsPath = dialog.FileName;
+                var config = new VanillaConfig { ExePath = amongUsPath };
+                var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(VanillaConfigPath, json);
+
+                LogOutput.Write($"Among Us.exe パス選択完了: {amongUsPath}");
+
+                LoadGameFolders();
+            }
+            else
+            {
+                LogOutput.Write("Among Us.exe の選択がキャンセルされました");
+            }
         }
 
         private void LoadGameFolders()
@@ -116,12 +185,9 @@ namespace Among_Us_ModManeger.Pages
                 if (File.Exists(VanillaConfigPath))
                 {
                     var json = File.ReadAllText(VanillaConfigPath);
-                    if (!string.IsNullOrWhiteSpace(json))
-                    {
-                        var config = JsonSerializer.Deserialize<VanillaConfig>(json);
-                        amongUsPath = config?.ExePath;
-                        LogOutput.Write($"設定ファイル読み込み成功: {amongUsPath}");
-                    }
+                    var config = JsonSerializer.Deserialize<VanillaConfig>(json);
+                    amongUsPath = config?.ExePath;
+                    LogOutput.Write($"設定ファイル読み込み成功: {amongUsPath}");
                 }
             }
             catch (Exception ex)
@@ -221,34 +287,16 @@ namespace Among_Us_ModManeger.Pages
             return button;
         }
 
-        private void SelectExeButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new OpenFileDialog
-            {
-                Title = "Among Us.exe を選択してください",
-                Filter = "Among Us (*.exe)|Among Us.exe"
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                var amongUsPath = dialog.FileName;
-                var config = new VanillaConfig { ExePath = amongUsPath };
-                var json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(VanillaConfigPath, json);
-
-                LogOutput.Write($"Among Us.exe パス選択完了: {amongUsPath}");
-
-                LoadGameFolders();
-            }
-            else
-            {
-                LogOutput.Write("Among Us.exe の選択がキャンセルされました");
-            }
-        }
-
         private class VanillaConfig
         {
             public string ExePath { get; set; }
+        }
+
+        public class NewsItem
+        {
+            public DateTime Date { get; set; }
+            public string Title { get; set; }
+            public string Content { get; set; }
         }
     }
 }

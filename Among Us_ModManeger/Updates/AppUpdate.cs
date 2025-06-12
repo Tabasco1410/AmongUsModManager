@@ -8,8 +8,8 @@ namespace Among_Us_ModManeger
 {
     public static class AppVersion
     {
-        public const string Version = "Version1.1";
-        public const string ReleaseDate = "2025-06-10";
-        public const string Notes = "UIの修正と、一部画面で戻るボタンが機能していなかった問題の修正を行いました。";
+        public const string Version = "1.2";
+        public const string ReleaseDate = "2025-06-11";
+        public const string Notes = "アプリ本体の自動アップデート機能を実装しました。";
     }
 }
