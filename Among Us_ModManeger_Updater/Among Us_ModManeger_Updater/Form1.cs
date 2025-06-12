@@ -21,59 +21,91 @@ namespace Among_Us_ModManeger_Updater
             {
                 logBox.AppendText("バージョン情報を取得中...\r\n");
 
-                // バージョン取得
                 using WebClient client = new WebClient();
                 string versionText = await client.DownloadStringTaskAsync("https://raw.githubusercontent.com/Tabasco1410/AmongUsModManeger/main/version.txt");
                 string version = versionText.Trim();
 
                 logBox.AppendText($"最新バージョン: {version}\r\n");
 
-                // ダウンロードURLを作成
                 string zipUrl = $"https://github.com/Tabasco1410/AmongUsModManeger/releases/download/{version}/Among.Us_ModManeger{version}.zip";
                 string tempZipPath = Path.Combine(Path.GetTempPath(), $"AmongUsModManager_{version}.zip");
+                string extractPath = Path.Combine(Path.GetTempPath(), $"AmongUsModManager_Extracted_{version}");
+
+                // 以前の展開フォルダを削除
+                if (Directory.Exists(extractPath))
+                    Directory.Delete(extractPath, true);
+
+                Directory.CreateDirectory(extractPath); // ← ここが重要！
 
                 logBox.AppendText("アップデートファイルをダウンロード中...\r\n");
-
-                // ダウンロード開始
                 progressBar1.Value = 10;
                 await client.DownloadFileTaskAsync(new Uri(zipUrl), tempZipPath);
                 logBox.AppendText("ダウンロード完了\r\n");
 
-                // 解凍
                 progressBar1.Value = 50;
                 logBox.AppendText("ファイルを展開中...\r\n");
 
-                string extractPath = AppDomain.CurrentDomain.BaseDirectory;
-                ZipFile.ExtractToDirectory(tempZipPath, extractPath, true); // 上書き有効
+                ZipFile.ExtractToDirectory(tempZipPath, extractPath);
                 logBox.AppendText("展開完了\r\n");
 
-                // 中に1フォルダだけあるなら中身を移動
-                string[] directories = Directory.GetDirectories(extractPath);
-                if (directories.Length == 1)
+                // Among Us_ModManeger.exe を含むフォルダを再帰的に探す
+                string FindExeDirectory(string root)
                 {
-                    string innerDir = directories[0];
-                    logBox.AppendText($"サブフォルダ {Path.GetFileName(innerDir)} の中身を移動中...\r\n");
-
-                    foreach (var file in Directory.GetFiles(innerDir))
+                    foreach (var file in Directory.GetFiles(root))
                     {
-                        string destFile = Path.Combine(extractPath, Path.GetFileName(file));
-                        File.Copy(file, destFile, true);
+                        if (Path.GetFileName(file) == "Among Us_ModManeger.exe")
+                            return root;
                     }
 
-                    foreach (var dir in Directory.GetDirectories(innerDir))
+                    foreach (var dir in Directory.GetDirectories(root))
                     {
-                        string destDir = Path.Combine(extractPath, Path.GetFileName(dir));
-                        if (Directory.Exists(destDir))
-                            Directory.Delete(destDir, true);
-                        Directory.Move(dir, destDir);
+                        string found = FindExeDirectory(dir);
+                        if (found != null)
+                            return found;
                     }
 
-                    Directory.Delete(innerDir, true);
+                    return null;
                 }
 
-                // 起動
+                string exeDirectory = FindExeDirectory(extractPath);
+                string targetDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+                if (exeDirectory != null)
+                {
+                    logBox.AppendText($"Among Us_ModManeger.exe を含むフォルダを発見: {exeDirectory}\r\n");
+                    logBox.AppendText("ファイルを正しい位置に移動中...\r\n");
+
+                    MoveDirectoryContentsFlat(exeDirectory, targetDirectory);
+                }
+                else
+                {
+                    logBox.AppendText("エラー: Among Us_ModManeger.exe が見つかりません（展開フォルダ）\r\n");
+                    return;
+                }
+
+                // 不要な一時フォルダ削除
+                try { Directory.Delete(extractPath, true); } catch { }
+
+                // Bootstrapper.exe があればそれを起動して終了
+                string bootstrapperPath = Path.Combine(targetDirectory, "Bootstrapper.exe");
+                if (File.Exists(bootstrapperPath))
+                {
+                    logBox.AppendText("Bootstrapper を起動して、Updater の更新を完了します...\r\n");
+
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = bootstrapperPath,
+                        Arguments = $"\"{Application.ExecutablePath}\"",
+                        UseShellExecute = true
+                    });
+
+                    await Task.Delay(500);
+                    Application.Exit();
+                    return;
+                }
+
                 progressBar1.Value = 80;
-                string exePath = Path.Combine(extractPath, "Among Us_ModManeger.exe");
+                string exePath = Path.Combine(targetDirectory, "Among Us_ModManeger.exe");
 
                 if (File.Exists(exePath))
                 {
@@ -82,13 +114,12 @@ namespace Among_Us_ModManeger_Updater
                 }
                 else
                 {
-                    logBox.AppendText("エラー: Among Us_ModManeger.exe が見つかりません\r\n");
+                    logBox.AppendText("エラー: Among Us_ModManeger.exe が見つかりません（最終確認）\r\n");
                 }
 
                 progressBar1.Value = 100;
                 logBox.AppendText("アップデート完了\r\n");
 
-                // アップデーター自身を終了
                 await Task.Delay(1000);
                 Application.Exit();
             }
@@ -98,9 +129,32 @@ namespace Among_Us_ModManeger_Updater
             }
         }
 
+        // フォルダ内の内容をすべて移動（既存ファイルは削除して上書き）
+        void MoveDirectoryContentsFlat(string sourceDir, string destDir)
+        {
+            foreach (var file in Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories))
+            {
+                string relativePath = Path.GetRelativePath(sourceDir, file);
+                string destFile = Path.Combine(destDir, Path.GetFileName(file));
+
+                try
+                {
+                    if (File.Exists(destFile))
+                        File.Delete(destFile);
+
+                    File.Copy(file, destFile, true);
+                    logBox.AppendText($"移動: {relativePath}\r\n");
+                }
+                catch (Exception ex)
+                {
+                    logBox.AppendText($"移動失敗: {relativePath} → {ex.Message}\r\n");
+                }
+            }
+        }
+
         private void label1_Click(object sender, EventArgs e)
         {
-            // 使わないなら空でもOK
+            // 不使用イベント
         }
     }
 }
