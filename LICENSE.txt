@@ -7,7 +7,7 @@ Among US_ModManeger
 最新の利用規約はGitHub内のLICENSE.txtによります。
 
 2.適用されるアプリケーションの種類
-本利用規約は、https://github.com/Tabasco1410/AmongUsModManeger/Releases で公開されているすべてのアプリケーションに適用されます。
+本利用規約は、https://github.com/Tabasco1410/AmongUsModManeger/releases で公開されているすべてのアプリケーションに適用されます。
 本アプリケーションは、Windows11での動作を確認しています。
 
 3.利用について
