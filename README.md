@@ -1,7 +1,7 @@
 # AmongUsModManeger
 
 最新リリースは[こちら](https://github.com/Tabasco1410/AmongUsModManeger/releases/latest)
-
+[![Discord](readme.png)](https://discord.gg/yjurSmjTxr))
 ## 利用規約
 LICENSEをご覧ください。
 Among Us_ModManeger
@@ -28,5 +28,3 @@ Copyright (c) 2025 Tabasco1410
 ## Steam版、BepInExを使用したmodでの動作確認済み
 （TownOfHost-Kを使用してテストを行いました）<br>
 Epic版での動作は保証できません。。。
-
-## [DiscordServer](https://discord.gg/yjurSmjTxr)
