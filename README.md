@@ -17,13 +17,16 @@ https://www.gnu.org/licenses/gpl-3.0.txt
 
 Copyright (c) 2025 Tabasco1410
 
-## 機能
+## 機能/Future
 ・.zipファイルからのAmong UsのModの新規導入の自動化<br>
 ・Among Usの起動ボタン（Mod有含め）
 <br>・Among Usファイルの管理
+![image](https://github.com/user-attachments/assets/bbd6bf75-606f-40da-9f96-cc005a70d9ce)
+
+
 
 ## Steam版、BepInExを使用したmodでの動作確認済み
-（TownOfHost-Kを使用してテストを行いました）
-
+（TownOfHost-Kを使用してテストを行いました）<br>
+Epic版での動作は保証できません。。。
 
 ## [DiscordServer](https://discord.gg/yjurSmjTxr)
