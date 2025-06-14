@@ -4,7 +4,6 @@
 [![Discord](readme.png)](https://discord.gg/yjurSmjTxr)<br>
 ## 利用規約
 LICENSEをご覧ください。<br>
-### [日本語訳](https://tabasco1410.github.io/AmongUsModManeger/LICENSE_JN.html)<br>※非公式です<br>
 Among Us_ModManeger
 
 このソフトウェアは GNU General Public License v3.0 に基づいて公開されています。
