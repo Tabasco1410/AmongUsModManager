@@ -28,3 +28,6 @@ Copyright (c) 2025 Tabasco1410
 ## Steam版、BepInExを使用したmodでの動作確認済み
 （TownOfHost-Kを使用してテストを行いました）<br>
 Epic版での動作は保証できません。
+
+
+https://tabasco1410.github.io/AmongUsModManeger/
