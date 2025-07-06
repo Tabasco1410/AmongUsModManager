@@ -9,6 +9,9 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="pages\Admin\AdminPanelPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Pages\ModSelectPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -21,7 +24,19 @@
     <Compile Update="pages\Mod_from_zip\SelectZipFile.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Pages\News.xaml.cs">
+    <Compile Update="pages\Mod_Update\ModVersionSelectionPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="pages\Mod_Update\Select_Updatemod.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="pages\News\News.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="pages\Note\NoteDisplayPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="pages\Note\NoteSelectionPage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

@@ -1,0 +1,20 @@
+﻿Among Us_ModManeger
+
+
+winexe
+C#
+.cs
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\obj\Debug\net8.0-windows\win-x64\
+Among_Us_ModManeger
+none
+false
+TRACE;DEBUG;NET;NET8_0;NETCOREAPP
+C:\Users\2023016043\Source\Repos\AmongUsModManeger\Among Us_ModManeger\App.xaml
+11-94171131
+1-1443530767
+27-436879471
+199-424942242
+MainWindow.xaml;pages\Admin\AdminPanelPage.xaml;pages\MainMenuPage.xaml;pages\ModSelectPage.xaml;pages\Mod_from_zip\Put_Zip_File.xaml;pages\Mod_from_zip\SelectZipFile.xaml;pages\Mod_Update\ModVersionSelectionPage.xaml;pages\Mod_Update\Select_Updatemod.xaml;pages\News\News.xaml;pages\Note\NoteDisplayPage.xaml;pages\Note\NoteSelectionPage.xaml;
+
+False
+
