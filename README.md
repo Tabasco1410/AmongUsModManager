@@ -15,19 +15,28 @@ Among Us_ModManeger
 詳しいライセンスの内容は、同梱の LICENSE ファイル、または下記を参照してください。<br>
 https://www.gnu.org/licenses/gpl-3.0.txt
 <br>
-Copyright (c) 2025 Tabasco1410
+Copyright (c) 2025 Tabasco1410</br>
+※本アプリはAmong Usの開発元であるInnersloth,各種Mod関係者様とは一切関係なく、非公式のアプリです。
+# Modを導入する際は必ずModの.zipファイルを用意してください。
+
+## 動作確認済みMod</br>
+TownOfHost</br>
+TownOfHost-K</br>
+SuperNewRoles</br>
+Nebula on the Ship</br>
+Extremeroles</br>
+</br>
+※BepInExを使用しているmod向けに作られています。</br>上記リストにないModでも.zip内のBepInEx.plugins内にmodの.dllが入っていれば導入ができます。</br>※Modによってフォルダの格納の仕方が異なるため、BepInEx.plugins内の.dllをチェックするようにしているような。。。
 
 ## 機能/Future
 ・.zipファイルからのAmong UsのModの新規導入の自動化<br>
 ・Among Usの起動ボタン（Mod有含め）
-<br>・Among Usファイルの管理
+</br>・Among Usファイルの管理
 ![image](https://github.com/user-attachments/assets/bbd6bf75-606f-40da-9f96-cc005a70d9ce)
+</br>
+wikiは作成中。。。
 
 
 
-## Steam版、BepInExを使用したmodでの動作確認済み
-（TownOfHost-Kを使用してテストを行いました）<br>
-Epic版での動作は保証できません。
-
-
+</br>
 https://tabasco1410.github.io/AmongUsModManeger/
