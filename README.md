@@ -1,7 +1,7 @@
 # AmongUsModManeger
 
 最新リリースは[こちら](https://github.com/Tabasco1410/AmongUsModManeger/releases/latest)<br>
-[![Discord](readme.png)](https://discord.gg/yjurSmjTxr)<br>
+[![Discord](readme.png)](https://discord.gg/nFhkYmf9At)<br>
 ## 利用規約
 LICENSEをご覧ください。<br>
 Among Us_ModManeger
