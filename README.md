@@ -43,4 +43,3 @@ wikiは作成中。。。
 
 </br>
 https://tabasco1410.github.io/AmongUsModManeger/
->>>>>>> fa908b8049eecf2eaf5fdf8135627777a1f81411
