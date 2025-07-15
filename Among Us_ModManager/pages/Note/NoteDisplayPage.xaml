@@ -1,0 +1,28 @@
+<Page x:Class="Among_Us_ModManager.NoteDisplayPage"
+          xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:cef="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
+          Title="記事閲覧" Background="White" Margin="20">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock x:Name="ArticleTitleTextBlock"
+                       FontSize="24" FontWeight="Bold"
+                       Margin="0,0,0,10" Grid.Row="0"/>
+
+        <cef:ChromiumWebBrowser x:Name="ArticleBrowser"
+                                    Grid.Row="1" Margin="0,10,0,0"/>
+
+        <StackPanel Grid.Row="2"
+                        Orientation="Horizontal"
+                        HorizontalAlignment="Right"
+                        Margin="0,20,0,0">
+            <Button Content="ブラウザで開く" Width="120" Height="30" Click="OpenInBrowser_Click"/>
+            <Button Content="戻る" Width="100" Height="30" Click="Back_Click"/>
+        </StackPanel>
+    </Grid>
+</Page>

@@ -1,0 +1,164 @@
+<Page x:Class="Among_Us_ModManager.Pages.MainMenuPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="MainMenuPage">
+
+    <Grid Background="White" Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="350" />
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Row="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0"
+                       Text="Among Us MOD Manager"
+                       FontSize="28"
+                       FontWeight="Bold"
+                       VerticalAlignment="Top"
+                       HorizontalAlignment="Left"/>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button x:Name="AdminPageButton"
+                        Content="管理者ページ"
+                        Visibility="Collapsed"
+                        Click="AdminLogin_Click"
+                        Width="100"
+                        Height="30"
+                        Margin="0,0,10,0"/>
+                <Button x:Name="NoticeBadge"
+                        Content="お知らせ"
+                        Width="100"
+                        Height="30"
+                        Click="Notice_Click"/>
+                <TextBlock x:Name="NoticeText"
+                           Text="新しいお知らせがあります！"
+                           Foreground="Red"
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"
+                           Margin="10,0,10,0"
+                           Visibility="Collapsed"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- 「Modを新しく導入する」セクション -->
+        <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,20,0,20">
+            <Button Content="Modを新しく導入する"
+                    Width="250"
+                    Height="50"
+                    FontSize="16"
+                    Click="Mod_New_Click"
+                    Margin="0,0,20,0"/>
+            <TextBlock FontSize="16"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       Width="400">
+                <Run Text="新しくAmong UsにModを導入する方はこちらからどうぞ。"/>
+                <LineBreak/>
+                <Run Text="Modの.zipファイルをご用意ください。"/>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- 左側のカラム: Among Us起動とリンク -->
+        <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,30,20,0">
+            <TextBlock Text="Among Usを起動する"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       Margin="0,0,0,10"/>
+            <Button Content="Among Us.exe を選択"
+                    Width="180"
+                    Height="30"
+                    Margin="0,0,0,10"
+                    Click="SelectExeButton_Click"/>
+            <ItemsControl x:Name="GameFolderList" Margin="0,0,0,30"/>
+
+            <TextBlock Text="各種リンク"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       Margin="0,0,0,10"/>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="Link"
+                        Width="200"
+                        Height="50"
+                        FontSize="16"
+                        Click="Note_Click"
+                        Margin="0,0,20,0"/>
+                <TextBlock FontSize="16" VerticalAlignment="Center">
+                    <Run Text="管理者が書いたnoteやYoutubeが載っています。"/>
+                    <LineBreak/>
+                    <Run Language="ja-jp" Text="※アプリ内で表示できますがブラウザバック機能未実装です"/>
+                </TextBlock>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- 右側のカラム: MODアップデート -->
+        <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,30,0,0" HorizontalAlignment="Stretch">
+            <TextBlock Text="Modのアップデート Comming Soon"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Margin="0,0,0,10"/>
+            <TextBlock Text="導入済みMOD一覧 Comming Soon"
+                       FontSize="16"
+                       FontWeight="Bold"
+                       Margin="0,10,0,5"/>
+            <ListBox x:Name="InstalledModsListBox"
+                     Height="180"
+                     DisplayMemberPath="Name"/>
+        </StackPanel>
+
+        <!-- バージョン情報とアップデート表示をまとめて配置 -->
+        <StackPanel Grid.Row="2" Grid.Column="1"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,10,10"
+            Orientation="Vertical">
+            <TextBlock x:Name="VersionText"
+               FontSize="12"
+               Foreground="Gray"
+               Text="バージョン取得中..."
+               HorizontalAlignment="Right"
+               Margin="0,0,0,5"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock x:Name="UpdateNoticeText"
+                   Text="アップデートがあります！"
+                   Foreground="Red"
+                   VerticalAlignment="Center"
+                   Visibility="Collapsed"
+                   Margin="0,0,10,0"/>
+                <Button x:Name="UpdateButton"
+                Content="アップデート"
+                Click="UpdateButton_Click"
+                Visibility="Collapsed"/>
+            </StackPanel>
+        </StackPanel>
+
+
+        <!-- ⭐ Discordアイコン 左下に表示 ⭐ -->
+        <Image Source="/Resources/Images/Discord.png"
+               Width="32"
+               Height="32"
+               Cursor="Hand"
+               HorizontalAlignment="Left"
+               VerticalAlignment="Bottom"
+               Margin="10"
+               Grid.Row="2"
+               ToolTipService.InitialShowDelay="0"
+               ToolTipService.BetweenShowDelay="0"
+               ToolTipService.ShowDuration="60000"
+               MouseLeftButtonUp="DiscordIcon_Click">
+            <Image.ToolTip>
+                <ToolTip Content="Discordサーバーはこちら！" />
+            </Image.ToolTip>
+        </Image>
+    </Grid>
+</Page>

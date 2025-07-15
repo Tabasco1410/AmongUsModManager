@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+
+    <!-- 単一ファイル発行を無効にして、DLLなどを個別に出力 -->
+    <PublishSingleFile>false</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <PublishTrimmed>false</PublishTrimmed>
+    <ApplicationIcon>Icon_N.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Resources\**" />
+    <EmbeddedResource Remove="Resources\**" />
+    <None Remove="Resources\**" />
+    <Page Remove="Resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Updates フォルダ内のファイルをビルド対象から外す -->
+    <None Remove="Updates\AppUpdate.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Icon_N.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CefSharp.Wpf.NETCore" Version="137.0.100" />
+    <PackageReference Include="Markdig" Version="0.41.3" />
+  </ItemGroup>
+
+</Project>
+
