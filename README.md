@@ -33,7 +33,8 @@ Extremeroles</br>
 ・.zipファイルからのAmong UsのModの新規導入の自動化<br>
 ・Among Usの起動ボタン（Mod有含め）
 </br>・Among Usファイルの管理
-![image](https://github.com/user-attachments/assets/bbd6bf75-606f-40da-9f96-cc005a70d9ce)
+<img width="1919" height="1207" alt="image" src="https://github.com/user-attachments/assets/65ed494f-1ca1-44b0-9199-72debefe07b2" />
+
 </br>
 wikiは作成中。。。
 
