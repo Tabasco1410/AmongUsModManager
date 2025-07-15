@@ -35,11 +35,3 @@ Extremeroles</br>
 </br>・Among Usファイルの管理
 <img width="1919" height="1207" alt="image" src="https://github.com/user-attachments/assets/65ed494f-1ca1-44b0-9199-72debefe07b2" />
 
-</br>
-wikiは作成中。。。
-
-
-
-
-</br>
-https://tabasco1410.github.io/AmongUsModManeger/
