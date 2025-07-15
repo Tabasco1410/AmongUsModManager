@@ -1,63 +1,35 @@
-﻿<Page x:Class="Among_Us_ModManager.Pages.AdminPanelPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="管理者画面"
-      Background="White">
+<?xml version="1.0" encoding="utf-8"?>
+<Page Background="White" Title="管理者画面" x:Class="Among_Us_ModManager.Pages.AdminPanelPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Margin="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <!-- タイトルとヘッダーはそのまま上部 -->
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
-            <TextBlock Text="管理者画面"
-                       FontSize="24"
-                       FontWeight="Bold"
-                       VerticalAlignment="Center" />
-        </StackPanel>
-
-        <!-- ニュース一覧 -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,10,0,10">
-            <ItemsControl x:Name="NewsListPanel" />
-        </ScrollViewer>
-
-        <!-- 下部のボタン配置 -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <!-- 左側 -->
-                <ColumnDefinition Width="Auto" />
-                <!-- 右側 -->
-            </Grid.ColumnDefinitions>
-
-            <!-- 左下: 戻るボタン -->
-            <Button Content="戻る"
-                    Click="BackButton_Click"
-                    Width="80" Height="30"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    Margin="0,5,0,5" />
-
-            <!-- 右下: 操作ボタン群 -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Content="ニュース追加"
-                        Width="100"
-                        Height="30"
-                        Click="AddNews_Click"/>
-                <Button Content="保存"
-                        Width="80"
-                        Height="30"
-                        Margin="10,0,0,0"
-                        Click="SaveNews_Click"/>
-                <Button Content="プッシュ"
-                        Width="80"
-                        Height="30"
-                        Margin="10,0,0,0"
-                        Click="PushNews_Click"/>
-            </StackPanel>
-        </Grid>
-    </Grid>
-</Page>
+<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"><Grid Margin="10">
+<Grid.RowDefinitions>
+<RowDefinition Height="Auto"/>
+<RowDefinition Height="*"/>
+<RowDefinition Height="Auto"/>
+</Grid.RowDefinitions>
+<!-- タイトルとヘッダーはそのまま上部 -->
+<StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+<TextBlock FontSize="24" FontWeight="Bold" Text="管理者画面" VerticalAlignment="Center"/>
+</StackPanel>
+<!-- ニュース一覧 -->
+<ScrollViewer Grid.Row="1" Margin="0,10,0,10" VerticalScrollBarVisibility="Auto">
+<ItemsControl x:Name="NewsListPanel"/>
+</ScrollViewer>
+<!-- 下部のボタン配置 -->
+<Grid Grid.Row="2">
+<Grid.ColumnDefinitions>
+<ColumnDefinition Width="*"/>
+<!-- 左側 -->
+<ColumnDefinition Width="Auto"/>
+<!-- 右側 -->
+</Grid.ColumnDefinitions>
+<!-- 左下: 戻るボタン -->
+<Button Click="BackButton_Click" Content="戻る" Height="30" HorizontalAlignment="Left" Margin="0,5,0,5" VerticalAlignment="Center" Width="80"/>
+<!-- 右下: 操作ボタン群 -->
+<StackPanel Grid.Column="1" HorizontalAlignment="Right" Orientation="Horizontal" VerticalAlignment="Center">
+<Button Click="AddNews_Click" Content="ニュース追加" Height="30" Width="100"/>
+<Button Click="SaveNews_Click" Content="保存" Height="30" Margin="10,0,0,0" Width="80"/>
+<Button Click="PushNews_Click" Content="プッシュ" Height="30" Margin="10,0,0,0" Width="80"/>
+</StackPanel>
+</Grid>
+</Grid></ScrollViewer></Page>

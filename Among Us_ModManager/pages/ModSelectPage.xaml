@@ -1,24 +1,11 @@
-﻿<Page x:Class="Among_Us_ModManager.Pages.ModSelectPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:local="clr-namespace:Among_Us_ModManager.Pages"
-      Title="ModSelectPage">
+<?xml version="1.0" encoding="utf-8"?>
+<Page Title="ModSelectPage" x:Class="Among_Us_ModManager.Pages.ModSelectPage" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:local="clr-namespace:Among_Us_ModManager.Pages" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Background="White" Margin="30">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <!-- 「.zipファイルから導入」ボタンを削除 -->
-
-        <Button Grid.Row="1"
-                Content="戻る"
-                Width="100"
-                Height="30"
-                HorizontalAlignment="Left"
-                VerticalAlignment="Bottom"
-                Margin="0,20,0,0"
-                Click="BackToMain_Click"/>
-    </Grid>
-</Page>
+<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"><Grid Background="White" Margin="30">
+<Grid.RowDefinitions>
+<RowDefinition Height="*"/>
+<RowDefinition Height="Auto"/>
+</Grid.RowDefinitions>
+<!-- 「.zipファイルから導入」ボタンを削除 -->
+<Button Click="BackToMain_Click" Content="戻る" Grid.Row="1" Height="30" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Bottom" Width="100"/>
+</Grid></ScrollViewer></Page>

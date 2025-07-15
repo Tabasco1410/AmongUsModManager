@@ -15,15 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Resources\**" />
-    <EmbeddedResource Remove="Resources\**" />
-    <None Remove="Resources\**" />
-    <Page Remove="Resources\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Updates フォルダ内のファイルをビルド対象から外す -->
-    <None Remove="Updates\AppUpdate.json" />
+    <None Remove="Resources\Images\Discord.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,6 +25,12 @@
   <ItemGroup>
     <PackageReference Include="CefSharp.Wpf.NETCore" Version="137.0.100" />
     <PackageReference Include="Markdig" Version="0.41.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Images\Discord.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

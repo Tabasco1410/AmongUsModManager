@@ -1,65 +1,30 @@
-﻿<Page x:Class="Among_Us_ModManager.Pages.PutZipFile.Put_Zip_File"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="Put_Zip_File">
+<?xml version="1.0" encoding="utf-8"?>
+<Page Title="Put_Zip_File" x:Class="Among_Us_ModManager.Pages.PutZipFile.Put_Zip_File" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        <!-- ヘッダー -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,20">
-            <TextBlock Text="MOD展開＆設置"
-                       FontSize="28"
-                       FontWeight="Bold"
-                       Margin="0,0,0,10"/>
-            <TextBlock x:Name="IntroTextBlock"
-                       Text="ZIPファイルを展開してインストール中です..."
-                       FontSize="16"/>
-            <TextBlock x:Name="FinishTextBlock"
-                       Text="インストールが完了しました。"
-                       FontSize="16"
-                       Visibility="Collapsed"
-                       Margin="0,10,0,0"/>
-        </StackPanel>
-
-        <!-- プログレスバーとログ -->
-        <StackPanel Grid.Row="1">
-            <ProgressBar x:Name="InstallProgressBar"
-                         Height="20"
-                         Minimum="0"
-                         Maximum="100"
-                         Margin="0,0,0,10"/>
-            <TextBlock x:Name="StatusTextBlock"
-                       Text="準備中..."
-                       FontSize="16"
-                       TextWrapping="Wrap"
-                       Height="40"
-                       Margin="0,0,0,10"/>
-            <ScrollViewer Height="200"
-                          VerticalScrollBarVisibility="Auto"
-                          Margin="0,0,0,10">
-                <TextBox x:Name="LogTextBox"
-                         IsReadOnly="True"
-                         TextWrapping="Wrap"
-                         AcceptsReturn="True"
-                         VerticalScrollBarVisibility="Auto"/>
-            </ScrollViewer>
-        </StackPanel>
-
-        <!-- フッター：戻るボタン -->
-        <Grid Grid.Row="2" Margin="0,10,0,0">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="ReturnHomeButton"
-                        Content="ホームに戻る"
-                        Width="150"
-                        Height="35"
-                        Visibility="Collapsed"
-                        Click="ReturnHomeButton_Click" />
-            </StackPanel>
-        </Grid>
-    </Grid>
-</Page>
+<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"><Grid Margin="20">
+<Grid.RowDefinitions>
+<RowDefinition Height="Auto"/>
+<RowDefinition Height="*"/>
+<RowDefinition Height="Auto"/>
+</Grid.RowDefinitions>
+<!-- ヘッダー -->
+<StackPanel Grid.Row="0" Margin="0,0,0,20">
+<TextBlock FontSize="28" FontWeight="Bold" Margin="0,0,0,10" Text="MOD展開＆設置"/>
+<TextBlock FontSize="16" Text="ZIPファイルを展開してインストール中です..." x:Name="IntroTextBlock"/>
+<TextBlock FontSize="16" Margin="0,10,0,0" Text="インストールが完了しました。" Visibility="Collapsed" x:Name="FinishTextBlock"/>
+</StackPanel>
+<!-- プログレスバーとログ -->
+<StackPanel Grid.Row="1">
+<ProgressBar Height="20" Margin="0,0,0,10" Maximum="100" Minimum="0" x:Name="InstallProgressBar"/>
+<TextBlock FontSize="16" Height="40" Margin="0,0,0,10" Text="準備中..." TextWrapping="Wrap" x:Name="StatusTextBlock"/>
+<ScrollViewer Height="200" Margin="0,0,0,10" VerticalScrollBarVisibility="Auto">
+<TextBox AcceptsReturn="True" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" x:Name="LogTextBox"/>
+</ScrollViewer>
+</StackPanel>
+<!-- フッター：戻るボタン -->
+<Grid Grid.Row="2" Margin="0,10,0,0">
+<StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+<Button Click="ReturnHomeButton_Click" Content="ホームに戻る" Height="35" Visibility="Collapsed" Width="150" x:Name="ReturnHomeButton"/>
+</StackPanel>
+</Grid>
+</Grid></ScrollViewer></Page>

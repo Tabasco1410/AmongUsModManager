@@ -1,105 +1,66 @@
-﻿<Page x:Class="Among_Us_ModManager.Pages.Mod_from_zip.SelectZipFile"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      Title="SelectZipFile">
+<?xml version="1.0" encoding="utf-8"?>
+<Page Title="SelectZipFile" x:Class="Among_Us_ModManager.Pages.Mod_from_zip.SelectZipFile" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <!-- タイトル -->
-            <RowDefinition Height="*"/>
-            <!-- 入力項目 -->
-            <RowDefinition Height="Auto"/>
-            <!-- ボタン -->
-        </Grid.RowDefinitions>
-
-        <!-- タイトル -->
-        <TextBlock Text=".zipファイル導入画面"
-                   FontSize="20"
-                   FontWeight="Bold"
-                   HorizontalAlignment="Center"
-                   Margin="0,0,0,20"
-                   Grid.Row="0"/>
-
-        <!-- 入力項目 -->
-        <StackPanel Grid.Row="1" Margin="0,0,0,20">
-
-            <!-- ZIPファイル選択 -->
-            <Grid Margin="0,10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="MOD ZIPファイル：" VerticalAlignment="Center" Grid.Column="0"/>
-                <TextBox Name="ZipFilePathTextBox" Grid.Column="1" Margin="10,0"
-                         IsReadOnly="True" TextChanged="ZipFilePathTextBox_TextChanged"
-                         VerticalAlignment="Center"/>
-                <Button Content="参照" Grid.Column="2" Width="70" Click="SelectZipFile_Click"/>
-            </Grid>
-
-            <!-- Among Us.exe選択 -->
-            <Grid Margin="0,10">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="Among Us.exe：" VerticalAlignment="Center" Grid.Column="0"/>
-                <TextBox Name="ExePathTextBox" Grid.Column="1" Margin="10,0"
-                         TextChanged="ExePathTextBox_TextChanged"
-                         VerticalAlignment="Center"/>
-                <Button Content="参照" Grid.Column="2" Width="70" Click="SelectExeFile_Click"/>
-            </Grid>
-
-            <!-- コピー後のフォルダ名 -->
-            <Grid Margin="0,10">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Text="コピー後のフォルダ名：" VerticalAlignment="Center" Grid.Row="0" Grid.Column="0"/>
-                <TextBox Name="CopyFolderNameTextBox" Grid.Row="0" Grid.Column="1" Margin="10,0"
-                         GotFocus="CopyFolderNameTextBox_GotFocus"
-                         LostFocus="CopyFolderNameTextBox_LostFocus"
-                         TextChanged="CopyFolderNameTextBox_TextChanged"
-                         VerticalAlignment="Center"/>
-                <TextBlock Name="ErrorTextBlock" Foreground="Red" Margin="10,0"
-                           VerticalAlignment="Center" Grid.Row="0" Grid.Column="2"/>
-
-                <TextBlock Text="ファイル名はModの名前にすることをオススメします"
-                           Foreground="Gray" Margin="10,2,0,0"
-                           FontSize="12" Grid.Row="1" Grid.Column="1"/>
-            </Grid>
-
-        </StackPanel>
-
-        <!-- ボタン類 -->
-        <Grid Grid.Row="2" Margin="0,10,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-
-            <Button Content="戻る"
-                    Grid.Column="0"
-                    Width="80" Height="30"
-                    Margin="10"
-                    Click="BackButton_Click"/>
-
-            <Button Name="InstallButton" Content="インストール開始"
-                    Grid.Column="2"
-                    Width="150" Height="40"
-                    IsEnabled="False"
-                    Margin="10"
-                    Click="InstallButton_Click"/>
-        </Grid>
-    </Grid>
-</Page>
+<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"><Grid Margin="20">
+<Grid.RowDefinitions>
+<RowDefinition Height="Auto"/>
+<!-- タイトル -->
+<RowDefinition Height="*"/>
+<!-- 入力項目 -->
+<RowDefinition Height="Auto"/>
+<!-- ボタン -->
+</Grid.RowDefinitions>
+<!-- タイトル -->
+<TextBlock FontSize="20" FontWeight="Bold" Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,20" Text=".zipファイル導入画面"/>
+<!-- 入力項目 -->
+<StackPanel Grid.Row="1" Margin="0,0,0,20">
+<!-- ZIPファイル選択 -->
+<Grid Margin="0,10">
+<Grid.ColumnDefinitions>
+<ColumnDefinition Width="Auto"/>
+<ColumnDefinition Width="*"/>
+<ColumnDefinition Width="Auto"/>
+</Grid.ColumnDefinitions>
+<TextBlock Grid.Column="0" Text="MOD ZIPファイル：" VerticalAlignment="Center"/>
+<TextBox Grid.Column="1" IsReadOnly="True" Margin="10,0" Name="ZipFilePathTextBox" TextChanged="ZipFilePathTextBox_TextChanged" VerticalAlignment="Center"/>
+<Button Click="SelectZipFile_Click" Content="参照" Grid.Column="2" Width="70"/>
+</Grid>
+<!-- Among Us.exe選択 -->
+<Grid Margin="0,10">
+<Grid.ColumnDefinitions>
+<ColumnDefinition Width="Auto"/>
+<ColumnDefinition Width="*"/>
+<ColumnDefinition Width="Auto"/>
+</Grid.ColumnDefinitions>
+<TextBlock Grid.Column="0" Text="Among Us.exe：" VerticalAlignment="Center"/>
+<TextBox Grid.Column="1" Margin="10,0" Name="ExePathTextBox" TextChanged="ExePathTextBox_TextChanged" VerticalAlignment="Center"/>
+<Button Click="SelectExeFile_Click" Content="参照" Grid.Column="2" Width="70"/>
+</Grid>
+<!-- コピー後のフォルダ名 -->
+<Grid Margin="0,10">
+<Grid.RowDefinitions>
+<RowDefinition Height="Auto"/>
+<RowDefinition Height="Auto"/>
+</Grid.RowDefinitions>
+<Grid.ColumnDefinitions>
+<ColumnDefinition Width="Auto"/>
+<ColumnDefinition Width="*"/>
+<ColumnDefinition Width="Auto"/>
+</Grid.ColumnDefinitions>
+<TextBlock Grid.Column="0" Grid.Row="0" Text="コピー後のフォルダ名：" VerticalAlignment="Center"/>
+<TextBox GotFocus="CopyFolderNameTextBox_GotFocus" Grid.Column="1" Grid.Row="0" LostFocus="CopyFolderNameTextBox_LostFocus" Margin="10,0" Name="CopyFolderNameTextBox" TextChanged="CopyFolderNameTextBox_TextChanged" VerticalAlignment="Center"/>
+<TextBlock Foreground="Red" Grid.Column="2" Grid.Row="0" Margin="10,0" Name="ErrorTextBlock" VerticalAlignment="Center"/>
+<TextBlock FontSize="12" Foreground="Gray" Grid.Column="1" Grid.Row="1" Margin="10,2,0,0" Text="ファイル名はModの名前にすることをオススメします"/>
+</Grid>
+</StackPanel>
+<!-- ボタン類 -->
+<Grid Grid.Row="2" Margin="0,10,0,0">
+<Grid.ColumnDefinitions>
+<ColumnDefinition Width="Auto"/>
+<ColumnDefinition Width="*"/>
+<ColumnDefinition Width="Auto"/>
+</Grid.ColumnDefinitions>
+<Button Click="BackButton_Click" Content="戻る" Grid.Column="0" Height="30" Margin="10" Width="80"/>
+<Button Click="InstallButton_Click" Content="インストール開始" Grid.Column="2" Height="40" IsEnabled="False" Margin="10" Name="InstallButton" Width="150"/>
+</Grid>
+</Grid></ScrollViewer></Page>

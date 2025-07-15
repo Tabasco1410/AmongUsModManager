@@ -26,7 +26,7 @@ namespace Among_Us_ModManager.Pages
         private static readonly string LastReadNewsFile = Path.Combine(AppDataFolder, "last_read_news.txt");
         private static readonly string VanillaConfigPath = Path.Combine(AppDataFolder, "Vanilla_Config.json");
 
-        private static readonly string AdminCheckFile = Path.Combine(AppDataFolder, "admin_check.txt");
+        private static readonly string AdminCheckFile = Path.Combine(AppDataFolder, "admin.txt");
 
         private const string AdminHash = "4920dd2c464d1daacdd048f45189d1a4232402af4b9f6cff8172b489b3ba9988";
 
