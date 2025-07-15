@@ -1,5 +1,6 @@
 # AmongUsModManager
-誰だろう。mannegerなんて書いた人
+
+# ver1.3.1Releaseまで一部機能が利用できません。
 
 最新リリースは[こちら](https://github.com/Tabasco1410/AmongUsModManeger/releases/latest)<br>
 [![Discord](readme.png)](https://discord.gg/nFhkYmf9At)<br>
