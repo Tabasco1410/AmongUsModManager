@@ -27,11 +27,12 @@ SuperNewRoles</br>
 Nebula on the Ship</br>
 Extremeroles</br>
 </br>
-※BepInExを使用しているmod向けに作られています。</br>上記リストにないModでも.zip内のBepInEx.plugins内にmodの.dllが入っていれば導入ができます。</br>※Modによってフォルダの格納の仕方が異なるため、BepInEx.plugins内の.dllをチェックするようにしているような。。。
+※BepInExを使用しているmod向けに作られています。</br>上記リストにないModでも.zip内のBepInEx.plugins内にmodの.dllが入っていれば導入ができます。
 
 ## 機能/Future
 ・.zipファイルからのAmong UsのModの新規導入の自動化<br>
 ・Among Usの起動ボタン（Mod有含め）
 </br>・Among Usファイルの管理
-<img width="1919" height="1207" alt="image" src="https://github.com/user-attachments/assets/65ed494f-1ca1-44b0-9199-72debefe07b2" />
+<img width="1919" height="1203" alt="image" src="https://github.com/user-attachments/assets/5f7383c3-c555-4f4e-8b6f-46892e58505a" />
+
 
