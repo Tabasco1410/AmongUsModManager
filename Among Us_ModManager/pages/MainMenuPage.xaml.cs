@@ -1,5 +1,6 @@
 ﻿using Among_Us_ModManager.Modules;
 using Among_Us_ModManager.Modules.Updates;
+using Among_Us_ModManager.pages.News;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,6 +10,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Text.Json;
+using System.Linq;
 
 namespace Among_Us_ModManager.Pages
 {
@@ -23,6 +26,10 @@ namespace Among_Us_ModManager.Pages
         private static readonly string AdminCheckFile = Path.Combine(AppDataFolder, "admin.txt");
 
         private const string AdminHash = "c6518372cdd213db645cc7b5e0f20612bd2e9acd1458898698acbf714bbb1bd9";
+
+        private static readonly string NewsFile = Path.Combine(AppDataFolder, "last_read_news.txt");
+
+
 
         public MainMenuPage()
         {
@@ -46,7 +53,10 @@ namespace Among_Us_ModManager.Pages
             {
                 await LoadVersionAsync();
                 await CheckUpdateButtonAsync();
+                await CheckNewNoticeAsync(); 
             };
+
+
         }
 
 
@@ -124,6 +134,88 @@ namespace Among_Us_ModManager.Pages
         }
 
         #region 標準ボタン処理
+
+        private async Task CheckNewNoticeAsync()
+        {
+            try
+            {
+                LogOutput.Write("CheckNewNoticeAsync 開始");
+
+                // AppData フォルダ作成済みは既にコンストラクタで行われている前提
+                if (!File.Exists(NewsFile))
+                {
+                    File.WriteAllText(NewsFile, DateTime.MinValue.ToString("o"));
+                    LogOutput.Write($"last_read_news.txt が存在しなかったため作成: {DateTime.MinValue:o}");
+                }
+
+                string lastReadStr = File.ReadAllText(NewsFile).Trim();
+                if (!DateTime.TryParse(lastReadStr, out DateTime lastRead))
+                {
+                    lastRead = DateTime.MinValue;
+                    LogOutput.Write("last_read_news.txt の日付パースに失敗、DateTime.MinValue を使用");
+                }
+                LogOutput.Write($"最終閲覧日時: {lastRead:o}");
+
+                DateTime latestNewsDate = await GetLatestNewsDateAsync();
+                LogOutput.Write($"最新ニュース日時: {latestNewsDate:o}");
+
+                bool hasNewNotice = latestNewsDate > lastRead;
+                NewNoticeText.Visibility = hasNewNotice ? Visibility.Visible : Visibility.Collapsed;
+                LogOutput.Write($"新しいお知らせがあるか: {hasNewNotice}");
+                LogOutput.Write("CheckNewNoticeAsync 完了");
+            }
+            catch (Exception ex)
+            {
+                NewNoticeText.Visibility = Visibility.Collapsed;
+                LogOutput.Write($"CheckNewNoticeAsync 例外: {ex.Message}");
+            }
+        }
+
+        private async Task<DateTime> GetLatestNewsDateAsync()
+        {
+            try
+            {
+                LogOutput.Write("GetLatestNewsDateAsync 開始");
+
+                string newsPath = Path.Combine(AppDataFolder, "News.json");
+                if (!File.Exists(newsPath))
+                {
+                    LogOutput.Write("News.json が存在しないため GitHub からダウンロードを試行");
+
+                    using var client = new HttpClient();
+                    string url = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManager/main/News.json";
+                    string json = await client.GetStringAsync(url);
+
+                    File.WriteAllText(newsPath, json);
+                    LogOutput.Write("GitHub から News.json をダウンロードして保存完了");
+                }
+
+                string localJson = File.ReadAllText(newsPath);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var newsItems = JsonSerializer.Deserialize<List<NewsItem>>(localJson, options);
+
+                if (newsItems == null || newsItems.Count == 0)
+                {
+                    LogOutput.Write("News.json が空またはパース失敗、DateTime.MinValue を返す");
+                    return DateTime.MinValue;
+                }
+
+                DateTime latest = newsItems.Max(n => n.Date);
+                LogOutput.Write($"News.json から取得した最新ニュース日時: {latest:o}");
+                LogOutput.Write("GetLatestNewsDateAsync 完了");
+
+                return latest;
+            }
+            catch (Exception ex)
+            {
+                LogOutput.Write($"GetLatestNewsDateAsync 例外: {ex.Message}");
+                return DateTime.MinValue;
+            }
+        }
+
+
+
+
 
 
         private void Launch_Click(object sender, RoutedEventArgs e)
@@ -207,7 +299,7 @@ namespace Among_Us_ModManager.Pages
             LogOutput.Write("LoadVersionAsync 開始: アプリバージョン情報をUIにセット");
             try
             {
-                VersionText.Text = $"バージョン: {AppVersion.Version}";
+                VersionText.Text = $"v {AppVersion.Version}";
                 VersionText.ToolTip = new TextBlock
                 {
                     Text = AppVersion.Notes,
@@ -332,8 +424,18 @@ namespace Among_Us_ModManager.Pages
         private void Notice_Click(object sender, RoutedEventArgs e)
         {
             LogOutput.Write("お知らせボタンクリック");
+
+            // ニュース閲覧日時を更新
+            try
+            {
+                File.WriteAllText(NewsFile, DateTime.Now.ToString("o"));
+                NewNoticeText.Visibility = Visibility.Collapsed;
+            }
+            catch { }
+
             NavigationService?.Navigate(new News());
         }
+
         #endregion
     }
 

@@ -59,25 +59,31 @@
                 </Button.Template>
             </Button>
 
-            <!-- お知らせボタン -->
-            <Button Width="100" Height="40" Margin="0,0,5,0" Click="Notice_Click" x:Name="NoticeBadge">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                            <TextBlock Text="お知らせ" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Opacity" Value="0.7"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Opacity" Value="0.5"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
+            <!-- お知らせボタンと新着通知 -->
+            <StackPanel>
+                <Button Width="100" Height="40" Margin="0,0,5,0" Click="Notice_Click" x:Name="NoticeBadge">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Grid>
+                                <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
+                                <TextBlock Text="お知らせ" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Opacity" Value="0.7"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Opacity" Value="0.5"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <!-- 新しいお知らせ -->
+                <TextBlock x:Name="NewNoticeText" Text="新しいお知らせがあります！" Foreground="Red" Visibility="Collapsed" 
+                   HorizontalAlignment="Center" FontWeight="Bold" Margin="0,2,0,0"/>
+            </StackPanel>
 
             <!-- 設定ボタン -->
             <Button Width="100" Height="40" Click="Settings_Click">
@@ -101,6 +107,7 @@
             </Button>
 
         </StackPanel>
+
 
 
 
