@@ -85,7 +85,7 @@
                    HorizontalAlignment="Center" FontWeight="Bold" Margin="0,2,0,0"/>
             </StackPanel>
 
-            <!-- 設定ボタン -->
+            <!-- 設定ボタン 
             <Button Width="100" Height="40" Click="Settings_Click">
                 <Button.Template>
                     <ControlTemplate TargetType="Button">
@@ -104,9 +104,9 @@
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Button.Template>
-            </Button>
+            </Button>-->
 
-        </StackPanel>
+        </StackPanel> 
 
 
 
@@ -199,7 +199,7 @@
                                             </Button.Template>
                                         </Button>
 
-                                        <!-- アップデート（文字のみ） -->
+                                        <!-- アップデート（文字のみ） 
                                         <Button Width="100" Height="40" Margin="5" Click="Update_Click">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
@@ -217,8 +217,8 @@
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
                                             </Button.Template>
-                                        </Button>
-
+                                        </Button>-->
+                                        
                                         <!-- アンインストール（文字のみ） -->
                                         <Button Width="120" Height="40" Margin="5" Click="Uninstall_Click">
                                             <Button.Template>

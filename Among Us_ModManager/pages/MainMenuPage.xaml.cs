@@ -281,7 +281,8 @@ namespace Among_Us_ModManager.Pages
             {
                 Process.Start(new ProcessStartInfo
                 {
-                    FileName = "https://discord.gg/tKHPHTHDXw",
+                    FileName = "https://discord.gg/nFhkYmf9At",
+                    //元のリンクは、プライベートフォークmodのDiscordサーバーの招待URLになっていました。現在はまだプライベートフォークですのでアクセスはお控えください。
                     UseShellExecute = true
                 });
             }

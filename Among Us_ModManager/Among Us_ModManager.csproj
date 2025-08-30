@@ -10,6 +10,11 @@
     <PlatformTarget>x64</PlatformTarget>
     <ApplicationIcon>Icon_N.ico</ApplicationIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+
+
+	  <PublishSingleFile>false</PublishSingleFile>
+	  <IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
+
   </PropertyGroup>
 
   <ItemGroup>
