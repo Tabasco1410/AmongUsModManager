@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Among_Us_ModManager.Models.Updates
+namespace Among_Us_ModManager.Modules.Updates
 {
     public static class AppUpdater
     {

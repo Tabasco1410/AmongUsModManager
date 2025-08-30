@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Among_Us_ModManager.Models
+namespace Among_Us_ModManager.Modules
 {
     public class NoteItem
     {

@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using Microsoft.Win32;
 using System.Windows.Navigation;
 
-namespace Among_Us_ModManager.Pages.Mod_from_zip
+namespace Among_Us_ModManager.Pages.Install.Zip
 {
     public partial class SelectZipFile : Page
     {
@@ -133,8 +133,18 @@ namespace Among_Us_ModManager.Pages.Mod_from_zip
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            NavigationService.Navigate(new Pages.MainMenuPage());
+            if (this.NavigationService != null && this.NavigationService.CanGoBack)
+            {
+                // 1つ前のページに戻る
+                this.NavigationService.GoBack();
+            }
+            else
+            {
+                // 戻れない場合は MainMenuPage にフォールバック（任意）
+                MessageBox.Show("前のページに戻れません。");
+            }
         }
+
 
         private void CopyFolderNameTextBox_GotFocus(object sender, RoutedEventArgs e)
         {

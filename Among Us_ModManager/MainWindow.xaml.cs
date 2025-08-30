@@ -20,7 +20,7 @@ namespace Among_Us_ModManager
             LoadWindowSize();
 
             // アプリ起動時に最初のページへ遷移
-            MainFrame.Navigate(new Pages.MainMenuPage());
+            MainFrame.Navigate(new Pages.SelectEXEPath());
         }
 
         private void LoadWindowSize()

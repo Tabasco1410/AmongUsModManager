@@ -1,11 +1,8 @@
 ﻿<Window x:Class="Among_Us_ModManager.MainWindow"
+
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Among Us Mod Manager"
-        Height="600" Width="900">
+        Title="AmongUsModManager" Height="600" Width="800">
 
-    <!-- ページを切り替えるためのフレーム -->
-    <Frame x:Name="MainFrame"
-           NavigationUIVisibility="Hidden" Navigated="MainFrame_Navigated"
-           />
+    <Frame x:Name="MainFrame" NavigationUIVisibility="Hidden"/>
 </Window>

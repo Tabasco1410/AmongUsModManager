@@ -1,21 +1,24 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-
-    <!-- 単一ファイル発行を無効にして、DLLなどを個別に出力 -->
-    <PublishSingleFile>false</PublishSingleFile>
-    <SelfContained>true</SelfContained>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
-    <PublishTrimmed>false</PublishTrimmed>
+    <PackageIcon>Icon.png</PackageIcon>
+    <PlatformTarget>x64</PlatformTarget>
     <ApplicationIcon>Icon_N.ico</ApplicationIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\Images\Discord.png" />
+    <None Remove="Resources\Buttons\Explorer_Black.png" />
+    <None Remove="Resources\Buttons\Menu_Black.png" />
+    <None Remove="Resources\Buttons\Start_Black.png" />
+    <None Remove="Resources\Buttons\Update_Black.png" />
+    <None Remove="Resources\DIscord.png" />
+    <None Remove="Resources\TownOfHost-Fun.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,15 +26,52 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="CefSharp.Wpf.NETCore" Version="137.0.100" />
-    <PackageReference Include="Markdig" Version="0.41.3" />
+    <None Include="..\..\..\..\Documents\Resource\Icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Images\Discord.png">
+    <Resource Include="Resources\DIscord.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Buttons\Explorer_Black.png" />
+    <Resource Include="Resources\Buttons\Menu_Black.png" />
+    <Resource Include="Resources\Buttons\Start_Black.png" />
+    <Resource Include="Resources\Buttons\Trash_Black.png" />
+    <Resource Include="Resources\TownOfHost-Fun.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
   </ItemGroup>
 
-</Project>
+  <ItemGroup>
+    <Resource Include="Resources\Buttons\Update_Black.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Pages\MainMenuPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Icon_N.ico">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Markdig" Version="0.41.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,22 @@
+﻿<Page x:Class="Among_Us_ModManager.Pages.SelectEXEPath"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Title="SelectEXEPath">
+
+    <Grid Background="White">
+        <TextBlock Text="Among Us ModManager"
+   FontSize="24"
+   FontWeight="Bold"
+   Foreground="Black"
+   HorizontalAlignment="Left"
+   VerticalAlignment="Top"
+   Margin="10"/>
+
+        <Button x:Name="SelectAmongUsExeButton"
+                Content="Among Us.exe を選択"
+                Width="200" Height="40"
+                Click="SelectAmongUsExe_Click"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"/>
+    </Grid>
+</Page>

@@ -21,10 +21,15 @@
 <TextBox AcceptsReturn="True" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto" x:Name="LogTextBox"/>
 </ScrollViewer>
 </StackPanel>
-<!-- フッター：戻るボタン -->
-<Grid Grid.Row="2" Margin="0,10,0,0">
-<StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-<Button Click="ReturnHomeButton_Click" Content="ホームに戻る" Height="35" Visibility="Collapsed" Width="150" x:Name="ReturnHomeButton"/>
-</StackPanel>
-</Grid>
-</Grid></ScrollViewer></Page>
+            <!-- フッター：戻るボタン＋ホームに戻る -->
+            <Grid Grid.Row="2" Margin="0,10,0,0">
+                <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
+                    <!-- 戻るボタン（最初は非表示） -->
+                    <Button Click="BackButton_Click" Content="戻る" Height="35" Width="100" Visibility="Collapsed" x:Name="BackButton" Margin="0,0,10,0"/>
+                    <!-- ホームに戻るボタン -->
+                    <Button Click="ReturnHomeButton_Click" Content="ホームに戻る" Height="35" Width="150" Visibility="Collapsed" x:Name="ReturnHomeButton"/>
+                </StackPanel>
+            </Grid>
+
+
+        </Grid></ScrollViewer></Page>
