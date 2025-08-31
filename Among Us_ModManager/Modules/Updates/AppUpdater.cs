@@ -44,24 +44,49 @@ namespace Among_Us_ModManager.Modules.Updates
             File.Delete(tempZipPath);
         }
 
-        public static void StartUpdaterAndExit()
+        public static async Task StartUpdaterAndExit()
         {
             try
             {
                 string updaterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Among Us_ModManager_Updater.exe");
 
+                // Updater が存在しない場合
                 if (!File.Exists(updaterPath))
                 {
-                    MessageBox.Show("アップデーターが見つかりませんでした。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
+                    var result = MessageBox.Show(
+                        "アップデーターが見つかりませんでした。\nダウンロードしますか？",
+                        "確認",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question
+                    );
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        bool downloadSuccess = await DownloadUpdaterAsync(updaterPath);
+                        if (!downloadSuccess)
+                        {
+                            MessageBox.Show("アップデーターのダウンロードに失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        // ユーザーがダウンロードを拒否した場合は終了
+                        return;
+                    }
                 }
 
-                Process.Start(new ProcessStartInfo
+                // Updater を起動（ダウンロード後も同じ）
+                var psi = new ProcessStartInfo
                 {
                     FileName = updaterPath,
-                    UseShellExecute = true
-                });
+                    UseShellExecute = true,
+                    Verb = "runas" // 管理者権限が必要な場合
+                };
 
+                Process.Start(psi);
+
+                // アプリ終了（Updater 起動後に必ず行う）
                 Environment.Exit(0);
             }
             catch (Exception ex)
@@ -69,5 +94,26 @@ namespace Among_Us_ModManager.Modules.Updates
                 MessageBox.Show($"アップデーターの起動に失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
+        private static async Task<bool> DownloadUpdaterAsync(string savePath)
+        {
+            try
+            {
+                const string updaterUrl = "https://github.com/Tabasco1410/AmongUsModManager/releases/download/1.3.3/Among.Us_ModManager_Updater.exe";
+
+                using var client = new HttpClient();
+                var data = await client.GetByteArrayAsync(updaterUrl);
+
+                await File.WriteAllBytesAsync(savePath, data);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"ダウンロード中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
+            }
+        }
+
     }
 }

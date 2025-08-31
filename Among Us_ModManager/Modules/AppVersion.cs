@@ -8,8 +8,8 @@ namespace Among_Us_ModManager.Modules
 {
     public static class AppVersion
     {
-        public const string Version = "1.3.3s";
+        public const string Version = "1.3.4";
         public const string ReleaseDate = "2025-08-31";
-        public const string Notes = "リンクの修正と、未実装のボタンを非表示化しました。このバージョンではアプリ内でアップデートを行うことはできません。";
+        public const string Notes = "Updaterに関する修正を行いました。";
     }
 }

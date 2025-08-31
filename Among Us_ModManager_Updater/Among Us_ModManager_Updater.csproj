@@ -13,6 +13,7 @@
 		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
 		<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
 		<PublishTrimmed>false</PublishTrimmed>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
 	</PropertyGroup>
 
 </Project>
