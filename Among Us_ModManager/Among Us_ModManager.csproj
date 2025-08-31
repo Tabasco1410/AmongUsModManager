@@ -12,8 +12,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
 
-	  <PublishSingleFile>false</PublishSingleFile>
-	  <IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
+	  <PublishSingleFile>true</PublishSingleFile>
+	  <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
 
   </PropertyGroup>
 
