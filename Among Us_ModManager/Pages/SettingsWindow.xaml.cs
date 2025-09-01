@@ -2,11 +2,11 @@
 using System.IO;
 using System.Text.Json;
 using System.Windows;
-using System.Windows.Navigation;
+using System.Windows.Controls;
 
-namespace Among_Us_ModManager
+namespace Among_Us_ModManager.Pages
 {
-    public partial class MainWindow : Window
+    public partial class SettingsWindow : Window
     {
         private readonly string configPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -14,17 +14,13 @@ namespace Among_Us_ModManager
 
         private AppWindowConfig appConfig = new AppWindowConfig();
 
-        public MainWindow()
+        public SettingsWindow()
         {
             InitializeComponent();
-
-            // ウィンドウサイズ・位置を復元
             LoadWindowSize();
-
-            // アプリ起動時に最初のページへ遷移
-            MainFrame.Navigate(new Pages.SelectEXEPath());
         }
 
+        #region ウィンドウサイズの保存・復元
         private void LoadWindowSize()
         {
             try
@@ -35,17 +31,14 @@ namespace Among_Us_ModManager
                     appConfig = JsonSerializer.Deserialize<AppWindowConfig>(json) ?? new AppWindowConfig();
                 }
 
-                var config = appConfig.MainWindow;
+                var config = appConfig.SettingsWindow;
                 Width = config.Width;
                 Height = config.Height;
                 Top = config.Top;
                 Left = config.Left;
                 WindowState = config.IsMaximized ? WindowState.Maximized : WindowState.Normal;
             }
-            catch
-            {
-                // 読み込み失敗は無視
-            }
+            catch { }
         }
 
         private void SaveWindowSize()
@@ -61,19 +54,16 @@ namespace Among_Us_ModManager
                     IsMaximized = this.WindowState == WindowState.Maximized
                 };
 
-                appConfig.MainWindow = config;
+                appConfig.SettingsWindow = config;
 
                 var dir = Path.GetDirectoryName(configPath);
-                if (!Directory.Exists(dir))
+                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 
                 var json = JsonSerializer.Serialize(appConfig, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(configPath, json);
             }
-            catch
-            {
-                // 保存失敗は無視
-            }
+            catch { }
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -81,17 +71,21 @@ namespace Among_Us_ModManager
             SaveWindowSize();
             base.OnClosing(e);
         }
+        #endregion
 
-        private void MainFrame_Navigated(object sender, NavigationEventArgs e)
+        #region メニュークリック
+        private void BtnNotice_Click(object sender, RoutedEventArgs e)
         {
-            // 必要なら処理をここに書く
+            // News ページを右側に表示
+            DetailFrame.Navigate(new News());
         }
+        #endregion
     }
 
     public class WindowConfig
     {
-        public double Width { get; set; } = 800;   // デフォルト幅
-        public double Height { get; set; } = 600;  // デフォルト高さ
+        public double Width { get; set; } = 800;
+        public double Height { get; set; } = 600;
         public double Top { get; set; } = 100;
         public double Left { get; set; } = 100;
         public bool IsMaximized { get; set; } = false;

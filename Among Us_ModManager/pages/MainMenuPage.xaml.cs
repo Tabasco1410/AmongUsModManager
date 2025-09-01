@@ -96,11 +96,21 @@ namespace Among_Us_ModManager.Pages
 
             var entries = new List<InstallEntry>();
 
+            // 除外対象DLL
+            var ignoreList = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "ExtremeSkins",
+        "Agartha",
+        "Mini.RegionInstall",
+        "System.Text.Encoding.CodePages"
+    };
+
             foreach (var folder in Directory.GetDirectories(rootFolder))
             {
                 var exePath = Path.Combine(folder, "Among Us.exe");
                 var pluginsFolder = Path.Combine(folder, "BepInEx", "plugins");
                 string nebulaFolder = Path.Combine(folder, "BepInEx", "Nebula");
+
                 if (Directory.Exists(pluginsFolder) && File.Exists(Path.Combine(pluginsFolder, "NebulaLoader.dll")))
                 {
                     pluginsFolder = nebulaFolder;
@@ -111,17 +121,40 @@ namespace Among_Us_ModManager.Pages
                     foreach (var dllPath in Directory.GetFiles(pluginsFolder, "*.dll"))
                     {
                         var dllName = Path.GetFileNameWithoutExtension(dllPath);
+
+                        // 除外対象はスキップ
+                        if (ignoreList.Contains(dllName))
+                        {
+                            LogOutput.Write($"除外DLL: {dllName}");
+                            continue;
+                        }
+
                         string version = "";
                         try
                         {
                             version = FileVersionInfo.GetVersionInfo(dllPath).FileVersion ?? "";
                         }
-                        catch { }
+                        catch (Exception ex)
+                        {
+                            LogOutput.Write($"DLLのバージョン取得失敗: {dllPath}, {ex.Message}");
+                        }
+
+                        // Nebula, TOHE はバージョン非表示
+                        string versionText;
+                        if (dllName.Equals("Nebula", StringComparison.OrdinalIgnoreCase) ||
+                            dllName.Equals("TOHE", StringComparison.OrdinalIgnoreCase))
+                        {
+                            versionText = dllName;
+                        }
+                        else
+                        {
+                            versionText = string.IsNullOrEmpty(version) ? dllName : $"{dllName}（{version}）";
+                        }
 
                         entries.Add(new InstallEntry
                         {
                             ExePath = exePath,
-                            VersionText = string.IsNullOrEmpty(version) ? dllName : $"{dllName}（{version}）"
+                            VersionText = versionText
                         });
 
                         LogOutput.Write($"Mod検出: {dllName}, バージョン: {version}");
@@ -132,6 +165,7 @@ namespace Among_Us_ModManager.Pages
             InstallListPanel.ItemsSource = entries;
             LogOutput.Write("LoadConfig 完了");
         }
+
 
         #region 標準ボタン処理
 
@@ -162,6 +196,7 @@ namespace Among_Us_ModManager.Pages
                 bool hasNewNotice = latestNewsDate > lastRead;
                 NewNoticeText.Visibility = hasNewNotice ? Visibility.Visible : Visibility.Collapsed;
                 LogOutput.Write($"新しいお知らせがあるか: {hasNewNotice}");
+
                 LogOutput.Write("CheckNewNoticeAsync 完了");
             }
             catch (Exception ex)
@@ -170,6 +205,7 @@ namespace Among_Us_ModManager.Pages
                 LogOutput.Write($"CheckNewNoticeAsync 例外: {ex.Message}");
             }
         }
+
 
         private async Task<DateTime> GetLatestNewsDateAsync()
         {
@@ -270,9 +306,11 @@ namespace Among_Us_ModManager.Pages
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            LogOutput.Write("設定ボタンクリック");
-            MessageBox.Show("設定画面を開く処理をここに書きます。");
+            var settingsWindow = new SettingsWindow();
+            settingsWindow.Owner = Window.GetWindow(this); 
+            settingsWindow.ShowDialog(); 
         }
+
 
         private void DiscordIcon_Click(object sender, RoutedEventArgs e)
         {
@@ -379,6 +417,9 @@ namespace Among_Us_ModManager.Pages
             }
         }
 
+        
+
+
 
         #region 管理者ページ
         private void CheckAdminButtonVisibility()
@@ -422,20 +463,7 @@ namespace Among_Us_ModManager.Pages
         #endregion
 
         #region お知らせ
-        private void Notice_Click(object sender, RoutedEventArgs e)
-        {
-            LogOutput.Write("お知らせボタンクリック");
-
-            // ニュース閲覧日時を更新
-            try
-            {
-                File.WriteAllText(NewsFile, DateTime.Now.ToString("o"));
-                NewNoticeText.Visibility = Visibility.Collapsed;
-            }
-            catch { }
-
-            NavigationService?.Navigate(new News());
-        }
+        
 
         #endregion
     }

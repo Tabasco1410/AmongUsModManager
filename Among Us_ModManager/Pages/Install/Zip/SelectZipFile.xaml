@@ -53,14 +53,27 @@
 <TextBlock FontSize="12" Foreground="Gray" Grid.Column="1" Grid.Row="1" Margin="10,2,0,0" Text="ファイル名はModの名前にすることをオススメします"/>
 </Grid>
 </StackPanel>
-<!-- ボタン類 -->
-<Grid Grid.Row="2" Margin="0,10,0,0">
-<Grid.ColumnDefinitions>
-<ColumnDefinition Width="Auto"/>
-<ColumnDefinition Width="*"/>
-<ColumnDefinition Width="Auto"/>
-</Grid.ColumnDefinitions>
-<Button Click="BackButton_Click" Content="戻る" Grid.Column="0" Height="30" Margin="10" Width="80"/>
-<Button Click="InstallButton_Click" Content="インストール開始" Grid.Column="2" Height="40" IsEnabled="False" Margin="10" Name="InstallButton" Width="150"/>
-</Grid>
-</Grid></ScrollViewer></Page>
+            <!-- ボタン類 -->
+            <Grid Grid.Row="2" Margin="0,10,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 戻るボタン -->
+                <Button Grid.Column="0"
+            Content="戻る"
+            Click="BackButton_Click"
+            Style="{StaticResource TextButtonStyle}"/>
+
+                <!-- インストール開始ボタン -->
+                <Button Grid.Column="2"
+            Content="インストール開始"
+            Click="InstallButton_Click"
+            IsEnabled="False"
+            Name="InstallButton"
+            Style="{StaticResource TextButtonStyle}"/>
+            </Grid>
+
+        </Grid></ScrollViewer></Page>

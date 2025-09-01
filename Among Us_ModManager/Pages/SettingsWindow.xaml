@@ -1,0 +1,26 @@
+﻿<Window x:Class="Among_Us_ModManager.Pages.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="メニュー" Height="450" Width="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <!-- 左メニュー -->
+            <ColumnDefinition Width="*"/>
+            <!-- 右詳細 -->
+        </Grid.ColumnDefinitions>
+
+        <!-- 左メニュー -->
+        <StackPanel Grid.Column="0" Background="#EEE">
+            <!-- TextButtonStyle を適用 -->
+            <Button Name="BtnNotice"
+                    Content="お知らせ"
+                    Margin="5"
+                    Click="BtnNotice_Click"
+                    Style="{StaticResource TextButtonStyle}"/>
+        </StackPanel>
+
+        <!-- 右詳細エリア -->
+        <Frame Grid.Column="1" Name="DetailFrame" NavigationUIVisibility="Hidden" Background="White"/>
+    </Grid>
+</Window>

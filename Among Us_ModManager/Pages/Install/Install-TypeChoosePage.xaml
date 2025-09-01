@@ -11,15 +11,74 @@
     <Grid>
         <!-- 中央に縦にボタンを配置 -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <!-- 非表示にする場合 -->
-            <Button Width="250" Height="60" Content="TownOfHost-Funをインストールする" 
-            Margin="0,0,0,20" Click="InstallDefault_Click" Visibility="Collapsed"/>
-            <Button Width="250" Height="60" Content="Modの.zipファイルからインストールする" Click="InstallFromZip_Click"/>
+
+            <!-- TownOfHost-Fun インストールボタン（非表示） -->
+            <Button Width="250" Height="60" Margin="0,0,0,20" Click="InstallDefault_Click" Visibility="Collapsed">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
+                            <TextBlock Text="TownOfHost-Funをインストールする"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+
+            <!-- zip からインストール -->
+            <Button Width="250" Height="60" Click="InstallFromZip_Click">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
+                            <TextBlock Text="Modの.zipファイルからインストールする"
+                                       FontSize="16"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.7"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
         </StackPanel>
 
-
         <!-- 左下に戻るボタン -->
-        <Button Width="100" Height="40" Content="戻る" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="20"
-                Click="BackButton_Click"/>
+        <Button Width="100" Height="40" Click="BackButton_Click" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="20">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Grid>
+                        <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
+                        <TextBlock Text="戻る" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Opacity" Value="0.7"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
     </Grid>
 </Page>
