@@ -58,7 +58,7 @@
             <!-- お知らせボタンと新着通知 -->
             <StackPanel>
                 <!-- 新しいお知らせ -->
-                <TextBlock x:Name="NewNoticeText" Text="新しいお知らせがあります！" Foreground="Red" Visibility="Collapsed" 
+                <TextBlock x:Name="NewNoticeText" Text="新しいお知らせがあります！メニューからお知らせを見て確認してください。" Foreground="Red" Visibility="Collapsed" 
                    HorizontalAlignment="Center" FontWeight="Bold" Margin="0,2,0,0"/>
             </StackPanel>
 

@@ -15,7 +15,7 @@ namespace Among_Us_ModManager.Pages
         private static readonly string AppDataFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "AmongUsModManager");
-        private static readonly string NewsFile = Path.Combine(AppDataFolder, "last_read_news.txt");
+        private static readonly string NewsFile = Path.Combine(AppDataFolder, "last_read_news.dat");
 
         public News()
         {

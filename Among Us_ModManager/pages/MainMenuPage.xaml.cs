@@ -23,11 +23,11 @@ namespace Among_Us_ModManager.Pages
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "AmongUsModManager");
 
-        private static readonly string AdminCheckFile = Path.Combine(AppDataFolder, "admin.txt");
+        private static readonly string AdminCheckFile = Path.Combine(AppDataFolder, "admin.dat");
 
         private const string AdminHash = "c6518372cdd213db645cc7b5e0f20612bd2e9acd1458898698acbf714bbb1bd9";
 
-        private static readonly string NewsFile = Path.Combine(AppDataFolder, "last_read_news.txt");
+        private static readonly string NewsFile = Path.Combine(AppDataFolder, "last_read_news.dat");
 
 
 
@@ -179,14 +179,14 @@ namespace Among_Us_ModManager.Pages
                 if (!File.Exists(NewsFile))
                 {
                     File.WriteAllText(NewsFile, DateTime.MinValue.ToString("o"));
-                    LogOutput.Write($"last_read_news.txt が存在しなかったため作成: {DateTime.MinValue:o}");
+                    LogOutput.Write($"last_read_news.dat が存在しなかったため作成: {DateTime.MinValue:o}");
                 }
 
                 string lastReadStr = File.ReadAllText(NewsFile).Trim();
                 if (!DateTime.TryParse(lastReadStr, out DateTime lastRead))
                 {
                     lastRead = DateTime.MinValue;
-                    LogOutput.Write("last_read_news.txt の日付パースに失敗、DateTime.MinValue を使用");
+                    LogOutput.Write("last_read_news.dat の日付パースに失敗、DateTime.MinValue を使用");
                 }
                 LogOutput.Write($"最終閲覧日時: {lastRead:o}");
 
@@ -431,7 +431,7 @@ namespace Among_Us_ModManager.Pages
                     string content = File.ReadAllText(AdminCheckFile).Trim();
                     string hash = ComputeSha256Hash(content);
 
-                    LogOutput.Write($"管理者チェック: admin.txt の内容 = \"{content}\"");
+                    LogOutput.Write($"管理者チェック: admin.dat の内容 = \"{content}\"");
                     LogOutput.Write($"管理者チェック: 計算されたハッシュ = {hash}");
 
                     AdminPageButton.Visibility = (hash == AdminHash)
@@ -443,7 +443,7 @@ namespace Among_Us_ModManager.Pages
                 else
                 {
                     AdminPageButton.Visibility = Visibility.Collapsed;
-                    LogOutput.Write("管理者チェック: admin.txt が存在しないため Collapsed");
+                    LogOutput.Write("管理者チェック: 存在しない。 Collapsed");
                 }
             }
             catch (Exception ex)

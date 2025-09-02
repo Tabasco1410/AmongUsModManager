@@ -18,6 +18,16 @@
                     Margin="5"
                     Click="BtnNotice_Click"
                     Style="{StaticResource TextButtonStyle}"/>
+            <!--  <Button Name="BtnGeneral"
+                    Content="基本設定"
+                    Margin="5"
+                    Click="BtnGeneral_Click"
+                    Style="{StaticResource TextButtonStyle}"/>
+            <Button Name="BtnExperimental"
+                    Content="試験的機能"
+                    Margin="5"
+                    Click="BtnExperimental_Click"
+                    Style="{StaticResource TextButtonStyle}"/>-->
         </StackPanel>
 
         <!-- 右詳細エリア -->
