@@ -14,6 +14,11 @@ namespace Among_Us_ModManager
 
         private AppWindowConfig appConfig = new AppWindowConfig();
 
+        public void NavigateToPage(System.Windows.Controls.Page page)
+        {
+            MainFrame.Navigate(page);
+        }
+
         public MainWindow()
         {
             InitializeComponent();

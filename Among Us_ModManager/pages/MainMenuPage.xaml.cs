@@ -17,7 +17,7 @@ namespace Among_Us_ModManager.Pages
 {
     public partial class MainMenuPage : Page
     {
-        private Among_Us_ModManager.Modules.VanillaConfig? config;
+        private Among_Us_ModManager.Modules.SettingsConfig? config;
 
         private static readonly string AppDataFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -71,10 +71,10 @@ namespace Among_Us_ModManager.Pages
         {
             LogOutput.Write("LoadConfig 開始");
 
-            config = Among_Us_ModManager.Modules.VanillaConfig.Load();
+            config = Among_Us_ModManager.Modules.SettingsConfig.Load();
             if (config == null)
             {
-                LogOutput.Write("VanillaConfig がロードできませんでした");
+                LogOutput.Write("SettingsConfig がロードできませんでした");
                 InstallListPanel.ItemsSource = null;
                 return;
             }
@@ -268,7 +268,7 @@ namespace Among_Us_ModManager.Pages
             if (((Button)sender).DataContext is InstallEntry entry)
             {
                 LogOutput.Write($"アップデート要求: {entry.ExePath}");
-                MessageBox.Show($"{entry.ExePath} をアップデートします（仮）");
+                MessageBox.Show($"未実装です。");
             }
         }
 
@@ -290,12 +290,28 @@ namespace Among_Us_ModManager.Pages
                 string folder = Path.GetDirectoryName(entry.ExePath) ?? "";
                 if (Directory.Exists(folder))
                 {
-                    Directory.Delete(folder, true);
-                    LogOutput.Write($"アンインストール: {folder}");
+                    // 確認ダイアログ
+                    var result = MessageBox.Show(
+                        $"Modをアンインストールしますか？\n\n対象フォルダ: {folder}",
+                        "確認",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning
+                    );
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        Directory.Delete(folder, true);
+                        LogOutput.Write($"アンインストール: {folder}");
+                        LoadConfig();
+                    }
+                    else
+                    {
+                        LogOutput.Write("アンインストールをキャンセルしました。");
+                    }
                 }
-                LoadConfig();
             }
         }
+
 
         private void InstallNewMod_Click(object sender, RoutedEventArgs e)
         {

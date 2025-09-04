@@ -8,77 +8,45 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Install_TypeChoosePage">
 
-    <Grid>
-        <!-- 中央に縦にボタンを配置 -->
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid Margin="20">
+        <!-- 縦中央にまとめるための StackPanel -->
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <WrapPanel Margin="0,10" HorizontalAlignment="Center">
+                <Button Style="{StaticResource TextButtonStyle}" MinWidth="150" Margin="10" Click="InstallTownOfHost_Click">
+                    TownOfHost
+                </Button>
+                <Button Style="{StaticResource TextButtonStyle}" MinWidth="150" Margin="10" Click="InstallTownOfHostK_Click">
+                    TownOfHost-K
+                </Button>
+            </WrapPanel>
 
-            <!-- TownOfHost-Fun インストールボタン（非表示） -->
-            <Button Width="250" Height="60" Margin="0,0,0,20" Click="InstallDefault_Click" Visibility="Collapsed">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                            <TextBlock Text="TownOfHost-Funをインストールする"
-                                       FontSize="16"
-                                       FontWeight="Bold"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Opacity" Value="0.7"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Opacity" Value="0.5"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
+            <WrapPanel Margin="0,10" HorizontalAlignment="Center">
+                <Button Style="{StaticResource TextButtonStyle}" MinWidth="150" Margin="10" Click="InstallSuperNewRoles_Click">
+                    SuperNewRoles
+                </Button>
+                <Button Style="{StaticResource TextButtonStyle}" MinWidth="150" Margin="10" Click="InstallNebula_Click">
+                    Nebula on the Ship
+                </Button>
+            </WrapPanel>
 
-            <!-- zip からインストール -->
-            <Button Width="250" Height="60" Click="InstallFromZip_Click">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                            <TextBlock Text="Modの.zipファイルからインストールする"
-                                       FontSize="16"
-                                       FontWeight="Bold"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Opacity" Value="0.7"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Opacity" Value="0.5"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
+            <WrapPanel Margin="0,10" HorizontalAlignment="Center">
+                <Button Style="{StaticResource TextButtonStyle}" MinWidth="150" Margin="10" Click="InstallExtremeRoles_Click">
+                    ExtremeRoles
+                </Button>
+                <!--<Button Style="{StaticResource TextButtonStyle}" MinWidth="150" Margin="10" Click="InstallTownOfHostFun_Click">
+                    TownOfHost-Fun
+                </Button>-->
+            </WrapPanel>
+
+            <!-- .zipからインストールボタン -->
+            <Button Style="{StaticResource TextButtonStyle}" Width="300" Height="60" Margin="0,20,0,0" HorizontalAlignment="Center" Click="InstallFromZip_Click">
+                Modの.zipファイルからインストールする
             </Button>
         </StackPanel>
 
         <!-- 左下に戻るボタン -->
-        <Button Width="100" Height="40" Click="BackButton_Click" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="20">
-            <Button.Template>
-                <ControlTemplate TargetType="Button">
-                    <Grid>
-                        <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                        <TextBlock Text="戻る" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Opacity" Value="0.7"/>
-                        </Trigger>
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Opacity" Value="0.5"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Button.Template>
+        <Button Style="{StaticResource TextButtonStyle}" Width="100" Height="40" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0" Click="BackButton_Click">
+            戻る
         </Button>
     </Grid>
 </Page>

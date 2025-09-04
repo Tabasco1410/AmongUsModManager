@@ -13,9 +13,9 @@ namespace Among_Us_ModManager.Pages
     {
         private static string ConfigPath => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "AmongUsModManager", "Vanilla_Config.json");
+            "AmongUsModManager", "Settings.json");
 
-        private class VanillaConfig
+        private class SettingConfig
         {
             public string AmongUsExePath { get; set; }
 
@@ -66,7 +66,7 @@ namespace Among_Us_ModManager.Pages
                     return;
                 }
 
-                var config = new VanillaConfig { AmongUsExePath = filePath };
+                var config = new SettingConfig { AmongUsExePath = filePath };
                 config.Save();
 
                 SelectAmongUsExeButton.Visibility = Visibility.Collapsed;

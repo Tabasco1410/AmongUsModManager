@@ -27,7 +27,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Icon_N.ico" />
+    <Content Include="Icon_N.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
@@ -75,12 +77,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Hardcodet.Wpf.TaskbarNotification" Version="1.0.5" />
     <PackageReference Include="Markdig" Version="0.41.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Pages\SettingsWindow\" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.8" />
   </ItemGroup>
 
 </Project>

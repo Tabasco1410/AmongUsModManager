@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Among_Us_ModManager.Pages.Install.Zip;
+using Among_Us_ModManager.Pages.Install.GitHub;
 
 namespace Among_Us_ModManager.Pages
 {
@@ -14,19 +15,53 @@ namespace Among_Us_ModManager.Pages
             InitializeComponent();
         }
 
-        // TownOfHost-Fun をインストールするボタン
-        private void InstallDefault_Click(object sender, RoutedEventArgs e)
+        // TownOfHost
+        private void InstallTownOfHost_Click(object sender, RoutedEventArgs e)
         {
-            // ChooseVersionPage に遷移
-            var chooseVersionPage = new Install.GitHub.ChooseVersionPage();
-            this.NavigationService?.Navigate(chooseVersionPage);
+            NavigateToGitHub("tukasa0001", "TownOfHost");
+        }
+
+        // TownOfHost-K
+        private void InstallTownOfHostK_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToGitHub("KYMario", "TownOfHost-K");
+        }
+
+        // SuperNewRoles
+        private void InstallSuperNewRoles_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToGitHub("SuperNewRoles", "SuperNewRoles");
+        }
+
+        // Nebula on the Ship
+        private void InstallNebula_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToGitHub("Dolly1016", "Nebula");
+        }
+
+        // ExtremeRoles
+        private void InstallExtremeRoles_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToGitHub("yukieiji", "ExtremeRoles");
+        }
+
+        // TownOfHost-Fun
+        private void InstallTownOfHostFun_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToGitHub("ToritenKabosu", "TownOfHost-Fun");
+        }
+
+        // 共通 GitHub 遷移
+        private void NavigateToGitHub(string owner, string repo)
+        {
+            var page = new CheckVersionPage(owner, repo);
+            this.NavigationService?.Navigate(page);
         }
 
         // Modの.zipファイルからインストールするボタン
         private void InstallFromZip_Click(object sender, RoutedEventArgs e)
         {
-            // SelectZipFile ページに遷移
-            var selectZipPage = new Install.Zip.SelectZipFile();
+            var selectZipPage = new SelectZipFile();
             if (this.NavigationService != null)
                 this.NavigationService.Navigate(selectZipPage);
             else

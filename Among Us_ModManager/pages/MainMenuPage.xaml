@@ -113,7 +113,7 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                    <TextBlock Text="Modを導入する方はこちらから。" VerticalAlignment="Center" Margin="15,0,0,0" FontSize="14"/>
+                    <TextBlock Text="Among Usに新しくModを導入する方・はじめてmodを導入する方はこちらのボタンをクリックしてください。" VerticalAlignment="Center" Margin="15,0,0,0" FontSize="14"/>
                 </StackPanel>
             </Border>
 
@@ -172,7 +172,7 @@
                                             </Button.Template>
                                         </Button>
 
-                                        <!-- アップデート（文字のみ）-->
+                                        <!-- アップデート（文字のみ）
                                         <Button Width="100" Height="40" Margin="5" Click="Update_Click" Cursor="Hand">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
@@ -190,7 +190,7 @@
                                                     </ControlTemplate.Triggers>
                                                 </ControlTemplate>
                                             </Button.Template>
-                                        </Button>
+                                        </Button> -->
 
                                         <!-- アンインストール（文字のみ） -->
                                         <Button Width="120" Height="40" Margin="5" Click="Uninstall_Click" Cursor="Hand">
