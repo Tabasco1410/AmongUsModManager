@@ -125,7 +125,7 @@ namespace Among_Us_ModManager.Pages
 
             // ヘッダー
             AppTitleText.Text = Strings.Get("AppTitle");
-            VersionText.Text = Strings.Get("FetchingVersion");
+            //VersionText.Text = Strings.Get("FetchingVersion");
 
             // 更新関連
             UpdateNoticeText.Text = Strings.Get("UpdateAvailable");
