@@ -59,7 +59,8 @@ namespace Among_Us_ModManager.Pages.Install.GitHub
                 string url = $"https://api.github.com/repos/{_owner}/{_repo}/releases";
                 var response = await client.GetStringAsync(url);
 
-                return JsonConvert.DeserializeObject<List<GitHubRelease>>(response);
+                return JsonConvert.DeserializeObject<List<GitHubRelease>>(response) ?? new List<GitHubRelease>();
+
             }
         }
 
@@ -96,96 +97,85 @@ namespace Among_Us_ModManager.Pages.Install.GitHub
         /// </summary>
         private async void InstallFile_Click(object sender, RoutedEventArgs e)
         {
-            if (FileListView.SelectedItem is GitHubReleaseAsset selectedFile)
+            if (FileListView.SelectedItem is not GitHubReleaseAsset selectedFile)
             {
-                // .dll はインストール不可
-                if (selectedFile.Name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+                MessageBox.Show("インストールするファイルを選択してください。");
+                return;
+            }
+
+            // .dll はインストール不可
+            if (selectedFile.Name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show(".dll ファイルはインストールできません。");
+                return;
+            }
+
+            // ダウンロード先フォルダ（AppData 下など）
+            string downloadsDir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                "AmongUsModManager", "Downloads"
+            );
+            Directory.CreateDirectory(downloadsDir);
+
+            string zipFilePath = Path.Combine(downloadsDir, selectedFile.Name);
+
+            try
+            {
+                MessageBox.Show("ダウンロードを開始します...", "情報", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                using var client = new HttpClient();
+                using var stream = await client.GetStreamAsync(selectedFile.DownloadUrl);
+                using var fileStream = new FileStream(zipFilePath, FileMode.Create, FileAccess.Write);
+                await stream.CopyToAsync(fileStream);
+
+                MessageBox.Show("ダウンロードが完了しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                // Settings.json を読み込む（nullable 戻り値）
+                string? amongUsExePath = LoadSettingConfig();
+                if (string.IsNullOrEmpty(amongUsExePath) || !File.Exists(amongUsExePath))
                 {
-                    MessageBox.Show(".dll ファイルはインストールできません。");
+                    MessageBox.Show("Settings.json が存在しないか Among Us.exe のパスが無効です。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
-                // ダウンロード先フォルダ（AppData 下など）
-                string downloadsDir = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                    "AmongUsModManager", "Downloads"
-                );
-                Directory.CreateDirectory(downloadsDir);
+                // ZIP名から Mod名（フォルダ名）を取得
+                string rawName = Path.GetFileNameWithoutExtension(selectedFile.Name);
+                string modName = rawName;
 
-                string zipFilePath = Path.Combine(downloadsDir, selectedFile.Name);
+                int dashIndex = rawName.IndexOf('-');
+                if (dashIndex > 0)
+                    modName = rawName.Substring(0, dashIndex);
 
-                try
+                int underscoreIndex = modName.IndexOf('_');
+                if (underscoreIndex > 0)
+                    modName = modName.Substring(0, underscoreIndex);
+
+                // AmongUs.exe のディレクトリを取得（null 安全）
+                string? sourceFolderPath = Path.GetDirectoryName(amongUsExePath);
+                if (string.IsNullOrEmpty(sourceFolderPath))
                 {
-                    MessageBox.Show("ダウンロードを開始します...", "情報", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                    using (var client = new HttpClient())
-                    using (var stream = await client.GetStreamAsync(selectedFile.DownloadUrl))
-                    using (var fileStream = new FileStream(zipFilePath, FileMode.Create, FileAccess.Write))
-                    {
-                        await stream.CopyToAsync(fileStream);
-                    }
-
-                    MessageBox.Show("ダウンロードが完了しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                    // Settings.json を読み込む
-                    string amongUsExePath = LoadSettingConfig();
-                    if (string.IsNullOrEmpty(amongUsExePath) || !File.Exists(amongUsExePath))
-                    {
-                        MessageBox.Show("Settings.json が存在しないか Among Us.exe のパスが無効です。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                        return;
-                    }
-
-                    // ZIP名から Mod名（フォルダ名）を取得
-                    // ZIP名から Mod名を取得（拡張子なし）
-                    string rawName = Path.GetFileNameWithoutExtension(selectedFile.Name);
-
-                    // Mod名だけに整形
-                    // 例: "TownOfHost-v1.0.0" → "TownOfHost"
-                    string modName = rawName;
-
-                    // ハイフン区切りでバージョンっぽい部分を消す
-                    int dashIndex = rawName.IndexOf('-');
-                    if (dashIndex > 0)
-                    {
-                        modName = rawName.Substring(0, dashIndex);
-                    }
-
-                    // アンダースコア区切りでも対応
-                    int underscoreIndex = modName.IndexOf('_');
-                    if (underscoreIndex > 0)
-                    {
-                        modName = modName.Substring(0, underscoreIndex);
-                    }
-
-
-
-                    string sourceFolderPath = Path.GetDirectoryName(amongUsExePath)!;
-
-                    // 既存フォルダの処理（Yes/No/Cancel）… ←ここは今のままでOK
-
-                    // 遷移 (Put_Zip_File に渡す)
-                    NavigationService.Navigate(new Among_Us_ModManager.Pages.PutZipFile.Put_Zip_File(
-                        sourceFolderPath,
-                        zipFilePath,
-                        modName
-                    ));
-
+                    MessageBox.Show("Among Us.exe のディレクトリを取得できませんでした。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"ダウンロードに失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+
+                // 遷移 (Put_Zip_File に渡す)
+                NavigationService?.Navigate(new Among_Us_ModManager.Pages.PutZipFile.Put_Zip_File(
+                    sourceFolderPath,
+                    zipFilePath,
+                    modName
+                ));
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("インストールするファイルを選択してください。");
+                MessageBox.Show($"ダウンロードに失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
         /// <summary>
         /// Settings.json を読み込む
         /// </summary>
-        private string LoadSettingConfig()
+        private string? LoadSettingConfig()
         {
             try
             {
@@ -203,6 +193,7 @@ namespace Among_Us_ModManager.Pages.Install.GitHub
                 return null;
             }
         }
+
 
         /// <summary>
         /// 戻るボタンを押したとき
@@ -233,11 +224,17 @@ namespace Among_Us_ModManager.Pages.Install.GitHub
 
         [JsonProperty("assets")]
         public List<GitHubReleaseAsset> Assets { get; set; }
+
+        // コンストラクターで初期化
+        public GitHubRelease()
+        {
+            Name = "";
+            TagName = "";
+            Body = "";
+            Assets = new List<GitHubReleaseAsset>();
+        }
     }
 
-    /// <summary>
-    /// GitHub Release Asset（ファイル情報）データモデル
-    /// </summary>
     public class GitHubReleaseAsset
     {
         [JsonProperty("name")]
@@ -261,14 +258,23 @@ namespace Among_Us_ModManager.Pages.Install.GitHub
 
         [JsonProperty("browser_download_url")]
         public string DownloadUrl { get; set; }
+
+        public GitHubReleaseAsset()
+        {
+            Name = "";
+            DownloadUrl = "";
+        }
     }
 
-    /// <summary>
-    /// Settings.json データモデル
-    /// </summary>
     public class SettingConfig
     {
         [JsonProperty("AmongUsExePath")]
         public string AmongUsExePath { get; set; }
+
+        public SettingConfig()
+        {
+            AmongUsExePath = "";
+        }
     }
+
 }

@@ -12,12 +12,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Text.Json;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Among_Us_ModManager.Pages
 {
     public partial class MainMenuPage : Page
     {
-        private Among_Us_ModManager.Modules.SettingsConfig? config;
+        private SettingsConfig? config;
 
         private static readonly string AppDataFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -29,36 +30,21 @@ namespace Among_Us_ModManager.Pages
 
         private static readonly string NewsFile = Path.Combine(AppDataFolder, "last_read_news.dat");
 
-
-
         public MainMenuPage()
         {
             InitializeComponent();
-
-            try
-            {
-                Directory.CreateDirectory(AppDataFolder);
-                LogOutput.Write("AppDataフォルダの作成または確認完了");
-            }
-            catch (Exception ex)
-            {
-                LogOutput.Write($"AppDataフォルダ作成失敗: {ex.Message}");
-            }
-
+            Strings.Load();
+            try { Directory.CreateDirectory(AppDataFolder); } catch { }
             LoadConfig();
+            ApplyLanguage();
             CheckAdminButtonVisibility();
-
-            // ページがロードされたときにバージョン表示とアップデートチェック
             Loaded += async (s, e) =>
             {
                 await LoadVersionAsync();
                 await CheckUpdateButtonAsync();
-                await CheckNewNoticeAsync(); 
+                await CheckNewNoticeAsync();
             };
-
-
         }
-
 
         private static string ComputeSha256Hash(string rawData)
         {
@@ -69,19 +55,15 @@ namespace Among_Us_ModManager.Pages
 
         private void LoadConfig()
         {
-            LogOutput.Write("LoadConfig 開始");
-
-            config = Among_Us_ModManager.Modules.SettingsConfig.Load();
+            config = SettingsConfig.Load();
             if (config == null)
             {
-                LogOutput.Write("SettingsConfig がロードできませんでした");
                 InstallListPanel.ItemsSource = null;
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(config.AmongUsExePath) || !File.Exists(config.AmongUsExePath))
             {
-                LogOutput.Write("AmongUsExePath が存在しません");
                 InstallListPanel.ItemsSource = null;
                 return;
             }
@@ -89,21 +71,16 @@ namespace Among_Us_ModManager.Pages
             string baseFolder = Path.GetDirectoryName(config.AmongUsExePath) ?? "";
             string rootFolder = Path.GetDirectoryName(baseFolder) ?? "";
             if (string.IsNullOrEmpty(rootFolder) || !Directory.Exists(rootFolder))
-            {
-                LogOutput.Write("rootFolder が存在しません");
                 return;
-            }
 
             var entries = new List<InstallEntry>();
-
-            // 除外対象DLL
             var ignoreList = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-    {
-        "ExtremeSkins",
-        "Agartha",
-        "Mini.RegionInstall",
-        "System.Text.Encoding.CodePages"
-    };
+            {
+                "ExtremeSkins",
+                "Agartha",
+                "Mini.RegionInstall",
+                "System.Text.Encoding.CodePages"
+            };
 
             foreach (var folder in Directory.GetDirectories(rootFolder))
             {
@@ -112,164 +89,138 @@ namespace Among_Us_ModManager.Pages
                 string nebulaFolder = Path.Combine(folder, "BepInEx", "Nebula");
 
                 if (Directory.Exists(pluginsFolder) && File.Exists(Path.Combine(pluginsFolder, "NebulaLoader.dll")))
-                {
                     pluginsFolder = nebulaFolder;
-                }
 
                 if (File.Exists(exePath) && Directory.Exists(pluginsFolder))
                 {
                     foreach (var dllPath in Directory.GetFiles(pluginsFolder, "*.dll"))
                     {
                         var dllName = Path.GetFileNameWithoutExtension(dllPath);
-
-                        // 除外対象はスキップ
                         if (ignoreList.Contains(dllName))
-                        {
-                            LogOutput.Write($"除外DLL: {dllName}");
                             continue;
-                        }
 
                         string version = "";
-                        try
-                        {
-                            version = FileVersionInfo.GetVersionInfo(dllPath).FileVersion ?? "";
-                        }
-                        catch (Exception ex)
-                        {
-                            LogOutput.Write($"DLLのバージョン取得失敗: {dllPath}, {ex.Message}");
-                        }
+                        try { version = FileVersionInfo.GetVersionInfo(dllPath).FileVersion ?? ""; } catch { }
 
-                        // Nebula, TOHE はバージョン非表示
-                        string versionText;
-                        if (dllName.Equals("Nebula", StringComparison.OrdinalIgnoreCase) ||
-                            dllName.Equals("TOHE", StringComparison.OrdinalIgnoreCase))
-                        {
-                            versionText = dllName;
-                        }
-                        else
-                        {
-                            versionText = string.IsNullOrEmpty(version) ? dllName : $"{dllName}（{version}）";
-                        }
+                        string versionText = (dllName.Equals("Nebula", StringComparison.OrdinalIgnoreCase) ||
+                                              dllName.Equals("TOHE", StringComparison.OrdinalIgnoreCase))
+                            ? dllName
+                            : string.IsNullOrEmpty(version) ? dllName : $"{dllName}（{version}）";
 
-                        entries.Add(new InstallEntry
-                        {
-                            ExePath = exePath,
-                            VersionText = versionText
-                        });
-
-                        LogOutput.Write($"Mod検出: {dllName}, バージョン: {version}");
+                        entries.Add(new InstallEntry { ExePath = exePath, VersionText = versionText });
                     }
                 }
             }
 
             InstallListPanel.ItemsSource = entries;
-            LogOutput.Write("LoadConfig 完了");
+        }
+
+        private void ApplyLanguage()
+        {
+            // 言語を設定
+            if (config != null && !string.IsNullOrWhiteSpace(config.Language))
+                Strings.SetLanguage(config.Language);
+            else
+                Strings.SetLanguage("JA");
+
+            // ヘッダー
+            AppTitleText.Text = Strings.Get("AppTitle");
+            VersionText.Text = Strings.Get("FetchingVersion");
+
+            // 更新関連
+            UpdateNoticeText.Text = Strings.Get("UpdateAvailable");
+            UpdateButton.Content = Strings.Get("Update");
+
+            // 右上ボタン（文字ボタンのみ）
+            AdminPageButton.Content = Strings.Get("AdminPage");
+            NewNoticeText.Text = Strings.Get("NewNotice");
+
+            // DiscordやSettingsは固定画像なので触らない
+            // SettingsButton.Contentは固定画像なので変更不要
+            // DiscordIconは固定画像なので変更不要
+
+            // 新規インストールボタンのテキストを変更
+            InstallModButton.Content = Strings.Get("InstallMod");
+
+            // 説明文
+            InstallModDescText.Text = Strings.Get("InstallModDesc");
+
+            // 導入済み一覧のボタン
+            foreach (var item in InstallListPanel.Items)
+            {
+                if (item is ModItem mod)
+                {
+                    mod.LaunchText = Strings.Get("Launch");
+                    mod.OpenFolderText = Strings.Get("OpenFolder");
+                    mod.UninstallText = Strings.Get("Uninstall");
+                }
+            }
+
+            InstallListPanel.Items.Refresh();
         }
 
 
-        #region 標準ボタン処理
+        public class ModItem
+        {
+            public string VersionText { get; set; }
+            public string ExePath { get; set; }
+            public string LaunchText { get; set; }
+            public string OpenFolderText { get; set; }
+            public string UninstallText { get; set; }
+        }
 
         private async Task CheckNewNoticeAsync()
         {
             try
             {
-                LogOutput.Write("CheckNewNoticeAsync 開始");
-
-                // AppData フォルダ作成済みは既にコンストラクタで行われている前提
                 if (!File.Exists(NewsFile))
-                {
                     File.WriteAllText(NewsFile, DateTime.MinValue.ToString("o"));
-                    LogOutput.Write($"last_read_news.dat が存在しなかったため作成: {DateTime.MinValue:o}");
-                }
 
                 string lastReadStr = File.ReadAllText(NewsFile).Trim();
                 if (!DateTime.TryParse(lastReadStr, out DateTime lastRead))
-                {
                     lastRead = DateTime.MinValue;
-                    LogOutput.Write("last_read_news.dat の日付パースに失敗、DateTime.MinValue を使用");
-                }
-                LogOutput.Write($"最終閲覧日時: {lastRead:o}");
 
                 DateTime latestNewsDate = await GetLatestNewsDateAsync();
-                LogOutput.Write($"最新ニュース日時: {latestNewsDate:o}");
-
                 bool hasNewNotice = latestNewsDate > lastRead;
                 NewNoticeText.Visibility = hasNewNotice ? Visibility.Visible : Visibility.Collapsed;
-                LogOutput.Write($"新しいお知らせがあるか: {hasNewNotice}");
-
-                LogOutput.Write("CheckNewNoticeAsync 完了");
             }
-            catch (Exception ex)
-            {
-                NewNoticeText.Visibility = Visibility.Collapsed;
-                LogOutput.Write($"CheckNewNoticeAsync 例外: {ex.Message}");
-            }
+            catch { NewNoticeText.Visibility = Visibility.Collapsed; }
         }
-
 
         private async Task<DateTime> GetLatestNewsDateAsync()
         {
             try
             {
-                LogOutput.Write("GetLatestNewsDateAsync 開始");
-
                 string newsPath = Path.Combine(AppDataFolder, "News.json");
                 if (!File.Exists(newsPath))
                 {
-                    LogOutput.Write("News.json が存在しないため GitHub からダウンロードを試行");
-
                     using var client = new HttpClient();
                     string url = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManager/main/News.json";
                     string json = await client.GetStringAsync(url);
-
                     File.WriteAllText(newsPath, json);
-                    LogOutput.Write("GitHub から News.json をダウンロードして保存完了");
                 }
 
                 string localJson = File.ReadAllText(newsPath);
                 var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                 var newsItems = JsonSerializer.Deserialize<List<NewsItem>>(localJson, options);
-
                 if (newsItems == null || newsItems.Count == 0)
-                {
-                    LogOutput.Write("News.json が空またはパース失敗、DateTime.MinValue を返す");
                     return DateTime.MinValue;
-                }
 
-                DateTime latest = newsItems.Max(n => n.Date);
-                LogOutput.Write($"News.json から取得した最新ニュース日時: {latest:o}");
-                LogOutput.Write("GetLatestNewsDateAsync 完了");
-
-                return latest;
+                return newsItems.Max(n => n.Date);
             }
-            catch (Exception ex)
-            {
-                LogOutput.Write($"GetLatestNewsDateAsync 例外: {ex.Message}");
-                return DateTime.MinValue;
-            }
+            catch { return DateTime.MinValue; }
         }
-
-
-
-
-
 
         private void Launch_Click(object sender, RoutedEventArgs e)
         {
             if (((Button)sender).DataContext is InstallEntry entry && File.Exists(entry.ExePath))
-            {
-                LogOutput.Write($"起動: {entry.ExePath}");
                 Process.Start(entry.ExePath);
-            }
         }
 
         private void Update_Click(object sender, RoutedEventArgs e)
         {
-            if (((Button)sender).DataContext is InstallEntry entry)
-            {
-                LogOutput.Write($"アップデート要求: {entry.ExePath}");
-                MessageBox.Show($"未実装です。");
-            }
+            if (((Button)sender).DataContext is InstallEntry)
+                MessageBox.Show(Strings.Get("Update_NotImplemented"));
         }
 
         private void OpenFolder_Click(object sender, RoutedEventArgs e)
@@ -277,7 +228,6 @@ namespace Among_Us_ModManager.Pages
             if (((Button)sender).DataContext is InstallEntry entry)
             {
                 string folder = Path.GetDirectoryName(entry.ExePath) ?? "";
-                LogOutput.Write($"フォルダ開く: {folder}");
                 if (Directory.Exists(folder))
                     Process.Start(new ProcessStartInfo { FileName = folder, UseShellExecute = true, Verb = "open" });
             }
@@ -290,10 +240,9 @@ namespace Among_Us_ModManager.Pages
                 string folder = Path.GetDirectoryName(entry.ExePath) ?? "";
                 if (Directory.Exists(folder))
                 {
-                    // 確認ダイアログ
                     var result = MessageBox.Show(
-                        $"Modをアンインストールしますか？\n\n対象フォルダ: {folder}",
-                        "確認",
+                        string.Format(Strings.Get("Confirm_Uninstall"), folder),
+                        Strings.Get("Confirm"),
                         MessageBoxButton.YesNo,
                         MessageBoxImage.Warning
                     );
@@ -301,121 +250,69 @@ namespace Among_Us_ModManager.Pages
                     if (result == MessageBoxResult.Yes)
                     {
                         Directory.Delete(folder, true);
-                        LogOutput.Write($"アンインストール: {folder}");
                         LoadConfig();
-                    }
-                    else
-                    {
-                        LogOutput.Write("アンインストールをキャンセルしました。");
                     }
                 }
             }
         }
 
-
         private void InstallNewMod_Click(object sender, RoutedEventArgs e)
         {
-            LogOutput.Write("新規Modインストール画面へ遷移");
             var page = new Install_TypeChoosePage();
             NavigationService?.Navigate(page);
         }
 
         private void Settings_Click(object sender, RoutedEventArgs e)
         {
-            var settingsWindow = new SettingsWindow();
-            settingsWindow.Owner = Window.GetWindow(this); 
-            settingsWindow.ShowDialog(); 
+            var settingsWindow = new SettingsWindow
+            {
+                Owner = Window.GetWindow(this)
+            };
+            settingsWindow.ShowDialog();
+            config = SettingsConfig.Load();
+            ApplyLanguage();
         }
-
 
         private void DiscordIcon_Click(object sender, RoutedEventArgs e)
         {
-            LogOutput.Write("Discordボタンクリック");
             try
             {
                 Process.Start(new ProcessStartInfo
                 {
                     FileName = "https://discord.gg/nFhkYmf9At",
-                    //元のリンクは、プライベートフォークmodのDiscordサーバーの招待URLになっていました。現在はまだプライベートフォークですのでアクセスはお控えください。
                     UseShellExecute = true
                 });
             }
-            catch (Exception ex)
-            {
-                LogOutput.Write($"Discordを開けませんでした: {ex.Message}");
-            }
+            catch { }
         }
-        #endregion
 
         private const string VersionUrl = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManager/main/version.txt";
 
         private async Task LoadVersionAsync()
         {
-            LogOutput.Write("LoadVersionAsync 開始: アプリバージョン情報をUIにセット");
-            try
+            VersionText.Text = $"v {AppVersion.Version}";
+            VersionText.ToolTip = new TextBlock
             {
-                VersionText.Text = $"v {AppVersion.Version}";
-                VersionText.ToolTip = new TextBlock
-                {
-                    Text = AppVersion.Notes,
-                    TextWrapping = TextWrapping.Wrap,
-                    Width = 250
-                };
-                LogOutput.Write($"LoadVersionAsync 成功: バージョン表示更新 Version={AppVersion.Version}");
-                await Task.CompletedTask;
-            }
-            catch (Exception ex)
-            {
-                LogOutput.Write($"LoadVersionAsync 例外: {ex.Message}\nスタックトレース:\n{ex.StackTrace}");
-                throw;
-            }
+                Text = AppVersion.Notes,
+                TextWrapping = TextWrapping.Wrap,
+                Width = 250
+            };
+            await Task.CompletedTask;
         }
 
         private async Task CheckUpdateButtonAsync()
         {
-            LogOutput.Write("CheckUpdateButtonAsync 開始: GitHubのversion.txtから最新バージョン取得し現在バージョンと比較。アップデート通知UIを制御。");
-            try
-            {
-                string rawVersion = AppVersion.Version;
-                bool endsWithS = rawVersion.EndsWith("s", StringComparison.OrdinalIgnoreCase);
-
-                bool isUpdateAvailable = await AppUpdater.IsUpdateAvailableAsync(rawVersion, VersionUrl);
-
-                UpdateNoticeText.Visibility = isUpdateAvailable ? Visibility.Visible : Visibility.Collapsed;
-                UpdateButton.Visibility = (!endsWithS && isUpdateAvailable) ? Visibility.Visible : Visibility.Collapsed;
-
-                LogOutput.Write($"CheckUpdateButtonAsync: 現在バージョン={rawVersion}、アップデート有無={isUpdateAvailable}、末尾s判定={endsWithS}");
-                LogOutput.Write("CheckUpdateButtonAsync 正常終了: アップデートUIを設定");
-            }
-            catch (Exception ex)
-            {
-                LogOutput.Write($"CheckUpdateButtonAsync 例外: アップデートチェック失敗。例外詳細: {ex.Message}\nスタックトレース:\n{ex.StackTrace}");
-                UpdateNoticeText.Visibility = Visibility.Collapsed;
-                UpdateButton.Visibility = Visibility.Collapsed;
-                LogOutput.Write("CheckUpdateButtonAsync: 例外時はアップデート通知とボタンを非表示に設定");
-            }
+            string rawVersion = AppVersion.Version;
+            bool endsWithS = rawVersion.EndsWith("s", StringComparison.OrdinalIgnoreCase);
+            bool isUpdateAvailable = await AppUpdater.IsUpdateAvailableAsync(rawVersion, VersionUrl);
+            UpdateNoticeText.Visibility = isUpdateAvailable ? Visibility.Visible : Visibility.Collapsed;
+            UpdateButton.Visibility = (!endsWithS && isUpdateAvailable) ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void UpdateButton_Click(object sender, RoutedEventArgs e)
+        private async void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
-            LogOutput.Write("UpdateButton_Click 開始: ユーザーがアップデートボタンをクリック。更新確認ダイアログ表示。");
-            try
-            {
-                if (MessageBox.Show("新しいバージョンがあります。アップデートしますか？", "アップデート確認", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-                {
-                    LogOutput.Write("UpdateButton_Click: ユーザーがアップデートを承認。Updater.exeを起動してアプリ終了。");
-                    AppUpdater.StartUpdaterAndExit();
-                }
-                else
-                {
-                    LogOutput.Write("UpdateButton_Click: ユーザーがアップデートを拒否。処理終了。");
-                }
-            }
-            catch (Exception ex)
-            {
-                LogOutput.Write($"UpdateButton_Click 例外: アップデートボタンクリック処理で例外。詳細: {ex.Message}\nスタックトレース:\n{ex.StackTrace}");
-                throw;
-            }
+            if (MessageBox.Show(Strings.Get("Update_Confirm"), Strings.Get("Update"), MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                await AppUpdater.StartUpdaterAndExit();
         }
 
         public static async Task<bool> IsUpdateAvailableAsync(string currentVersion, string versionUrl)
@@ -426,18 +323,9 @@ namespace Among_Us_ModManager.Pages
                 string latestVersion = await client.GetStringAsync(versionUrl);
                 return !string.Equals(currentVersion, latestVersion.Trim(), StringComparison.OrdinalIgnoreCase);
             }
-            catch (Exception ex)
-            {
-                LogOutput.Write($"IsUpdateAvailableAsync 例外: {ex.Message}");
-                return false;
-            }
+            catch { return false; }
         }
 
-        
-
-
-
-        #region 管理者ページ
         private void CheckAdminButtonVisibility()
         {
             try
@@ -446,42 +334,35 @@ namespace Among_Us_ModManager.Pages
                 {
                     string content = File.ReadAllText(AdminCheckFile).Trim();
                     string hash = ComputeSha256Hash(content);
-
-                    LogOutput.Write($"管理者チェック: admin.dat の内容 = \"{content}\"");
-                    LogOutput.Write($"管理者チェック: 計算されたハッシュ = {hash}");
-
-                    AdminPageButton.Visibility = (hash == AdminHash)
-                        ? Visibility.Visible
-                        : Visibility.Collapsed;
-
-                    LogOutput.Write($"管理者チェック結果: {AdminPageButton.Visibility}");
+                    AdminPageButton.Visibility = (hash == AdminHash) ? Visibility.Visible : Visibility.Collapsed;
                 }
                 else
-                {
                     AdminPageButton.Visibility = Visibility.Collapsed;
-                    LogOutput.Write("管理者チェック: 存在しない。 Collapsed");
-                }
             }
-            catch (Exception ex)
-            {
-                AdminPageButton.Visibility = Visibility.Collapsed;
-                LogOutput.Write($"管理者チェック: 例外発生 {ex}");
-            }
+            catch { AdminPageButton.Visibility = Visibility.Collapsed; }
         }
 
-
-        private void AdminLogin_Click(object sender, RoutedEventArgs e)
+        private async void AdminLogin_Click(object sender, RoutedEventArgs e)
         {
-            LogOutput.Write("管理者ページボタンクリック");
+            bool hasToken = await OAuthManager.Instance.InitializeAsync();
+            if (!hasToken)
+            {
+                bool isAdmin = await OAuthManager.Instance.LoginAsync();
+                if (!isAdmin)
+                {
+                    MessageBox.Show("管理者権限がありません。", "アクセス拒否", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+            else if (!OAuthManager.Instance.IsAdmin)
+            {
+                MessageBox.Show("管理者権限がありません。", "アクセス拒否", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             if (AdminPageButton.Visibility == Visibility.Visible)
                 NavigationService?.Navigate(new AdminPanelPage());
         }
-        #endregion
-
-        #region お知らせ
-        
-
-        #endregion
     }
 
     public class InstallEntry

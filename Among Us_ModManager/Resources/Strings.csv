@@ -1,0 +1,78 @@
+﻿Key,JA,EN,ZH-CN,ZH-TW
+# MainMenuPage
+AppTitle,Among Us ModManager,Among Us ModManager,Among Us Mod管理器,Among Us Mod管理器
+FetchingVersion,バージョン取得中...,Fetching version...,正在获取版本...,正在取得版本...
+UpdateAvailable,アップデートがあります！,Update available!,有可用更新！,有可用更新！
+Update,アップデート,Update,更新,更新
+AdminPage,管理者ページ,Admin Page,管理页面,管理頁面
+NewNotice,新しいお知らせがあります！メニューからお知らせを見て確認してください。,There is a new notice! Please check from the menu.,有新公告！请从菜单中查看。,有新公告！請從選單中查看。
+Settings,設定,Settings,设置,設定
+InstallMod,Modをインストール,Install Mod,安装Mod,安裝Mod
+InstallModDesc,Among Usに新しくModを導入する方・はじめてmodを導入する方はこちらのボタンをクリックしてください。,If you are installing a mod for the first time, click this button.,如果您是首次安装Mod，请点击此按钮。,如果您是首次安裝Mod，請點擊此按鈕。
+Launch,起動,Launch,启动,啟動
+OpenFolder,フォルダを開く,Open Folder,打开文件夹,開啟資料夾
+Uninstall,アンインストール,Uninstall,卸载,解除安裝
+ReturnHome,ホームに戻る,Return to Home,返回主页,返回首頁
+Back,戻る,Back,返回,返回
+
+# SelectEXEPath
+SelectExe,Among Us.exe を選択,Select Among Us.exe,选择 Among Us.exe,選擇 Among Us.exe
+
+# SettingsWindow
+Notice,お知らせ,Notice,公告,公告
+MenuTitle,メニュー,Menu,菜单,選單
+
+# SettingsPage
+SettingsPageTitle,設定画面,Settings Page,设置页面,設定頁面
+ExePath,Among Us.exe パス,Among Us.exe Path,Among Us.exe 路径,Among Us.exe 路徑
+Browse,参照,Browse,浏览,瀏覽
+BackgroundOption,アプリを閉じてもバックグラウンドで起動したままする,Keep running in background after closing,关闭应用后继续在后台运行,關閉應用後繼續在背景執行
+
+# NewsPage
+News,お知らせ,News,公告,公告
+
+# Install_TypeChoosePage
+InstallFromZip,Modの.zipファイルからインストールする,Install from .zip file,从.zip文件安装,從.zip檔案安裝
+
+# Put_Zip_File
+ModDeploy,MOD展開＆設置,Mod Deployment & Setup,MOD展开与安装,MOD展開與安裝
+InstallingZip,ZIPファイルを展開してインストール中です...,Extracting ZIP and installing...,正在解压ZIP并安装...,正在解壓ZIP並安裝...
+InstallCompleted,インストールが完了しました。,Installation completed.,安装完成。,安裝完成。
+Preparing,準備中...,Preparing...,准备中...,準備中...
+StatusPreparing,準備中...,Preparing...,准备中...,準備中...
+StatusCopyingExe,Among Us.exeをコピー中...,Copying Among Us.exe...,正在复制 Among Us.exe...,正在複製 Among Us.exe...
+StatusExtractingZip,ZIPを展開中...,Extracting ZIP...,正在解压 ZIP...,正在解壓 ZIP...
+StatusCopyingFiles,ZIPの内容をコピー中...,Copying files from ZIP...,复制 ZIP 中的文件...,複製 ZIP 中的檔案...
+StatusCopyingBepInEx,BepInExをコピー中...,Copying BepInEx folder...,复制 BepInEx 文件夹...,複製 BepInEx 資料夾...
+StatusInstallComplete,インストール完了,Installation complete,安装完成,安裝完成
+BackButton,戻る,Back,返回,返回
+ReturnHomeButton,ホームに戻る,Return to Home,返回主页,返回首頁
+LogLabel,ログ,Log,日志,日誌
+
+# SelectZipFile
+ZipInstallTitle,.zipファイル導入画面,.zip File Install Screen,.zip文件安装界面,.zip檔案安裝畫面
+ZipFile,MOD ZIPファイル：,MOD ZIP File:,MOD ZIP文件：,MOD ZIP檔案：
+ExeFile,Among Us.exe：,Among Us.exe:,Among Us.exe：,Among Us.exe：
+CopyFolderName,コピー後のフォルダ名：,Folder Name After Copy:,复制后的文件夹名：,複製後的資料夾名稱：
+CopyFolderHint,ファイル名はModの名前にすることをオススメします,It is recommended to use the mod name as the folder name.,建议将文件名设为Mod名称,建議將檔名設為Mod名稱
+StartInstall,インストール開始,Start Installation,开始安装,開始安裝
+InvalidFolderNameError,無効な文字が含まれています。,Folder name contains invalid characters.,文件夹名称包含无效字符。,資料夾名稱包含無效字元
+ZipFileNotSelected,ZIPファイルが選択されていません。,ZIP file is not selected.,未选择 ZIP 文件。,未選擇 ZIP 檔案
+ExeFileNotSelected,Among Us.exe が選択されていません。,Among Us.exe is not selected.,未选择 Among Us.exe。,未選擇 Among Us.exe
+
+# CheckVersionPage
+SelectVersionTitle,インストールするバージョンを選択してください,Please select a version to install,请选择要安装的版本,請選擇要安裝的版本
+ReleaseName,リリース名,Release Name,发行名称,發行名稱
+PublishedDate,公開日,Published Date,发布日期,發佈日期
+FileListTitle,リリースのファイル一覧,Release File List,发行文件列表,發行檔案列表
+FileName,ファイル名,File Name,文件名,檔案名稱
+FileSize,サイズ,Size,大小,大小
+SelectVersion,バージョンを選択,Select Version,选择版本,選擇版本
+DownloadAndInstall,ダウンロードしてインストールする,Download and Install,下载并安装,下載並安裝
+DllNotAllowed,.dll ファイルはインストールできません。,Cannot install .dll files,.dll 文件无法安装,.dll 檔案無法安裝
+Downloading,ダウンロード中...,Downloading...,下载中...,下載中...
+DownloadComplete,ダウンロード完了,Download complete,下载完成,下載完成
+ExePathInvalid,Settings.json が存在しないか Among Us.exe のパスが無効です。,Settings.json does not exist or Among Us.exe path is invalid,Settings.json 不存在或 Among Us.exe 路径无效,Settings.json 不存在或 Among Us.exe 路徑無效
+ModNameSuggestion,Mod名としてフォルダ名を自動設定,Auto-setting folder name based on Mod,根据 Mod 自动设置文件夹名,根據 Mod 自動設定資料夾名稱
+NavigateToInstallPage,インストールページに移動,Navigate to install page,导航到安装页面,導航到安裝頁面
+BackButton,戻る,Back,返回,返回

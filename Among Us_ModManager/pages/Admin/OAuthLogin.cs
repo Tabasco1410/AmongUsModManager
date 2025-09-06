@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -9,11 +10,19 @@ namespace Among_Us_ModManager.Auth
     {
         private static readonly string TokenFilePath = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "AmongUsModManager", "token.txt");
+            "AmongUsModManager", "token.json"); // JSONに変更
 
         private static readonly GitHubOAuthService oauthService = new();
 
-        public static async Task<string> LoginAsync()
+        // public に変更
+        public class TokenData
+        {
+            public string AccessToken { get; set; }
+            public string UserName { get; set; }
+            public bool IsAdmin { get; set; }
+        }
+
+        public static async Task<TokenData> LoginAsync()
         {
             try
             {
@@ -32,9 +41,20 @@ namespace Among_Us_ModManager.Auth
                 // codeを使ってアクセストークンを取得
                 var token = await oauthService.ExchangeCodeForTokenAsync(code);
 
-                SaveToken(token);
+                // アクセストークンでユーザー情報を取得
+                string userName = await oauthService.GetUserNameAsync(token);
+                bool isAdmin = userName == "Tabasco1410"; // 管理者判定
 
-                return token;
+                var tokenData = new TokenData
+                {
+                    AccessToken = token,
+                    UserName = userName,
+                    IsAdmin = isAdmin
+                };
+
+                SaveToken(tokenData);
+
+                return tokenData;
             }
             catch (Exception ex)
             {
@@ -43,16 +63,24 @@ namespace Among_Us_ModManager.Auth
             }
         }
 
-        public static string LoadToken()
+        public static TokenData LoadToken()
         {
-            if (File.Exists(TokenFilePath))
+            if (!File.Exists(TokenFilePath))
+                return null;
+
+            try
             {
-                return File.ReadAllText(TokenFilePath);
+                string json = File.ReadAllText(TokenFilePath);
+                return JsonSerializer.Deserialize<TokenData>(json);
             }
-            return null;
+            catch (Exception ex)
+            {
+                MessageBox.Show("トークン読み込みに失敗しました: " + ex.Message, "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
         }
 
-        private static void SaveToken(string token)
+        private static void SaveToken(TokenData tokenData)
         {
             try
             {
@@ -60,7 +88,8 @@ namespace Among_Us_ModManager.Auth
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 
-                File.WriteAllText(TokenFilePath, token);
+                string json = JsonSerializer.Serialize(tokenData, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(TokenFilePath, json);
             }
             catch (Exception ex)
             {

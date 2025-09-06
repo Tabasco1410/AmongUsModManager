@@ -2,11 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.IO;
 
 public class OAuthManager
 {
@@ -25,7 +25,6 @@ public class OAuthManager
     public string UserName { get; private set; }
     private string AccessToken;
 
-    // コンストラクタではファイルパス設定のみ、トークン読み込みは非同期メソッドで行う
     private OAuthManager()
     {
         string appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
@@ -36,10 +35,6 @@ public class OAuthManager
         tokenFilePath = Path.Combine(folder, "token.json");
     }
 
-    /// <summary>
-    /// 非同期でトークンファイルを読み込み、ユーザー情報を取得する。
-    /// 起動時などに一度呼び出す想定。
-    /// </summary>
     public async Task<bool> InitializeAsync()
     {
         return await LoadTokenAsync();
@@ -60,13 +55,13 @@ public class OAuthManager
                 return false;
 
             using var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", AccessToken);
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", AccessToken);
             client.DefaultRequestHeaders.UserAgent.ParseAdd("AmongUsModManager");
 
             var userResponse = await client.GetStringAsync("https://api.github.com/user");
             using var doc = JsonDocument.Parse(userResponse);
-            var root = doc.RootElement;
-            UserName = root.GetProperty("login").GetString();
+            UserName = doc.RootElement.GetProperty("login").GetString();
 
             IsAdmin = UserName == "Tabasco1410";
             IsLoggedIn = true;
@@ -108,7 +103,6 @@ public class OAuthManager
             return false;
         }
 
-        // すでにトークンがあればそのままログイン状態にする（簡易的）
         if (!string.IsNullOrEmpty(AccessToken))
         {
             LogOutput.Write("OAuthManager.LoginAsync: 既存のアクセストークンがあります。");
@@ -117,7 +111,8 @@ public class OAuthManager
         }
 
         string state = Guid.NewGuid().ToString();
-        string authUrl = $"https://github.com/login/oauth/authorize?client_id={ClientId}&redirect_uri={Uri.EscapeDataString(RedirectUri)}&scope=read:user&state={state}";
+        string authUrl =
+            $"https://github.com/login/oauth/authorize?client_id={ClientId}&redirect_uri={Uri.EscapeDataString(RedirectUri)}&scope=read:user&state={state}";
         LogOutput.Write($"OAuthManager.LoginAsync: 認証URL生成完了: {authUrl}");
 
         var listener = new HttpListener();
@@ -128,24 +123,41 @@ public class OAuthManager
             listener.Start();
             LogOutput.Write("OAuthManager.LoginAsync: ローカルHTTPリスナー開始");
 
-            Process.Start(new ProcessStartInfo
+            // Chrome があれば Chrome で開く、なければ既定ブラウザ
+            string chromePath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles%\Google\Chrome\Application\chrome.exe");
+            if (!File.Exists(chromePath))
+                chromePath = Environment.ExpandEnvironmentVariables(@"%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe");
+
+            if (File.Exists(chromePath))
             {
-                FileName = authUrl,
-                UseShellExecute = true
-            });
-            LogOutput.Write("OAuthManager.LoginAsync: ブラウザでGitHub認証ページを開きました");
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = chromePath,
+                    Arguments = authUrl,
+                    UseShellExecute = true
+                });
+                LogOutput.Write("OAuthManager.LoginAsync: Chrome で認証ページを開きました");
+            }
+            else
+            {
+                // 規定ブラウザ
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = authUrl,
+                    UseShellExecute = true
+                });
+                LogOutput.Write("OAuthManager.LoginAsync: 規定ブラウザで認証ページを開きました");
+            }
 
             var context = await listener.GetContextAsync();
             var query = context.Request.QueryString;
             string code = query["code"];
             string returnedState = query["state"];
-            LogOutput.Write($"OAuthManager.LoginAsync: コールバック受信 - code: {code}, state: {returnedState}");
 
-            // レスポンス返却
-            context.Response.ContentType = "text/html; charset=utf-8";
             string responseString = "<html><body>認証完了しました。この画面を閉じてください。</body></html>";
             byte[] buffer = System.Text.Encoding.UTF8.GetBytes(responseString);
             context.Response.ContentLength64 = buffer.Length;
+            context.Response.ContentType = "text/html; charset=utf-8";
             await context.Response.OutputStream.WriteAsync(buffer, 0, buffer.Length);
             context.Response.OutputStream.Close();
             listener.Stop();
@@ -163,15 +175,13 @@ public class OAuthManager
                 return false;
             }
 
-            LogOutput.Write("OAuthManager.LoginAsync: アクセストークン取得リクエスト開始");
-
             using var client = new HttpClient();
             var tokenRequest = new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("client_id", ClientId),
-                new KeyValuePair<string, string>("client_secret", ClientSecret),
-                new KeyValuePair<string, string>("code", code),
-                new KeyValuePair<string, string>("redirect_uri", RedirectUri)
+                new KeyValuePair<string,string>("client_id", ClientId),
+                new KeyValuePair<string,string>("client_secret", ClientSecret),
+                new KeyValuePair<string,string>("code", code),
+                new KeyValuePair<string,string>("redirect_uri", RedirectUri)
             });
 
             var tokenResponse = await client.PostAsync("https://github.com/login/oauth/access_token", tokenRequest);
@@ -187,21 +197,16 @@ public class OAuthManager
                 return false;
             }
 
-            // 取得したアクセストークンを保存
             AccessToken = accessToken;
             SaveToken();
 
-            LogOutput.Write("OAuthManager.LoginAsync: アクセストークン取得成功、ユーザー情報取得開始");
-
-            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+            client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
             client.DefaultRequestHeaders.UserAgent.ParseAdd("AmongUsModManager");
 
             var userResponse = await client.GetStringAsync("https://api.github.com/user");
-            LogOutput.Write($"OAuthManager.LoginAsync: GitHubユーザー情報レスポンス: {userResponse}");
-
             using var doc = JsonDocument.Parse(userResponse);
-            var root = doc.RootElement;
-            UserName = root.GetProperty("login").GetString();
+            UserName = doc.RootElement.GetProperty("login").GetString();
 
             IsAdmin = UserName == "Tabasco1410";
             IsLoggedIn = true;
@@ -231,7 +236,6 @@ public class OAuthManager
         }
     }
 
-    // トークン保存用の内部クラス
     private class TokenData
     {
         public string AccessToken { get; set; }

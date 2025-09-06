@@ -20,75 +20,57 @@ namespace Among_Us_ModManager.Pages
         {
             InitializeComponent();
 
-            Debug.WriteLine("AdminPanelPage: Constructor start");
-
             string repoPath = Environment.GetEnvironmentVariable("GITHUB_REPO") ?? "";
             if (string.IsNullOrEmpty(repoPath))
             {
                 MessageBox.Show("環境変数 GITHUB_REPO が設定されていません。");
-                Debug.WriteLine("AdminPanelPage: GITHUB_REPO environment variable is empty.");
             }
 
             newsPath = Path.Combine(repoPath, "News.json");
 
             _ = LoadNewsFromGitHubAsync();
-
-            Debug.WriteLine("AdminPanelPage: Constructor end");
         }
 
         private async Task LoadNewsFromGitHubAsync()
         {
             const string url = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManager/main/News.json";
 
-            Debug.WriteLine("LoadNewsFromGitHubAsync: Start loading news from GitHub.");
-
             try
             {
                 using HttpClient client = new();
-                // キャッシュ回避
-                string urlWithCacheBuster = url + "?t=" + DateTime.UtcNow.Ticks;
-                string json = await client.GetStringAsync(urlWithCacheBuster);
-                Debug.WriteLine("LoadNewsFromGitHubAsync: Successfully downloaded news JSON from GitHub.");
+                string json = await client.GetStringAsync(url + "?t=" + DateTime.UtcNow.Ticks);
 
                 if (!string.IsNullOrEmpty(newsPath))
                 {
                     Directory.CreateDirectory(Path.GetDirectoryName(newsPath) ?? "");
                     File.WriteAllText(newsPath, json);
-                    Debug.WriteLine($"LoadNewsFromGitHubAsync: Saved news JSON to local file: {newsPath}");
                 }
 
                 LoadNews();
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"LoadNewsFromGitHubAsync: Exception caught - {ex.Message}");
-                MessageBox.Show($"GitHubからニュースの取得に失敗しました。\nローカルファイルを読み込みます。\n\nエラー: {ex.Message}");
+                MessageBox.Show($"GitHubからニュース取得失敗: {ex.Message}\nローカルを読み込みます。");
                 LoadNews();
             }
         }
 
         private void LoadNews()
         {
-            Debug.WriteLine("LoadNews: Start loading news from local file.");
-
             try
             {
                 if (!string.IsNullOrEmpty(newsPath) && File.Exists(newsPath))
                 {
                     string json = File.ReadAllText(newsPath);
                     newsList = JsonSerializer.Deserialize<List<NewsItem>>(json) ?? new List<NewsItem>();
-                    Debug.WriteLine($"LoadNews: Loaded {newsList.Count} news items.");
                 }
                 else
                 {
-                    Debug.WriteLine("LoadNews: newsPath is null or file does not exist.");
                     newsList = new List<NewsItem>();
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Debug.WriteLine($"LoadNews: Exception caught - {ex.Message}");
-                MessageBox.Show($"ニュースの読み込みに失敗しました: {ex.Message}");
                 newsList = new List<NewsItem>();
             }
 
@@ -97,14 +79,59 @@ namespace Among_Us_ModManager.Pages
             {
                 NewsListPanel.Items.Add(CreateNewsEditor(news));
             }
-
-            Debug.WriteLine("LoadNews: Finished populating UI with news items.");
         }
 
         private Border CreateNewsEditor(NewsItem news)
         {
             var panel = new StackPanel { Margin = new Thickness(0) };
 
+            // 言語切替
+            var langLabel = new TextBlock { Text = "言語", FontWeight = FontWeights.SemiBold };
+            var langBox = new ComboBox
+            {
+                ItemsSource = new List<string> { "JA", "EN" },
+                SelectedIndex = 0,
+                Width = 60,
+                Margin = new Thickness(0, 2, 0, 6)
+            };
+
+            // タイトルと内容
+            var titleLabel = new TextBlock { Text = "タイトル", FontWeight = FontWeights.SemiBold };
+            var titleBox = new TextBox { Margin = new Thickness(0, 2, 0, 6) };
+            var contentLabel = new TextBlock { Text = "内容", FontWeight = FontWeights.SemiBold };
+            var contentBox = new TextBox
+            {
+                AcceptsReturn = true,
+                TextWrapping = TextWrapping.Wrap,
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                Height = 100,
+                Margin = new Thickness(0, 2, 0, 6)
+            };
+
+            void UpdateTextBoxes()
+            {
+                string lang = langBox.SelectedItem as string ?? "JA";
+                titleBox.Text = news.Title.ContainsKey(lang) ? news.Title[lang] : "";
+                contentBox.Text = news.Content.ContainsKey(lang) ? news.Content[lang] : "";
+            }
+
+            langBox.SelectionChanged += (s, e) => UpdateTextBoxes();
+
+            titleBox.TextChanged += (s, e) =>
+            {
+                string lang = langBox.SelectedItem as string ?? "JA";
+                news.Title[lang] = titleBox.Text;
+            };
+
+            contentBox.TextChanged += (s, e) =>
+            {
+                string lang = langBox.SelectedItem as string ?? "JA";
+                news.Content[lang] = contentBox.Text;
+            };
+
+            UpdateTextBoxes();
+
+            // 日付
             var dateLabel = new TextBlock { Text = "日付 (yyyy-MM-dd HH:mm:ss)", FontWeight = FontWeights.SemiBold };
             var dateBox = new TextBox
             {
@@ -118,39 +145,19 @@ namespace Among_Us_ModManager.Pages
                     news.Date = dt;
             };
 
-            var titleLabel = new TextBlock { Text = "タイトル", FontWeight = FontWeights.SemiBold };
-            var titleBox = new TextBox
-            {
-                Text = news.Title,
-                Margin = new Thickness(0, 2, 0, 6)
-            };
-            titleBox.TextChanged += (s, e) => news.Title = titleBox.Text;
-
-            var contentLabel = new TextBlock { Text = "内容", FontWeight = FontWeights.SemiBold };
-            var contentBox = new TextBox
-            {
-                Text = news.Content,
-                AcceptsReturn = true,
-                TextWrapping = TextWrapping.Wrap,
-                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
-                Height = 100,
-                Margin = new Thickness(0, 2, 0, 6)
-            };
-            contentBox.TextChanged += (s, e) => news.Content = contentBox.Text;
-
+            // 削除
             var deleteButton = new Button
             {
                 Content = "削除",
                 Width = 60,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Margin = new Thickness(0, 4, 0, 0)
+                Margin = new Thickness(0, 4, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Left
             };
             deleteButton.Click += (s, e) =>
             {
                 if (MessageBox.Show("このニュースを削除しますか？", "確認", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     newsList.Remove(news);
-                    Debug.WriteLine($"CreateNewsEditor: News item deleted - Title: {news.Title}");
                     SaveNewsToFile();
                     LoadNews();
                 }
@@ -158,6 +165,8 @@ namespace Among_Us_ModManager.Pages
 
             panel.Children.Add(dateLabel);
             panel.Children.Add(dateBox);
+            panel.Children.Add(langLabel);
+            panel.Children.Add(langBox);
             panel.Children.Add(titleLabel);
             panel.Children.Add(titleBox);
             panel.Children.Add(contentLabel);
@@ -180,95 +189,51 @@ namespace Among_Us_ModManager.Pages
             var newNews = new NewsItem
             {
                 Date = DateTime.Now,
-                Title = "新しいニュース",
-                Content = ""
+                Title = new Dictionary<string, string> { { "JA", "新しいニュース" }, { "EN", "New News" } },
+                Content = new Dictionary<string, string> { { "JA", "" }, { "EN", "" } }
             };
             newsList.Insert(0, newNews);
-            Debug.WriteLine("AddNews_Click: Added new news item.");
-
             SaveNewsToFile();
             LoadNews();
         }
 
         private void SaveNews_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("SaveNews_Click: Saving news to file.");
-            SaveNewsToFile(showDialog: true);
+            SaveNewsToFile(true);
         }
 
         private void SaveNewsToFile(bool showDialog = false)
         {
-            Debug.WriteLine("SaveNewsToFile: Start saving news JSON to file.");
-
             try
             {
-                if (string.IsNullOrEmpty(newsPath))
-                {
-                    MessageBox.Show("保存先のパスが設定されていません。");
-                    Debug.WriteLine("SaveNewsToFile: newsPath is null or empty.");
-                    return;
-                }
+                if (string.IsNullOrEmpty(newsPath)) return;
 
                 string json = JsonSerializer.Serialize(newsList, new JsonSerializerOptions { WriteIndented = true });
                 Directory.CreateDirectory(Path.GetDirectoryName(newsPath) ?? string.Empty);
                 File.WriteAllText(newsPath, json);
-
-                Debug.WriteLine($"SaveNewsToFile: Successfully saved news to {newsPath}.");
 
                 if (showDialog)
                     MessageBox.Show("News.json を保存しました。");
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"SaveNewsToFile: Exception caught - {ex.Message}");
                 MessageBox.Show("保存エラー: " + ex.Message);
             }
         }
 
         private void PushNews_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("PushNews_Click: Starting git push process.");
-
-            try
-            {
-                var commitTitle = Microsoft.VisualBasic.Interaction.InputBox("コミットタイトルを入力してください：", "Git Commit", "お知らせの更新");
-                if (string.IsNullOrWhiteSpace(commitTitle))
-                {
-                    MessageBox.Show("コミットタイトルが空です。");
-                    Debug.WriteLine("PushNews_Click: Commit title was empty.");
-                    return;
-                }
-
-                var commitDescription = Microsoft.VisualBasic.Interaction.InputBox("コミットの説明を入力してください（任意）：", "Git Commit 説明", "");
-
-                string repoDir = Path.GetDirectoryName(newsPath) ?? "";
-                if (string.IsNullOrEmpty(repoDir))
-                {
-                    MessageBox.Show("Gitリポジトリのパスが不正です。");
-                    Debug.WriteLine("PushNews_Click: repoDir is null or empty.");
-                    return;
-                }
-
-                RunGitCommand($"add \"{newsPath}\"", repoDir);
-                string commitMsg = commitTitle + (!string.IsNullOrWhiteSpace(commitDescription) ? "\n\n" + commitDescription : "");
-                RunGitCommand($"commit -m \"{commitMsg.Replace("\"", "\\\"")}\"", repoDir);
-                RunGitCommand("push", repoDir);
-
-                MessageBox.Show("Git push を実行しました。");
-                Debug.WriteLine("PushNews_Click: Git push completed successfully.");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"PushNews_Click: Exception caught - {ex.Message}");
-                MessageBox.Show("Git Push に失敗しました: " + ex.Message);
-            }
+            if (string.IsNullOrEmpty(newsPath)) return;
+            string repoDir = Path.GetDirectoryName(newsPath) ?? "";
+            RunGitCommand($"add \"{newsPath}\"", repoDir);
+            RunGitCommand("commit -m \"Update news\"", repoDir);
+            RunGitCommand("push", repoDir);
+            MessageBox.Show("Git push を実行しました。");
         }
 
         private static void RunGitCommand(string arguments, string workingDirectory)
         {
-            Debug.WriteLine($"RunGitCommand: Running git command: git {arguments} in {workingDirectory}");
-
-            var processInfo = new ProcessStartInfo("git", arguments)
+            var psi = new ProcessStartInfo("git", arguments)
             {
                 WorkingDirectory = workingDirectory,
                 CreateNoWindow = true,
@@ -276,46 +241,21 @@ namespace Among_Us_ModManager.Pages
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             };
-
-            using var process = Process.Start(processInfo);
-            if (process != null)
+            using var proc = Process.Start(psi);
+            if (proc != null)
             {
-                string output = process.StandardOutput.ReadToEnd();
-                string error = process.StandardError.ReadToEnd();
-                process.WaitForExit();
-
-                if (!string.IsNullOrEmpty(output))
-                {
-                    Debug.WriteLine("Git output:\n" + output);
-                    MessageBox.Show("Git output:\n" + output);
-                }
-                if (!string.IsNullOrEmpty(error))
-                {
-                    Debug.WriteLine("Git error:\n" + error);
-                    MessageBox.Show("Git error:\n" + error);
-                }
-            }
-            else
-            {
-                Debug.WriteLine("RunGitCommand: Git process start failed.");
-                MessageBox.Show("Git コマンドの起動に失敗しました。");
+                string output = proc.StandardOutput.ReadToEnd();
+                string error = proc.StandardError.ReadToEnd();
+                proc.WaitForExit();
+                if (!string.IsNullOrEmpty(output)) Debug.WriteLine(output);
+                if (!string.IsNullOrEmpty(error)) Debug.WriteLine(error);
             }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            Debug.WriteLine("BackButton_Click: Back button pressed.");
-
             if (this.NavigationService?.CanGoBack == true)
-            {
                 this.NavigationService.GoBack();
-                Debug.WriteLine("BackButton_Click: Navigated back.");
-            }
-            else
-            {
-                MessageBox.Show("戻れるページがありません。");
-                Debug.WriteLine("BackButton_Click: No page to go back to.");
-            }
         }
 
         public class NewsItem
@@ -324,10 +264,10 @@ namespace Among_Us_ModManager.Pages
             public DateTime Date { get; set; }
 
             [JsonPropertyName("title")]
-            public string Title { get; set; } = "";
+            public Dictionary<string, string> Title { get; set; } = new();
 
             [JsonPropertyName("content")]
-            public string Content { get; set; } = "";
+            public Dictionary<string, string> Content { get; set; } = new();
         }
     }
 }

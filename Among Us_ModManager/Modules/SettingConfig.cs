@@ -12,6 +12,9 @@ namespace Among_Us_ModManager.Modules
         [JsonProperty("RunInBackground")]
         public bool RunInBackground { get; set; } = true; // デフォルト ON
 
+        [JsonProperty("Language")]
+        public string Language { get; set; } = "JA"; // デフォルト日本語
+
         private static readonly string ConfigPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                          "AmongUsModManager", "Settings.json");
@@ -28,7 +31,8 @@ namespace Among_Us_ModManager.Modules
         public void Save()
         {
             var dir = Path.GetDirectoryName(ConfigPath);
-            if (!Directory.Exists(dir))
+
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
 
             var json = JsonConvert.SerializeObject(this, Formatting.Indented);

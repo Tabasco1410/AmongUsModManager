@@ -17,11 +17,22 @@
 
         <!-- アプリをバックグラウンド起動 -->
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,10">
-            <CheckBox x:Name="BackgroundStartCheckBox" Content="アプリを閉じてもバックグラウンドで起動したままする" IsChecked="True" Checked="BackgroundStartChanged" Unchecked="BackgroundStartChanged"/>
+            <CheckBox x:Name="BackgroundStartCheckBox"
+                      Content="アプリを閉じてもバックグラウンドで起動したままする"
+                      IsChecked="True"
+                      Checked="BackgroundStartChanged"
+                      Unchecked="BackgroundStartChanged"/>
+        </StackPanel>
+
+        <!-- 言語設定 -->
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,10">
+            <TextBlock Text="言語" VerticalAlignment="Center" Width="120"/>
+            <ComboBox x:Name="LanguageComboBox" Width="150" SelectionChanged="LanguageComboBox_SelectionChanged"/>
         </StackPanel>
 
     </StackPanel>
 </Page>
+
 
 
 

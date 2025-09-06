@@ -23,6 +23,7 @@
     <None Remove="Resources\Buttons\Start_Black.png" />
     <None Remove="Resources\Buttons\Update_Black.png" />
     <None Remove="Resources\DIscord.png" />
+    <None Remove="Resources\Strings.csv" />
     <None Remove="Resources\TownOfHost-Fun.png" />
   </ItemGroup>
 
@@ -30,6 +31,9 @@
     <Content Include="Icon_N.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Resources\Strings.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>

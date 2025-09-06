@@ -5,115 +5,94 @@
 
     <Grid Background="White">
 
+        <!-- ヘッダー -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10">
-            <TextBlock Text="Among Us ModManager"
-               FontSize="24"
-               FontWeight="Bold"
-               Foreground="Black"
-               VerticalAlignment="Center"/>
+            <TextBlock x:Name="AppTitleText"
+                       Text="Among Us ModManager"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       Foreground="Black"
+                       VerticalAlignment="Center"/>
 
             <StackPanel Orientation="Vertical" Margin="10,0,0,0" VerticalAlignment="Bottom">
-                <TextBlock Text="バージョン取得中..." 
-                   FontSize="12" 
-                   Foreground="Gray" 
-                   x:Name="VersionText"/>
+                <TextBlock x:Name="VersionText"
+                           Text="バージョン取得中..."
+                           FontSize="12"
+                           Foreground="Gray"/>
                 <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
-                    <TextBlock Text="アップデートがあります！" 
-                       Foreground="Red" 
-                       Visibility="Collapsed" 
-                       x:Name="UpdateNoticeText"
-                       VerticalAlignment="Center"/>
-                    <Button Content="アップデート" 
-                            Click="UpdateButton_Click" 
-                            Visibility="Collapsed" 
-                            x:Name="UpdateButton" 
-                            Height="20" Margin="5,0,0,0"
+                    <TextBlock x:Name="UpdateNoticeText"
+                               Text="アップデートがあります！"
+                               Foreground="Red"
+                               Visibility="Collapsed"
+                               VerticalAlignment="Center"/>
+                    <Button x:Name="UpdateButton"
+                            Style="{StaticResource TextButtonStyle}"
+                            Content="アップデート"
+                            Click="UpdateButton_Click"
+                            Visibility="Collapsed"
+                            Height="20"
+                            Margin="5,0,0,0"
                             Cursor="Hand"/>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
 
+        <!-- 右上ボタン -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,10,0">
 
             <!-- 管理者ページボタン -->
-            <Button Width="100" Height="40" Margin="0,0,5,0" Click="AdminLogin_Click" x:Name="AdminPageButton" Visibility="Collapsed" Cursor="Hand">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                            <TextBlock Text="管理者ページ" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Opacity" Value="0.7"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Opacity" Value="0.5"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
+            <Button x:Name="AdminPageButton"
+                    Style="{StaticResource TextButtonStyle}"
+                    Content="管理者ページ"
+                    Width="100"
+                    Height="40"
+                    Margin="0,0,5,0"
+                    Click="AdminLogin_Click"
+                    Visibility="Collapsed"
+                    Cursor="Hand"/>
 
-            <!-- お知らせボタンと新着通知 -->
+            <!-- 新しいお知らせ -->
             <StackPanel>
-                <!-- 新しいお知らせ -->
-                <TextBlock x:Name="NewNoticeText" Text="新しいお知らせがあります！メニューからお知らせを見て確認してください。" Foreground="Red" Visibility="Collapsed" 
-                   HorizontalAlignment="Center" FontWeight="Bold" Margin="0,2,0,0"/>
+                <TextBlock x:Name="NewNoticeText"
+                           Text="新しいお知らせがあります！メニューからお知らせを見て確認してください。"
+                           Foreground="Red"
+                           Visibility="Collapsed"
+                           HorizontalAlignment="Center"
+                           FontWeight="Bold"
+                           Margin="0,2,0,0"/>
             </StackPanel>
 
             <!-- 設定ボタン -->
-            <Button Width="100" Height="40" Click="Settings_Click" Cursor="Hand">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-                        <Grid>
-                            <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                            <Image x:Name="btnImage" Source="pack://application:,,,/Resources/Buttons/Menu_Black.png"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="btnImage" Property="Opacity" Value="0.7"/>
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="btnImage" Property="Opacity" Value="0.5"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-
+            <Button x:Name="SettingsButton"
+                    Style="{StaticResource ImageButtonStyle}"
+                    Content="pack://application:,,,/Resources/Buttons/Menu_Black.png"
+                    Width="100"
+                    Height="40"
+                    Click="Settings_Click"
+                    Cursor="Hand"/>
         </StackPanel>
 
-        <!-- メイン領域 -->
+        <!-- メイン -->
         <Grid Margin="10,80,10,10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- 新規インストールセクション -->
+            <!-- 新規インストール -->
             <Border Grid.Row="0" BorderBrush="DarkGray" BorderThickness="1" CornerRadius="5" Padding="15" Margin="0,0,0,10">
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Width="150" Height="50" Margin="5" Click="InstallNewMod_Click" Cursor="Hand">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Grid>
-                                    <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                                    <TextBlock Text="Modをインストール" FontSize="14" FontWeight="Bold" TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                </Grid>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Opacity" Value="0.7"/>
-                                    </Trigger>
-                                    <Trigger Property="IsPressed" Value="True">
-                                        <Setter Property="Opacity" Value="0.5"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                    <TextBlock Text="Among Usに新しくModを導入する方・はじめてmodを導入する方はこちらのボタンをクリックしてください。" VerticalAlignment="Center" Margin="15,0,0,0" FontSize="14"/>
+                    <Button x:Name="InstallModButton"
+                            Style="{StaticResource TextButtonStyle}"
+                            Width="150"
+                            Height="50"
+                            Margin="5"
+                            Click="InstallNewMod_Click"
+                            Cursor="Hand"
+                            Content="Modをインストール"/>
+                    <TextBlock x:Name="InstallModDescText"
+                               Text="Among Usに新しくModを導入する方・はじめてmodを導入する方はこちらのボタンをクリックしてください。"
+                               VerticalAlignment="Center" Margin="15,0,0,0" FontSize="14"/>
                 </StackPanel>
             </Border>
 
@@ -127,93 +106,11 @@
                                     <TextBlock Text="{Binding VersionText}" FontWeight="Bold" FontSize="16" Margin="0,0,0,5"/>
                                     <TextBlock Text="{Binding ExePath}" Foreground="Gray" FontSize="13" Margin="0,0,0,10"/>
 
-                                    <!-- 横並びボタンを WrapPanel に変更 -->
                                     <WrapPanel>
-
-                                        <!-- 起動（画像あり） -->
-                                        <Button Width="80" Height="40" Margin="5" Click="Launch_Click" Cursor="Hand">
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Grid>
-                                                        <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                                                        <Image x:Name="btnImage" Source="pack://application:,,,/Resources/Buttons/Start_Black.png"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Grid>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="btnImage" Property="Opacity" Value="0.7"/>
-                                                        </Trigger>
-                                                        <Trigger Property="IsPressed" Value="True">
-                                                            <Setter TargetName="btnImage" Property="Opacity" Value="0.5"/>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button>
-
-                                        <!-- フォルダを開く（画像あり） -->
-                                        <Button Width="80" Height="40" Margin="5" Click="OpenFolder_Click" Cursor="Hand">
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Grid>
-                                                        <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                                                        <Image x:Name="btnImage" Source="pack://application:,,,/Resources/Buttons/Explorer_Black.png"
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Grid>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter TargetName="btnImage" Property="Opacity" Value="0.7"/>
-                                                        </Trigger>
-                                                        <Trigger Property="IsPressed" Value="True">
-                                                            <Setter TargetName="btnImage" Property="Opacity" Value="0.5"/>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button>
-
-                                        <!-- アップデート（文字のみ）
-                                        <Button Width="100" Height="40" Margin="5" Click="Update_Click" Cursor="Hand">
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Grid>
-                                                        <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                                                        <TextBlock Text="アップデート" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Grid>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="Opacity" Value="0.7"/>
-                                                        </Trigger>
-                                                        <Trigger Property="IsPressed" Value="True">
-                                                            <Setter Property="Opacity" Value="0.5"/>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button> -->
-
-                                        <!-- アンインストール（文字のみ） -->
-                                        <Button Width="120" Height="40" Margin="5" Click="Uninstall_Click" Cursor="Hand">
-                                            <Button.Template>
-                                                <ControlTemplate TargetType="Button">
-                                                    <Grid>
-                                                        <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                                                        <TextBlock Text="アンインストール" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Grid>
-                                                    <ControlTemplate.Triggers>
-                                                        <Trigger Property="IsMouseOver" Value="True">
-                                                            <Setter Property="Opacity" Value="0.7"/>
-                                                        </Trigger>
-                                                        <Trigger Property="IsPressed" Value="True">
-                                                            <Setter Property="Opacity" Value="0.5"/>
-                                                        </Trigger>
-                                                    </ControlTemplate.Triggers>
-                                                </ControlTemplate>
-                                            </Button.Template>
-                                        </Button>
-
+                                        <Button Style="{StaticResource TextButtonStyle}" Width="80" Height="40" Margin="5" Click="Launch_Click" Cursor="Hand" Content="{Binding LaunchText}"/>
+                                        <Button Style="{StaticResource TextButtonStyle}" Width="80" Height="40" Margin="5" Click="OpenFolder_Click" Cursor="Hand" Content="{Binding OpenFolderText}"/>
+                                        <Button Style="{StaticResource TextButtonStyle}" Width="120" Height="40" Margin="5" Click="Uninstall_Click" Cursor="Hand" Content="{Binding UninstallText}"/>
                                     </WrapPanel>
-
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
@@ -222,8 +119,8 @@
             </ScrollViewer>
         </Grid>
 
-        <!-- Discordアイコン（変更なし） -->
-        <Button Width="32" Height="32" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,40,20" Click="DiscordIcon_Click" Cursor="Hand">
+        <!-- Discord は個別 -->
+        <Button x:Name="DiscordIcon" Width="32" Height="32" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,40,20" Click="DiscordIcon_Click" Cursor="Hand">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
                     <Image Source="pack://application:,,,/Resources/Discord.png"/>

@@ -8,6 +8,7 @@ namespace Among_Us_ModManager
         private static readonly string AppDataFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AmongUsModManager");
         private static readonly string LogFilePath = Path.Combine(AppDataFolder, "LogOutput.log");
+        private static readonly string OldLogFilePath = Path.Combine(AppDataFolder, "LogOutput_Old.log");
 
         static LogOutput()
         {
@@ -15,10 +16,17 @@ namespace Among_Us_ModManager
             {
                 if (!Directory.Exists(AppDataFolder))
                     Directory.CreateDirectory(AppDataFolder);
+
+                // 既存のログを_Old.logに退避
+                if (File.Exists(LogFilePath))
+                {
+                    File.Copy(LogFilePath, OldLogFilePath, true); // 上書きOK
+                    File.Delete(LogFilePath); // 元のログは削除
+                }
             }
             catch
             {
-                // フォルダ作成失敗は無視
+                // フォルダ作成や退避失敗は無視
             }
         }
 

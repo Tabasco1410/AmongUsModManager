@@ -10,7 +10,8 @@ namespace Among_Us_ModManager
 {
     public partial class App : Application
     {
-        private TaskbarIcon trayIcon;
+        // null 許容型に変更
+        private TaskbarIcon? trayIcon;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -22,13 +23,14 @@ namespace Among_Us_ModManager
                 "AmongUsModManager", "Settings.json"
             );
 
-            SettingsConfig settings = null;
+            SettingsConfig settings;
+
             if (File.Exists(settingsPath))
             {
                 try
                 {
                     var json = File.ReadAllText(settingsPath);
-                    settings = JsonConvert.DeserializeObject<SettingsConfig>(json);
+                    settings = JsonConvert.DeserializeObject<SettingsConfig>(json) ?? new SettingsConfig();
                 }
                 catch
                 {

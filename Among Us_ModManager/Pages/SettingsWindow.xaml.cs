@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Windows;
+using Among_Us_ModManager.Modules;
 
 namespace Among_Us_ModManager.Pages
 {
@@ -17,11 +18,22 @@ namespace Among_Us_ModManager.Pages
         {
             InitializeComponent();
 
-            // サイズは固定
+            // CSVから文字列読み込み & 言語設定
+            Strings.SetLanguage("JA"); // 例: 日本語
+            Strings.Load();
+
+            // サイズ固定
             this.Width = 900;
             this.Height = 600;
             this.ResizeMode = ResizeMode.NoResize;
             this.WindowStyle = WindowStyle.SingleBorderWindow;
+
+            // ウィンドウタイトル
+            this.Title = Strings.Get("MenuTitle");
+
+            // ボタンのテキスト
+            BtnNotice.Content = Strings.Get("Notice");
+            BtnSettings.Content = Strings.Get("Settings");
 
             LoadWindowPosition();
             LoadLastPage();
@@ -44,12 +56,10 @@ namespace Among_Us_ModManager.Pages
             }
             catch
             {
-                // デフォルト位置
                 this.Top = 100;
                 this.Left = 100;
             }
         }
-        
 
         private void SaveWindowPosition()
         {
