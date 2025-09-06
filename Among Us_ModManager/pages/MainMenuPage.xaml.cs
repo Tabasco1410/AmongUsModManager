@@ -158,6 +158,15 @@ namespace Among_Us_ModManager.Pages
 
             InstallListPanel.Items.Refresh();
         }
+        public class InstallEntry
+        {
+            public string ExePath { get; set; } = "";
+            public string VersionText { get; set; } = "";
+
+            public string LaunchText { get; set; } = Strings.Get("Launch");
+            public string OpenFolderText { get; set; } = Strings.Get("OpenFolder");
+            public string UninstallText { get; set; } = Strings.Get("Uninstall");
+        }
 
 
         public class ModItem

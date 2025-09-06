@@ -26,7 +26,7 @@
 
         <!-- 言語設定 -->
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,10">
-            <TextBlock Text="言語" VerticalAlignment="Center" Width="120"/>
+            <TextBlock Text="言語/Langugage（Language switching is not implemented yet.)" VerticalAlignment="Center" Width="120"/>
             <ComboBox x:Name="LanguageComboBox" Width="150" SelectionChanged="LanguageComboBox_SelectionChanged"/>
         </StackPanel>
 

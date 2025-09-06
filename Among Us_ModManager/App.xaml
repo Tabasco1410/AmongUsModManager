@@ -36,7 +36,8 @@
                     <ControlTemplate TargetType="Button">
                         <Grid>
                             <Border Background="#F0F0F0" CornerRadius="5" BorderBrush="Gray" BorderThickness="1"/>
-                            <Image Source="{TemplateBinding Content}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <!-- 中身は自由に差し替え可能 -->
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Grid>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -52,5 +53,6 @@
             <Setter Property="Height" Value="40"/>
             <Setter Property="Width" Value="100"/>
         </Style>
+
     </Application.Resources>
 </Application>

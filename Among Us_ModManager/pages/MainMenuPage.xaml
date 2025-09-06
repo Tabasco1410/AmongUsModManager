@@ -62,14 +62,16 @@
                            Margin="0,2,0,0"/>
             </StackPanel>
 
-            <!-- 設定ボタン -->
             <Button x:Name="SettingsButton"
-                    Style="{StaticResource ImageButtonStyle}"
-                    Content="pack://application:,,,/Resources/Buttons/Menu_Black.png"
-                    Width="100"
-                    Height="40"
-                    Click="Settings_Click"
-                    Cursor="Hand"/>
+        Style="{StaticResource ImageButtonStyle}"
+        Width="100"
+        Height="40"
+        Click="Settings_Click"
+        Cursor="Hand">
+                <Image Source="pack://application:,,,/Resources/Buttons/Menu_Black.png"/>
+            </Button>
+
+
         </StackPanel>
 
         <!-- メイン -->
