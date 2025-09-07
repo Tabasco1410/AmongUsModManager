@@ -225,8 +225,29 @@ namespace Among_Us_ModManager.Pages
         private void Launch_Click(object sender, RoutedEventArgs e)
         {
             if (((Button)sender).DataContext is InstallEntry entry && File.Exists(entry.ExePath))
+            {
+                var settings = SettingsConfig.Load();
+
+                // Steam版でsteam_appid.txtがない場合
+                if (settings.Platform.Equals("Steam", StringComparison.OrdinalIgnoreCase))
+                {
+                    var exeDir = Path.GetDirectoryName(entry.ExePath);
+                    if (exeDir != null)
+                    {
+                        var steamAppIdPath = Path.Combine(exeDir, "steam_appid.txt");
+
+                        if (!File.Exists(steamAppIdPath))
+                        {
+                            File.WriteAllText(steamAppIdPath, "945360");
+                        }
+                    }
+                }
+
+                // ゲーム起動
                 Process.Start(entry.ExePath);
+            }
         }
+
 
         private void Update_Click(object sender, RoutedEventArgs e)
         {
