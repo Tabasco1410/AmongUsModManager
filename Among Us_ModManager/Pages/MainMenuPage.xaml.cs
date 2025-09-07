@@ -314,23 +314,34 @@ namespace Among_Us_ModManager.Pages
             string? latestTag = await GetLatestReleaseTagAsync(owner, repo);
             var allTags = await GetAllReleaseTagsAsync(owner, repo);
 
-            // 過去Releaseに自分のバージョンがある場合のみ、最新バージョンを表示
-            if (!string.IsNullOrEmpty(latestTag) &&
-                allTags.Contains(AppVersion.Version.Trim(), StringComparer.OrdinalIgnoreCase) &&
-                !string.Equals(AppVersion.Version.Trim(), latestTag.Trim(), StringComparison.OrdinalIgnoreCase))
+            bool isOutdated = !string.IsNullOrEmpty(latestTag) &&
+                              allTags.Contains(AppVersion.Version.Trim(), StringComparer.OrdinalIgnoreCase) &&
+                              !string.Equals(AppVersion.Version.Trim(), latestTag.Trim(), StringComparison.OrdinalIgnoreCase);
+
+            if (isOutdated)
             {
                 VersionText.Text += $"  (最新: v{latestTag})";
-                VersionText.Foreground = Brushes.Red;         // 赤文字
-                VersionText.FontWeight = FontWeights.Bold;   // 太字
+                VersionText.Foreground = Brushes.Red;
+                VersionText.FontWeight = FontWeights.Bold;
+
+                // s が付いている場合はアップデートボタンを非表示にして警告文表示
+                if (AppVersion.Version.EndsWith("s", StringComparison.OrdinalIgnoreCase))
+                {
+                    UpdateButton.Visibility = Visibility.Collapsed;
+                    UpdateNoticeText.Text = "このバージョンでは自動アップデートができません。新しいバージョンのアプリをダウンロードしてください。";
+                    UpdateNoticeText.Visibility = Visibility.Visible;
+                }
             }
             else
             {
                 VersionText.Foreground = Brushes.Gray;
                 VersionText.FontWeight = FontWeights.Normal;
+                UpdateNoticeText.Visibility = Visibility.Collapsed;
             }
 
             await Task.CompletedTask;
         }
+
 
 
         private async Task CheckUpdateButtonAsync()
