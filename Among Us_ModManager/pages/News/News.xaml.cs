@@ -11,7 +11,7 @@ namespace Among_Us_ModManager.Pages
 {
     public partial class News : Page
     {
-        private const string NewsUrl = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManager/main/News.json";
+        private const string NewsUrl = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManager/main/Among%20Us_ModManager/News.json";
         private static readonly string AppDataFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "AmongUsModManager");

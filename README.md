@@ -26,7 +26,7 @@ Copyright (c) 2025 Tabasco1410</br>
 ※本アプリはAmong Usの開発元であるInnersloth,各種Mod関係者様とは一切関係なく、非公式のアプリです。
 
 
-## mod導入をアプリで行うことができるMod
+## 導入をアプリ内で自動で行うことができるMod
 TownOfHost</br>
 TownOfHost-K</br>
 SuperNewRoles</br>
@@ -34,8 +34,4 @@ Nebula on the Ship</br>
 Extremeroles</br>
 </br>
 ※リストにないmodについては、.zipファイルをご用意の上「Modをインストール」→「.zipファイルからインストール」をご利用ください。
-
-
-<img width="1919" height="1203" alt="image" src="https://github.com/user-attachments/assets/5f7383c3-c555-4f4e-8b6f-46892e58505a" />
-
 

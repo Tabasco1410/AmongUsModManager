@@ -33,7 +33,7 @@ namespace Among_Us_ModManager.Pages
 
         private async Task LoadNewsFromGitHubAsync()
         {
-            const string url = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManager/main/News.json";
+            const string url = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManager/main/Among%20Us_ModManager/News.json";
 
             try
             {
