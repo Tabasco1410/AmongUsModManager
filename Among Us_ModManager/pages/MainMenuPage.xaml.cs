@@ -206,7 +206,7 @@ namespace Among_Us_ModManager.Pages
                 if (!File.Exists(newsPath))
                 {
                     using var client = new HttpClient();
-                    string url = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManager/main/News.json";
+                    string url = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManager/main/Among%20Us_ModManager/News.json";
                     string json = await client.GetStringAsync(url);
                     File.WriteAllText(newsPath, json);
                 }
