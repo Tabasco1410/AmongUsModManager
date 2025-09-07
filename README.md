@@ -1,4 +1,6 @@
 # AmongUsModManager
+Among UsのModを選ぶだけで自動で導入を行ってくれるアプリです。
+（.zipファイルをご用意いただくことでリストにないmodでもインストールができます）
 
 
 最新リリースは[こちら](https://github.com/Tabasco1410/AmongUsModManeger/releases/latest)<br>
@@ -22,21 +24,18 @@ https://www.gnu.org/licenses/gpl-3.0.txt
 <br>
 Copyright (c) 2025 Tabasco1410</br>
 ※本アプリはAmong Usの開発元であるInnersloth,各種Mod関係者様とは一切関係なく、非公式のアプリです。
-# Modを導入する際は必ずModの.zipファイルを用意してください。
 
-## 動作確認済みMod</br>
+
+## mod導入をアプリで行うことができるMod
 TownOfHost</br>
 TownOfHost-K</br>
 SuperNewRoles</br>
 Nebula on the Ship</br>
 Extremeroles</br>
 </br>
-※BepInExを使用しているmod向けに作られています。</br>上記リストにないModでも.zip内のBepInEx.plugins内にmodの.dllが入っていれば導入ができます。
+※リストにないmodについては、.zipファイルをご用意の上「Modをインストール」→「.zipファイルからインストール」をご利用ください。
 
-## 機能/Future
-・.zipファイルからのAmong UsのModの新規導入の自動化<br>
-・Among Usの起動ボタン（Mod有含め）
-</br>・Among Usファイルの管理
+
 <img width="1919" height="1203" alt="image" src="https://github.com/user-attachments/assets/5f7383c3-c555-4f4e-8b6f-46892e58505a" />
 
 
