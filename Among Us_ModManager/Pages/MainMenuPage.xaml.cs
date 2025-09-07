@@ -5,14 +5,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Text.Json;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace Among_Us_ModManager.Pages
 {
@@ -295,8 +297,6 @@ namespace Among_Us_ModManager.Pages
             catch { }
         }
 
-        private const string VersionUrl = "https://raw.githubusercontent.com/Tabasco1410/AmongUsModManager/main/version.txt";
-
         private async Task LoadVersionAsync()
         {
             VersionText.Text = $"v {AppVersion.Version}";
@@ -306,14 +306,43 @@ namespace Among_Us_ModManager.Pages
                 TextWrapping = TextWrapping.Wrap,
                 Width = 250
             };
+
+            string owner = "Tabasco1410";
+            string repo = "AmongUsModManager";
+
+            // 最新タグと全タグ取得
+            string? latestTag = await GetLatestReleaseTagAsync(owner, repo);
+            var allTags = await GetAllReleaseTagsAsync(owner, repo);
+
+            // 過去Releaseに自分のバージョンがある場合のみ、最新バージョンを表示
+            if (!string.IsNullOrEmpty(latestTag) &&
+                allTags.Contains(AppVersion.Version.Trim(), StringComparer.OrdinalIgnoreCase) &&
+                !string.Equals(AppVersion.Version.Trim(), latestTag.Trim(), StringComparison.OrdinalIgnoreCase))
+            {
+                VersionText.Text += $"  (最新: v{latestTag})";
+                VersionText.Foreground = Brushes.Red;         // 赤文字
+                VersionText.FontWeight = FontWeights.Bold;   // 太字
+            }
+            else
+            {
+                VersionText.Foreground = Brushes.Gray;
+                VersionText.FontWeight = FontWeights.Normal;
+            }
+
             await Task.CompletedTask;
         }
+
 
         private async Task CheckUpdateButtonAsync()
         {
             string rawVersion = AppVersion.Version;
             bool endsWithS = rawVersion.EndsWith("s", StringComparison.OrdinalIgnoreCase);
-            bool isUpdateAvailable = await AppUpdater.IsUpdateAvailableAsync(rawVersion, VersionUrl);
+
+            string owner = "Tabasco1410";
+            string repo = "AmongUsModManager";
+
+            bool isUpdateAvailable = await IsUpdateAvailableAsync(rawVersion, owner, repo);
+
             UpdateNoticeText.Visibility = isUpdateAvailable ? Visibility.Visible : Visibility.Collapsed;
             UpdateButton.Visibility = (!endsWithS && isUpdateAvailable) ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -324,16 +353,84 @@ namespace Among_Us_ModManager.Pages
                 await AppUpdater.StartUpdaterAndExit();
         }
 
-        public static async Task<bool> IsUpdateAvailableAsync(string currentVersion, string versionUrl)
+        // 最新リリースタグを取得
+        private static async Task<string?> GetLatestReleaseTagAsync(string owner, string repo)
         {
             try
             {
                 using var client = new HttpClient();
-                string latestVersion = await client.GetStringAsync(versionUrl);
-                return !string.Equals(currentVersion, latestVersion.Trim(), StringComparison.OrdinalIgnoreCase);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("AmongUsModManager");
+
+                string latestUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
+                string latestJson = await client.GetStringAsync(latestUrl);
+                using var latestDoc = JsonDocument.Parse(latestJson);
+                return latestDoc.RootElement.GetProperty("tag_name").GetString()?.Trim();
             }
-            catch { return false; }
+            catch
+            {
+                return null;
+            }
         }
+
+        // 過去Releaseを含む全タグ取得
+        private static async Task<HashSet<string>> GetAllReleaseTagsAsync(string owner, string repo)
+        {
+            try
+            {
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("AmongUsModManager");
+
+                string allUrl = $"https://api.github.com/repos/{owner}/{repo}/releases";
+                string allJson = await client.GetStringAsync(allUrl);
+                using var allDoc = JsonDocument.Parse(allJson);
+
+                return allDoc.RootElement
+                    .EnumerateArray()
+                    .Select(e => e.GetProperty("tag_name").GetString()?.Trim())
+                    .Where(s => !string.IsNullOrEmpty(s))
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            }
+        }
+
+        // アップデート判定
+        public static async Task<bool> IsUpdateAvailableAsync(string currentVersion, string owner, string repo)
+        {
+            try
+            {
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("AmongUsModManager");
+
+                // 最新リリース
+                string latestUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
+                string latestJson = await client.GetStringAsync(latestUrl);
+                using var latestDoc = JsonDocument.Parse(latestJson);
+                string? latestTag = latestDoc.RootElement.GetProperty("tag_name").GetString()?.Trim();
+
+                if (string.IsNullOrWhiteSpace(latestTag))
+                    return false;
+
+                // 過去Release含む全タグ取得
+                var allTags = await GetAllReleaseTagsAsync(owner, repo);
+
+                // 自分のバージョンが過去Releaseに存在する場合のみ更新判定
+                if (!allTags.Contains(currentVersion.Trim()))
+                    return false;
+
+                // 最新リリースと違えば更新あり
+                return !string.Equals(currentVersion.Trim(), latestTag, StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+
+
 
         private void CheckAdminButtonVisibility()
         {

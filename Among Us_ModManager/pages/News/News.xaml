@@ -86,11 +86,6 @@
                 </Grid>
             </Border>
         </Grid>
-
-        <Button Click="BackButton_Click"
-                Content="戻る"
-                Grid.Row="2"
-                Margin="0,10,0,0"
-                Style="{StaticResource TextButtonStyle}"/>
+      
     </Grid>
 </Page>

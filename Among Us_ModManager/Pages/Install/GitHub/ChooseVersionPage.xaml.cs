@@ -110,7 +110,6 @@ namespace Among_Us_ModManager.Pages.Install.GitHub
                 return;
             }
 
-            // ダウンロード先フォルダ（AppData 下など）
             string downloadsDir = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "AmongUsModManager", "Downloads"
@@ -121,20 +120,43 @@ namespace Among_Us_ModManager.Pages.Install.GitHub
 
             try
             {
-                MessageBox.Show("ダウンロードを開始します...", "情報", MessageBoxButton.OK, MessageBoxImage.Information);
+                // 進捗パネルを表示
+                ProgressPanel.Visibility = Visibility.Visible;
+                ProgressText.Text = "ダウンロード中...";
+                ProgressBar.Value = 0;
 
                 using var client = new HttpClient();
-                using var stream = await client.GetStreamAsync(selectedFile.DownloadUrl);
-                using var fileStream = new FileStream(zipFilePath, FileMode.Create, FileAccess.Write);
-                await stream.CopyToAsync(fileStream);
+                using var response = await client.GetAsync(selectedFile.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
+                response.EnsureSuccessStatusCode();
 
-                MessageBox.Show("ダウンロードが完了しました。", "完了", MessageBoxButton.OK, MessageBoxImage.Information);
+                var totalBytes = response.Content.Headers.ContentLength ?? -1L;
+                using var stream = await response.Content.ReadAsStreamAsync();
+                using var fileStream = new FileStream(zipFilePath, FileMode.Create, FileAccess.Write, FileShare.None);
 
-                // Settings.json を読み込む（nullable 戻り値）
+                var buffer = new byte[8192];
+                long totalRead = 0;
+                int bytesRead;
+                while ((bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                {
+                    await fileStream.WriteAsync(buffer, 0, bytesRead);
+                    totalRead += bytesRead;
+
+                    if (totalBytes > 0)
+                    {
+                        double percent = (double)totalRead / totalBytes * 100;
+                        ProgressBar.Value = percent;
+                    }
+                }
+
+                // ダウンロード完了
+                ProgressText.Text = "ダウンロード完了！";
+
+                // 設定ファイル読み込み
                 string? amongUsExePath = LoadSettingConfig();
                 if (string.IsNullOrEmpty(amongUsExePath) || !File.Exists(amongUsExePath))
                 {
                     MessageBox.Show("Settings.json が存在しないか Among Us.exe のパスが無効です。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ProgressPanel.Visibility = Visibility.Collapsed;
                     return;
                 }
 
@@ -150,15 +172,18 @@ namespace Among_Us_ModManager.Pages.Install.GitHub
                 if (underscoreIndex > 0)
                     modName = modName.Substring(0, underscoreIndex);
 
-                // AmongUs.exe のディレクトリを取得（null 安全）
+                // AmongUs.exe のディレクトリを取得
                 string? sourceFolderPath = Path.GetDirectoryName(amongUsExePath);
                 if (string.IsNullOrEmpty(sourceFolderPath))
                 {
                     MessageBox.Show("Among Us.exe のディレクトリを取得できませんでした。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    ProgressPanel.Visibility = Visibility.Collapsed;
                     return;
                 }
 
-                // 遷移 (Put_Zip_File に渡す)
+                // 進捗パネルを非表示にして遷移
+                ProgressPanel.Visibility = Visibility.Collapsed;
+
                 NavigationService?.Navigate(new Among_Us_ModManager.Pages.PutZipFile.Put_Zip_File(
                     sourceFolderPath,
                     zipFilePath,
@@ -167,9 +192,13 @@ namespace Among_Us_ModManager.Pages.Install.GitHub
             }
             catch (Exception ex)
             {
+                ProgressPanel.Visibility = Visibility.Collapsed;
                 MessageBox.Show($"ダウンロードに失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
+
+
 
 
         /// <summary>
