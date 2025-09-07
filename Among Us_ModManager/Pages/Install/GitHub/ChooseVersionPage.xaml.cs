@@ -110,6 +110,29 @@ namespace Among_Us_ModManager.Pages.Install.GitHub
                 return;
             }
 
+            // --- プラットフォームチェック (ダウンロード前) ---
+            var config = Among_Us_ModManager.Modules.SettingsConfig.Load();
+            string fileName = selectedFile.Name.ToLower();
+            string platform = config.Platform.ToLower();
+            bool isMismatch = false;
+
+            if (platform.Contains("steam") && fileName.Contains("epic"))
+                isMismatch = true;
+            else if (platform.Contains("epic") && fileName.Contains("steam"))
+                isMismatch = true;
+
+            if (isMismatch)
+            {
+                var result = MessageBox.Show(
+                    $"選択したファイル \"{selectedFile.Name}\" は設定されたプラットフォーム ({config.Platform}) 用ではない可能性があります。\n続行しますか？",
+                    "警告",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.No)
+                    return; // ユーザーが中止した場合は何もせず return
+            }
+
             string downloadsDir = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                 "AmongUsModManager", "Downloads"
@@ -196,6 +219,7 @@ namespace Among_Us_ModManager.Pages.Install.GitHub
                 MessageBox.Show($"ダウンロードに失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
 
 
 

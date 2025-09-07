@@ -15,6 +15,9 @@ namespace Among_Us_ModManager.Modules
         [JsonProperty("Language")]
         public string Language { get; set; } = "JA"; // デフォルト日本語
 
+        [JsonProperty("Platform")]
+        public string Platform { get; set; } = "Steam"; // デフォルト: Steam, "Epic" も可
+
         private static readonly string ConfigPath =
             Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
                          "AmongUsModManager", "Settings.json");

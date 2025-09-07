@@ -17,7 +17,7 @@ namespace Among_Us_ModManager.Pages
 
         private class SettingConfig
         {
-            public string AmongUsExePath { get; set; }
+            public string AmongUsExePath { get; set; } = "";
 
             public void Save()
             {
@@ -33,7 +33,7 @@ namespace Among_Us_ModManager.Pages
             InitializeComponent();
 
             // CSVから文字列読み込み & 言語設定
-            Strings.SetLanguage("JA"); // 例: 日本語
+            Strings.SetLanguage("JA"); // 例: デフォルト日本語
             Strings.Load();
 
             // ボタンの文字列を多言語化
@@ -52,7 +52,7 @@ namespace Among_Us_ModManager.Pages
                 try
                 {
                     string json = File.ReadAllText(ConfigPath);
-                    var config = System.Text.Json.JsonSerializer.Deserialize<SettingConfig>(json);
+                    var config = JsonSerializer.Deserialize<SettingConfig>(json);
 
                     if (config != null && !string.IsNullOrWhiteSpace(config.AmongUsExePath))
                     {
@@ -74,7 +74,6 @@ namespace Among_Us_ModManager.Pages
                 LogOutput.Write("SelectEXEPath_Loaded: 設定ファイルなし、EXE選択待ち");
             }
         }
-
 
         private void SelectAmongUsExe_Click(object sender, RoutedEventArgs e)
         {
@@ -134,8 +133,6 @@ namespace Among_Us_ModManager.Pages
                 LogOutput.Write("SelectAmongUsExe_Click: ダイアログキャンセル");
             }
         }
-
-
 
         private void NavigateToMainMenu()
         {

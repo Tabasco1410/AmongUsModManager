@@ -5,18 +5,32 @@
 
     <Grid Background="White">
         <TextBlock Text="Among Us ModManager"
-   FontSize="24"
-   FontWeight="Bold"
-   Foreground="Black"
-   HorizontalAlignment="Left"
-   VerticalAlignment="Top"
-   Margin="10"/>
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Foreground="Black"
+                   HorizontalAlignment="Left"
+                   VerticalAlignment="Top"
+                   Margin="10"/>
 
-        <Button x:Name="SelectAmongUsExeButton"
-                Content="Among Us.exe を選択"
-                Width="200" Height="40"
-                Click="SelectAmongUsExe_Click"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"/>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="プラットフォームを選択してください"
+               FontSize="16"
+               HorizontalAlignment="Center"
+               Margin="0,0,0,10"/>
+
+            <ComboBox x:Name="PlatformComboBox"
+              Width="200" Height="30"
+              SelectedIndex="0"
+              Margin="0,0,0,15">
+                <ComboBoxItem Content="Steam"/>
+                <ComboBoxItem Content="Epic"/>
+            </ComboBox>
+
+            <Button x:Name="SelectAmongUsExeButton"
+            Content="Among Us.exe を選択"
+            Width="200" Height="40"
+            Click="SelectAmongUsExe_Click"/>
+        </StackPanel>
+
     </Grid>
 </Page>

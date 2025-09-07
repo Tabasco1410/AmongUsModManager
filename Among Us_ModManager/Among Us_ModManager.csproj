@@ -11,10 +11,17 @@
     <ApplicationIcon>Icon_N.ico</ApplicationIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
 
+    <PublishSingleFile>false</PublishSingleFile>
+    <IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
 
-	  <PublishSingleFile>false</PublishSingleFile>
-	  <IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
-
+    <!-- 基本変えない -->
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    
+    <!-- アプリのバージョン -->
+    <FileVersion>1.4.0.0</FileVersion>
+    <Version>1.4.0</Version>
+    <Company>AmongUs ModManager</Company>
+    <Product>AmongUs ModManager</Product>
   </PropertyGroup>
 
   <ItemGroup>

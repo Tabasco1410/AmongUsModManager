@@ -299,6 +299,7 @@ namespace Among_Us_ModManager.Pages
 
         private async Task LoadVersionAsync()
         {
+            // 現在のバージョンを表示
             VersionText.Text = $"v {AppVersion.Version}";
             VersionText.ToolTip = new TextBlock
             {
@@ -310,7 +311,7 @@ namespace Among_Us_ModManager.Pages
             string owner = "Tabasco1410";
             string repo = "AmongUsModManager";
 
-            // 最新タグと全タグ取得
+            // 最新タグと全タグを取得
             string? latestTag = await GetLatestReleaseTagAsync(owner, repo);
             var allTags = await GetAllReleaseTagsAsync(owner, repo);
 
@@ -324,7 +325,7 @@ namespace Among_Us_ModManager.Pages
                 VersionText.Foreground = Brushes.Red;
                 VersionText.FontWeight = FontWeights.Bold;
 
-                // s が付いている場合はアップデートボタンを非表示にして警告文表示
+                // s が付いている場合は自動アップデート不可と警告表示
                 if (AppVersion.Version.EndsWith("s", StringComparison.OrdinalIgnoreCase))
                 {
                     UpdateButton.Visibility = Visibility.Collapsed;
@@ -341,8 +342,6 @@ namespace Among_Us_ModManager.Pages
 
             await Task.CompletedTask;
         }
-
-
 
         private async Task CheckUpdateButtonAsync()
         {
@@ -361,10 +360,13 @@ namespace Among_Us_ModManager.Pages
         private async void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show(Strings.Get("Update_Confirm"), Strings.Get("Update"), MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                // AppUpdater が Release から最新 Updater ZIP を探して展開・起動
                 await AppUpdater.StartUpdaterAndExit();
+            }
         }
 
-        // 最新リリースタグを取得
+        // GitHub 最新リリースタグを取得
         private static async Task<string?> GetLatestReleaseTagAsync(string owner, string repo)
         {
             try
@@ -383,7 +385,7 @@ namespace Among_Us_ModManager.Pages
             }
         }
 
-        // 過去Releaseを含む全タグ取得
+        // 過去 Release を含む全タグを取得
         private static async Task<HashSet<string>> GetAllReleaseTagsAsync(string owner, string repo)
         {
             try
@@ -415,7 +417,7 @@ namespace Among_Us_ModManager.Pages
                 using var client = new HttpClient();
                 client.DefaultRequestHeaders.UserAgent.ParseAdd("AmongUsModManager");
 
-                // 最新リリース
+                // 最新リリース取得
                 string latestUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
                 string latestJson = await client.GetStringAsync(latestUrl);
                 using var latestDoc = JsonDocument.Parse(latestJson);
@@ -424,10 +426,10 @@ namespace Among_Us_ModManager.Pages
                 if (string.IsNullOrWhiteSpace(latestTag))
                     return false;
 
-                // 過去Release含む全タグ取得
+                // 過去 Release を含む全タグ取得
                 var allTags = await GetAllReleaseTagsAsync(owner, repo);
 
-                // 自分のバージョンが過去Releaseに存在する場合のみ更新判定
+                // 自分のバージョンが過去 Release に存在する場合のみ更新判定
                 if (!allTags.Contains(currentVersion.Trim()))
                     return false;
 
@@ -439,6 +441,7 @@ namespace Among_Us_ModManager.Pages
                 return false;
             }
         }
+
 
 
 

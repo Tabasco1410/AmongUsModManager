@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -10,6 +11,13 @@ namespace Among_Us_ModManager.Modules.Updates
 {
     public static class AppUpdater
     {
+        private const string GitHubOwner = "Tabasco1410";
+        private const string GitHubRepo = "AmongUsModManager";
+        private static readonly string BaseDir = AppDomain.CurrentDomain.BaseDirectory;
+
+        /// <summary>
+        /// 現在のバージョンと比較して更新があるか確認
+        /// </summary>
         public static async Task<bool> IsUpdateAvailableAsync(string currentVersion, string versionUrl)
         {
             using var client = new HttpClient();
@@ -28,11 +36,12 @@ namespace Among_Us_ModManager.Modules.Updates
                 return currentVer < latestVer;
             }
 
-            // パースできなかった場合は念のためアップデートありと判定
-            return true;
+            return true; // パースできなかった場合はアップデートあり
         }
 
-
+        /// <summary>
+        /// ZIPをダウンロードして展開する
+        /// </summary>
         public static async Task DownloadAndUpdateAsync(string version, string zipUrl, string extractPath)
         {
             string tempZipPath = Path.Combine(Path.GetTempPath(), $"AmongUsModManager_{version}.zip");
@@ -44,76 +53,106 @@ namespace Among_Us_ModManager.Modules.Updates
             File.Delete(tempZipPath);
         }
 
+        /// <summary>
+        /// Updaterを最新版に更新して起動
+        /// </summary>
         public static async Task StartUpdaterAndExit()
         {
             try
             {
-                string updaterPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Among Us_ModManager_Updater.exe");
+                string updaterExePath = Path.Combine(BaseDir, "Among Us_ModManager_Updater.exe");
 
-                // Updater が存在しない場合
-                if (!File.Exists(updaterPath))
+                // UpdaterのZIPがReleaseにあるか確認してダウンロード
+                string? updaterZipUrl = await GetLatestUpdaterZipUrlAsync();
+                if (updaterZipUrl != null)
                 {
-                    var result = MessageBox.Show(
-                        "アップデーターが見つかりませんでした。\nダウンロードしますか？",
-                        "確認",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Question
-                    );
-
-                    if (result == MessageBoxResult.Yes)
-                    {
-                        bool downloadSuccess = await DownloadUpdaterAsync(updaterPath);
-                        if (!downloadSuccess)
-                        {
-                            MessageBox.Show("アップデーターのダウンロードに失敗しました。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        // ユーザーがダウンロードを拒否した場合は終了
-                        return;
-                    }
+                    await DownloadAndUpdateAsync("Updater", updaterZipUrl, BaseDir);
                 }
 
-                // Updater を起動（ダウンロード後も同じ）
+                // ZIPが無くてもexeがなければ過去Releaseから取得
+                if (!File.Exists(updaterExePath))
+                {
+                    updaterZipUrl = await GetLatestUpdaterZipUrlFromAllReleasesAsync();
+                    if (updaterZipUrl != null)
+                        await DownloadAndUpdateAsync("Updater", updaterZipUrl, BaseDir);
+                }
+
+                if (!File.Exists(updaterExePath))
+                {
+                    MessageBox.Show("Updaterを取得できませんでした。", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                // Updater起動
                 var psi = new ProcessStartInfo
                 {
-                    FileName = updaterPath,
+                    FileName = updaterExePath,
                     UseShellExecute = true,
-                    Verb = "runas" // 管理者権限が必要な場合
+                    Verb = "runas"
                 };
-
                 Process.Start(psi);
 
-                // アプリ終了（Updater 起動後に必ず行う）
                 Environment.Exit(0);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"アップデーターの起動に失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Updaterの起動に失敗しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-
-        private static async Task<bool> DownloadUpdaterAsync(string savePath)
+        /// <summary>
+        /// 最新ReleaseにUpdater ZIPがある場合のURLを取得
+        /// </summary>
+        private static async Task<string?> GetLatestUpdaterZipUrlAsync()
         {
             try
             {
-                const string updaterUrl = "https://github.com/Tabasco1410/AmongUsModManager/releases/download/1.3.3/Among.Us_ModManager_Updater.exe";
-
                 using var client = new HttpClient();
-                var data = await client.GetByteArrayAsync(updaterUrl);
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("AmongUsModManager");
 
-                await File.WriteAllBytesAsync(savePath, data);
-                return true;
+                string latestUrl = $"https://api.github.com/repos/{GitHubOwner}/{GitHubRepo}/releases/latest";
+                string latestJson = await client.GetStringAsync(latestUrl);
+
+                using var doc = JsonDocument.Parse(latestJson);
+                foreach (var asset in doc.RootElement.GetProperty("assets").EnumerateArray())
+                {
+                    string name = asset.GetProperty("name").GetString() ?? "";
+                    if (name.Equals("Among Us_ModManager_Updater.zip", StringComparison.OrdinalIgnoreCase))
+                        return asset.GetProperty("browser_download_url").GetString();
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"ダウンロード中にエラーが発生しました: {ex.Message}", "エラー", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false;
-            }
+            catch { }
+
+            return null;
         }
 
+        /// <summary>
+        /// 過去Releaseも含めてUpdater ZIPのURLを取得
+        /// </summary>
+        private static async Task<string?> GetLatestUpdaterZipUrlFromAllReleasesAsync()
+        {
+            try
+            {
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("AmongUsModManager");
+
+                string allUrl = $"https://api.github.com/repos/{GitHubOwner}/{GitHubRepo}/releases";
+                string allJson = await client.GetStringAsync(allUrl);
+
+                using var doc = JsonDocument.Parse(allJson);
+                foreach (var release in doc.RootElement.EnumerateArray())
+                {
+                    foreach (var asset in release.GetProperty("assets").EnumerateArray())
+                    {
+                        string name = asset.GetProperty("name").GetString() ?? "";
+                        if (name.Equals("Among Us_ModManager_Updater.zip", StringComparison.OrdinalIgnoreCase))
+                            return asset.GetProperty("browser_download_url").GetString();
+                    }
+                }
+            }
+            catch { }
+
+            return null;
+        }
     }
 }

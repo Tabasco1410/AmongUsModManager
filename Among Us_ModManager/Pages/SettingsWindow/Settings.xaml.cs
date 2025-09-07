@@ -28,6 +28,7 @@ namespace Among_Us_ModManager.Pages.Settings
             InitializeComponent();
             LoadSettings();
             LoadLanguageOptions();
+            LoadPlatformOptions();
         }
 
         private void LoadSettings()
@@ -41,7 +42,7 @@ namespace Among_Us_ModManager.Pages.Settings
                 {
                     string json = File.ReadAllText(configPath);
                     config = JsonConvert.DeserializeObject<SettingsConfig>(json) ?? new SettingsConfig();
-                    LogOutput.Write($"設定読み込み成功: AmongUsExePath={config.AmongUsExePath}, RunInBackground={config.RunInBackground}, Language={config.Language}");
+                    LogOutput.Write($"設定読み込み成功: AmongUsExePath={config.AmongUsExePath}, RunInBackground={config.RunInBackground}, Language={config.Language}, Platform={config.Platform}");
                 }
                 catch (Exception ex)
                 {
@@ -145,8 +146,24 @@ namespace Among_Us_ModManager.Pages.Settings
             _isInitializing = false;
         }
 
+        private void LoadPlatformOptions()
+        {
+            _isInitializing = true;
 
+            foreach (ComboBoxItem item in PlatformComboBox.Items)
+            {
+                if ((string)item.Content == config.Platform)
+                {
+                    PlatformComboBox.SelectedItem = item;
+                    break;
+                }
+            }
 
+            if (PlatformComboBox.SelectedItem == null && PlatformComboBox.Items.Count > 0)
+                PlatformComboBox.SelectedIndex = 0;
+
+            _isInitializing = false;
+        }
 
         private void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -161,6 +178,19 @@ namespace Among_Us_ModManager.Pages.Settings
                     SaveSettings();
                     LogOutput.Write($"LanguageComboBox_SelectionChanged: Language={config.Language}");
                 }
+            }
+        }
+
+        private void PlatformComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_isInitializing) return;
+
+            if (PlatformComboBox.SelectedItem is ComboBoxItem item)
+            {
+                string selectedPlatform = item.Content.ToString() ?? "Steam";
+                config.Platform = selectedPlatform;
+                SaveSettings();
+                LogOutput.Write($"PlatformComboBox_SelectionChanged: Platform={config.Platform}");
             }
         }
 
@@ -199,5 +229,8 @@ namespace Among_Us_ModManager.Pages.Settings
 
         [JsonProperty("Language", Required = Required.Default)]
         public string Language { get; set; } = "JA"; // デフォルト日本語
+
+        [JsonProperty("Platform", Required = Required.Default)]
+        public string Platform { get; set; } = "Steam"; // デフォルト Steam
     }
 }

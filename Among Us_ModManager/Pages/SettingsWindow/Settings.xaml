@@ -28,23 +28,40 @@
         <Grid Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
-              
                 <ColumnDefinition Width="*"/>
-              
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0"
-               Text="言語 / Language (Language switching is not implemented yet.)"
-               VerticalAlignment="Center"
-               Margin="0,0,10,0"/>
+                       Text="言語"
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0"/>
             <ComboBox x:Name="LanguageComboBox"
-              Grid.Column="1"
-              Width="150"
-              Height="30"
-              SelectionChanged="LanguageComboBox_SelectionChanged"/>
+                      Grid.Column="1"
+                      Width="150"
+                      Height="30"
+                      SelectionChanged="LanguageComboBox_SelectionChanged"/>
         </Grid>
 
+        <!-- プラットフォーム設定 -->
+        <Grid Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
+            <TextBlock Grid.Column="0"
+                       Text="プラットフォーム"
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0"/>
+            <ComboBox x:Name="PlatformComboBox"
+                      Grid.Column="1"
+                      Width="150"
+                      Height="30"
+                      SelectionChanged="PlatformComboBox_SelectionChanged">
+                <ComboBoxItem Content="Steam"/>
+                <ComboBoxItem Content="Epic"/>
+            </ComboBox>
+        </Grid>
 
     </StackPanel>
 </Page>
