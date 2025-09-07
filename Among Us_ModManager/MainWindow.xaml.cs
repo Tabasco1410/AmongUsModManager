@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Among_Us_ModManager.Modules.Updates;
+using System;
 using System.IO;
+using System.Net.Http;
 using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
 
@@ -22,12 +25,49 @@ namespace Among_Us_ModManager
         public MainWindow()
         {
             InitializeComponent();
-
-            // ウィンドウサイズ・位置を復元
             LoadWindowSize();
-
-            // アプリ起動時に最初のページへ遷移
+            CheckForceUpdateAsync();
             MainFrame.Navigate(new Pages.SelectEXEPath());
+        }
+
+        private async void CheckForceUpdateAsync()
+        {
+            string owner = "Tabasco1410";
+            string repo = "AmongUsModManager";
+
+            try
+            {
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("AmongUsModManager");
+
+                string latestReleaseUrl = $"https://api.github.com/repos/{owner}/{repo}/releases/latest";
+                string latestJson = await client.GetStringAsync(latestReleaseUrl);
+                using var doc = JsonDocument.Parse(latestJson);
+
+                var assets = doc.RootElement.GetProperty("assets").EnumerateArray();
+                string? jsonUrl = null;
+                foreach (var asset in assets)
+                {
+                    if (asset.GetProperty("name").GetString() == "force_update.json")
+                    {
+                        jsonUrl = asset.GetProperty("browser_download_url").GetString();
+                        break;
+                    }
+                }
+
+                if (jsonUrl == null)
+                    return;
+
+                string json = await client.GetStringAsync(jsonUrl);
+                var jsonDoc = JsonDocument.Parse(json);
+                bool forceUpdate = jsonDoc.RootElement.GetProperty("force_update").GetBoolean();
+
+                if (forceUpdate)
+                    await AppUpdater.StartUpdaterAndExit();
+            }
+            catch
+            {
+            }
         }
 
         private void LoadWindowSize()
@@ -47,10 +87,7 @@ namespace Among_Us_ModManager
                 Left = config.Left;
                 WindowState = config.IsMaximized ? WindowState.Maximized : WindowState.Normal;
             }
-            catch
-            {
-                // 読み込み失敗は無視
-            }
+            catch { }
         }
 
         private void SaveWindowSize()
@@ -75,10 +112,7 @@ namespace Among_Us_ModManager
                 var json = JsonSerializer.Serialize(appConfig, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(configPath, json);
             }
-            catch
-            {
-                // 保存失敗は無視
-            }
+            catch { }
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
@@ -89,14 +123,13 @@ namespace Among_Us_ModManager
 
         private void MainFrame_Navigated(object sender, NavigationEventArgs e)
         {
-            // 必要なら処理をここに書く
         }
     }
 
     public class WindowConfig
     {
-        public double Width { get; set; } = 800;   // デフォルト幅
-        public double Height { get; set; } = 600;  // デフォルト高さ
+        public double Width { get; set; } = 800;
+        public double Height { get; set; } = 600;
         public double Top { get; set; } = 100;
         public double Left { get; set; } = 100;
         public bool IsMaximized { get; set; } = false;
