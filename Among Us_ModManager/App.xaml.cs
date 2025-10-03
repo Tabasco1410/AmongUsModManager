@@ -42,9 +42,9 @@ namespace Among_Us_ModManager
                 settings = new SettingsConfig(); // 初回起動
             }
 
-            // 「アプリを閉じてもバックグラウンドで起動」の設定がオンなら
-            if (settings.RunInBackground)
-            {
+ 
+            
+            
                 // タスクトレイにアイコンを作成
                 trayIcon = new TaskbarIcon
                 {
@@ -52,8 +52,8 @@ namespace Among_Us_ModManager
                     ToolTipText = "Among Us Mod Manager"
                 };
 
-                // ウィンドウを表示せずバックグラウンド常駐可能
-            }
+              
+            
         }
 
         protected override void OnExit(ExitEventArgs e)
