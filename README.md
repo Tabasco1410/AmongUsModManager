@@ -4,7 +4,8 @@ Among UsのModを選ぶだけで自動で導入を行ってくれるアプリで
 
 
 最新リリースは[こちら](https://github.com/Tabasco1410/AmongUsModManeger/releases/latest)<br>
-[![Discord](readme.png)](https://discord.gg/nFhkYmf9At)<br>
+
+## [Discordはこちら](https://discord.gg/nFhkYmf9At)<br>
 
 ### スクリーンショット
 <img width="1919" height="1174" alt="Among Us_ModManager" src="https://github.com/user-attachments/assets/f54ff90d-9fec-426a-9eae-b341aaab758a" />
