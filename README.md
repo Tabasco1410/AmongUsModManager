@@ -5,9 +5,7 @@ Among UsのModを選ぶだけで自動で導入を行ってくれるアプリで
 ホームページは[**こちら**](https://amongusmodmanager.web.app/)<br>
 
 
-最新リリースは[こちら](https://github.com/Tabasco1410/AmongUsModManeger/releases/latest)<br>
-
-## [Discordはこちら](https://discord.gg/nFhkYmf9At)<br>
+## [Discord](https://discord.gg/nFhkYmf9At)<br>
 
 ## 利用規約
 LICENSEをご覧ください。<br>
