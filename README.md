@@ -24,6 +24,13 @@ https://www.gnu.org/licenses/gpl-3.0.txt
 Copyright (c) 2025 Tabasco1410</br>
 ※本アプリはAmong Usの開発元であるInnersloth,各種Mod関係者様とは一切関係なく、非公式のアプリです。
 
+## Among UsのModを導入する皆さんへ
+【公開部屋でのmod部屋への誘導は禁止です】
+バニラ公開部屋でmod部屋のコードを貼ったり、コードを貼りに来る人を待機する部屋を作ることは禁止されています。絶対に行わないでください。
+これらの行為をした場合、MOD共通のブラックリストに登録されることがあります。
+もしこのような行為を発見した場合は、TownOfHost-KのDiscordにて報告をお願いします。
+（配信やDiscordなどで非公開ルームのコードを共有して遊ぶのには問題ありません。）
+
 
 ## 導入をアプリ内で自動で行うことができるMod
 TownofHostやSuperNewRolesなどのModをインストールすることができます。<br>
