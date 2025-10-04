@@ -58,7 +58,7 @@ namespace Among_Us_ModManager.Pages.Settings
             }
 
             ExePathTextBox.Text = config.AmongUsExePath ?? "";
-            BackgroundStartCheckBox.IsChecked = config.RunInBackground;
+            //BackgroundStartCheckBox.IsChecked = config.RunInBackground;
 
             _isInitializing = false;
             LogOutput.Write("LoadSettings 完了");
@@ -84,19 +84,19 @@ namespace Among_Us_ModManager.Pages.Settings
             }
         }
 
-        private void BackgroundStartChanged(object sender, RoutedEventArgs e)
-        {
-            if (_isInitializing) return;
+        /* private void BackgroundStartChanged(object sender, RoutedEventArgs e)
+         {
+             if (_isInitializing) return;
 
-            if (!string.IsNullOrWhiteSpace(ExePathTextBox.Text))
-                config.AmongUsExePath = ExePathTextBox.Text;
+             if (!string.IsNullOrWhiteSpace(ExePathTextBox.Text))
+                 config.AmongUsExePath = ExePathTextBox.Text;
 
-            config.RunInBackground = BackgroundStartCheckBox.IsChecked == true;
-            LogOutput.Write($"BackgroundStartChanged: AmongUsExePath={config.AmongUsExePath}, RunInBackground={config.RunInBackground}");
+             config.RunInBackground = BackgroundStartCheckBox.IsChecked == true;
+             LogOutput.Write($"BackgroundStartChanged: AmongUsExePath={config.AmongUsExePath}, RunInBackground={config.RunInBackground}");
 
-            if (!string.IsNullOrWhiteSpace(config.AmongUsExePath))
-                SaveSettings();
-        }
+             if (!string.IsNullOrWhiteSpace(config.AmongUsExePath))
+                 SaveSettings();
+         }*/
 
         private void LoadLanguageOptions()
         {
@@ -117,27 +117,43 @@ namespace Among_Us_ModManager.Pages.Settings
             using Stream stream = assembly.GetManifestResourceStream(resourceName)!;
             using var reader = new StreamReader(stream);
 
-            var lines = new List<string>();
-            while (!reader.EndOfStream)
-                lines.Add(reader.ReadLine());
+            var headerLine = reader.ReadLine();
+            if (string.IsNullOrWhiteSpace(headerLine)) { _isInitializing = false; return; }
 
-            if (lines.Count < 1) { _isInitializing = false; return; }
-
-            var headers = lines[0].Split(',');
+            var headers = headerLine.Split(',');
 
             languageDict.Clear();
             LanguageComboBox.Items.Clear();
 
+            // 言語コード → 表示名のマップ（ここは好きに増やせる）
+            var displayNames = new Dictionary<string, string>
+    {
+        { "JA", "日本語" },
+        { "EN", "English" },
+        { "ZH-CN", "简体中文" },
+        { "ZH-TW", "繁體中文" }
+    };
+
             for (int i = 1; i < headers.Length; i++)
             {
-                string lang = headers[i].Trim();
-                if (string.IsNullOrEmpty(lang)) continue;
+                string langCode = headers[i].Trim();
+                if (string.IsNullOrEmpty(langCode)) continue;
 
-                languageDict[lang] = lang;
-                ComboBoxItem item = new ComboBoxItem { Tag = lang, Content = lang };
+                string displayName = displayNames.ContainsKey(langCode)
+                    ? displayNames[langCode]
+                    : langCode; // fallback
+
+                languageDict[langCode] = displayName;
+
+                ComboBoxItem item = new ComboBoxItem
+                {
+                    Tag = langCode,        // 保存するのはコード
+                    Content = displayName  // 表示は人間向け
+                };
                 LanguageComboBox.Items.Add(item);
 
-                if (config.Language == lang) LanguageComboBox.SelectedItem = item;
+                if (config.Language == langCode)
+                    LanguageComboBox.SelectedItem = item;
             }
 
             if (LanguageComboBox.SelectedItem == null && LanguageComboBox.Items.Count > 0)
@@ -145,6 +161,8 @@ namespace Among_Us_ModManager.Pages.Settings
 
             _isInitializing = false;
         }
+
+
 
         private void LoadPlatformOptions()
         {
@@ -177,9 +195,12 @@ namespace Among_Us_ModManager.Pages.Settings
                     config.Language = selectedLang;
                     SaveSettings();
                     LogOutput.Write($"LanguageComboBox_SelectionChanged: Language={config.Language}");
+
+                   
                 }
             }
         }
+
 
         private void PlatformComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

@@ -15,14 +15,14 @@
             <Button Content="参照" Style="{StaticResource TextButtonStyle}" Click="BrowseExePath_Click"/>
         </StackPanel>
 
-        <!-- アプリをバックグラウンド起動 -->
+        <!-- アプリをバックグラウンド起動 
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,10">
             <CheckBox x:Name="BackgroundStartCheckBox"
                       Content="アプリを閉じてもバックグラウンドで起動したままする"
                       IsChecked="True"
                       Checked="BackgroundStartChanged"
                       Unchecked="BackgroundStartChanged"/>
-        </StackPanel>
+        </StackPanel> -->
 
         <!-- 言語設定 -->
         <Grid Margin="0,0,0,10">
@@ -32,7 +32,7 @@
             </Grid.ColumnDefinitions>
 
             <TextBlock Grid.Column="0"
-                       Text="言語"
+                       Text="言語/language（未実装 Comming soon...）"
                        VerticalAlignment="Center"
                        Margin="0,0,10,0"/>
             <ComboBox x:Name="LanguageComboBox"

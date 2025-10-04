@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
+using Microsoft.VisualBasic; // InputBox用
 using Among_Us_ModManager.Pages.Install.Zip;
 using Among_Us_ModManager.Pages.Install.GitHub;
 
@@ -49,6 +51,52 @@ namespace Among_Us_ModManager.Pages
         private void InstallTownOfHostFun_Click(object sender, RoutedEventArgs e)
         {
             NavigateToGitHub("ToritenKabosu", "TownOfHost-Fun");
+        }
+
+        // TownOfHost-Enhanced
+        private void InstallEnhancedTownOfHost_Click(object sender, RoutedEventArgs e)
+        {
+            NavigateToGitHub("EnhancedNetwork", "TownofHost-Enhanced");
+        }
+
+        // GitHubリンクから指定
+        private void InstallFromGitHubLink_Click(object sender, RoutedEventArgs e)
+        {
+            string url = Interaction.InputBox(
+                "GitHubのリポジトリURLを入力してください。\n例: https://github.com/TheOtherRolesAU/TheOtherRoles\n\n※Among UsのModのGitHubリンクを入力していることを確認してください。",
+                "GitHubリンク入力",
+                "https://github.com/"
+            );
+
+            if (string.IsNullOrWhiteSpace(url))
+                return;
+
+            try
+            {
+                var uri = new Uri(url);
+                if (uri.Host != "github.com")
+                {
+                    MessageBox.Show("GitHubのURLを入力してください。");
+                    return;
+                }
+
+                // パスを分解 (/owner/repo/...)
+                var segments = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+                if (segments.Length < 2)
+                {
+                    MessageBox.Show("URLからリポジトリを特定できません。");
+                    return;
+                }
+
+                string owner = segments[0];
+                string repo = segments[1];
+
+                NavigateToGitHub(owner, repo);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"URLの解析に失敗しました: {ex.Message}");
+            }
         }
 
         // 共通 GitHub 遷移

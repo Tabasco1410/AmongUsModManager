@@ -76,13 +76,21 @@ namespace Among_Us_ModManager.Pages
                 return;
 
             var entries = new List<InstallEntry>();
-            var ignoreList = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+
+            // ✅ まずバニラを追加
+            entries.Add(new InstallEntry
             {
-                "ExtremeSkins",
-                "Agartha",
-                "Mini.RegionInstall",
-                "System.Text.Encoding.CodePages"
-            };
+                ExePath = config.AmongUsExePath,
+                VersionText = "Among Us（Modなし）"
+            });
+
+            var ignoreList = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "ExtremeSkins",
+        "Agartha",
+        "Mini.RegionInstall",
+        "System.Text.Encoding.CodePages"
+    };
 
             foreach (var folder in Directory.GetDirectories(rootFolder))
             {
@@ -105,7 +113,7 @@ namespace Among_Us_ModManager.Pages
                         try { version = FileVersionInfo.GetVersionInfo(dllPath).FileVersion ?? ""; } catch { }
 
                         string versionText = (dllName.Equals("Nebula", StringComparison.OrdinalIgnoreCase) ||
-                                              dllName.Equals("TOHE", StringComparison.OrdinalIgnoreCase))
+                                               dllName.Equals("TOHE", StringComparison.OrdinalIgnoreCase))
                             ? dllName
                             : string.IsNullOrEmpty(version) ? dllName : $"{dllName}（{version}）";
 
@@ -116,6 +124,7 @@ namespace Among_Us_ModManager.Pages
 
             InstallListPanel.ItemsSource = entries;
         }
+
 
         private void ApplyLanguage()
         {

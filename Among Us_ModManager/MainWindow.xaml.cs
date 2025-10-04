@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
 
@@ -118,7 +117,8 @@ namespace Among_Us_ModManager
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
             SaveWindowSize();
-            base.OnClosing(e);
+            e.Cancel = true;
+            this.Hide();
         }
 
         private void MainFrame_Navigated(object sender, NavigationEventArgs e)
