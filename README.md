@@ -2,8 +2,8 @@
 Among UsのModを選ぶだけで自動で導入を行ってくれるアプリです。<br>
 （.zipファイルをご用意いただくことでリストにないmodでもインストールができます）
 
-詳しくは[こちら](https://amongusmodmanager.web.app/)<br>
-お知らせもこちらで表示できます。
+ホームページは[**こちら**](https://amongusmodmanager.web.app/)<br>
+
 
 最新リリースは[こちら](https://github.com/Tabasco1410/AmongUsModManeger/releases/latest)<br>
 
