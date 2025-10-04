@@ -26,11 +26,11 @@ Copyright (c) 2025 Tabasco1410</br>
 
 
 ## 導入をアプリ内で自動で行うことができるMod
-TownOfHost<br>
-TownOfHost-K<br>
-SuperNewRoles<br>
-Nebula on the Ship<br>
-Extremeroles<br>
+TownofHostやSuperNewRolesなどのModをインストールすることができます。<br>
+また、リストにないmodでも.zipファイルを用意すればインストールすることができます。
+
+NEW!　githubのリンクから導入できる機能を追加しました。<br>
+※Among UsのMod以外のgithubリンクを入力すると不具合が発生することがありますのでお控えください。
 
 ※リストにないmodについては、.zipファイルをご用意の上「Modをインストール」→「.zipファイルからインストール」をご利用ください。
 
