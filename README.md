@@ -1,5 +1,5 @@
 # AmongUsModManager
-Among UsのModを選ぶだけで自動で導入を行ってくれるアプリです。
+Among UsのModを選ぶだけで自動で導入を行ってくれるアプリです。<br>
 （.zipファイルをご用意いただくことでリストにないmodでもインストールができます）
 
 
@@ -26,11 +26,11 @@ Copyright (c) 2025 Tabasco1410</br>
 
 
 ## 導入をアプリ内で自動で行うことができるMod
-TownOfHost</br>
-TownOfHost-K</br>
-SuperNewRoles</br>
-Nebula on the Ship</br>
-Extremeroles</br>
-</br>
+TownOfHost<br>
+TownOfHost-K<br>
+SuperNewRoles<br>
+Nebula on the Ship<br>
+Extremeroles<br>
+
 ※リストにないmodについては、.zipファイルをご用意の上「Modをインストール」→「.zipファイルからインストール」をご利用ください。
 
