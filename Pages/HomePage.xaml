@@ -1,0 +1,82 @@
+﻿<Page
+    x:Class="AmongUsModManager.Pages.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="using:AmongUsModManager.Pages"
+    xmlns:models="using:AmongUsModManager.Models"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Grid>
+        <ScrollViewer>
+            <StackPanel Spacing="32" Margin="32,24,32,24" HorizontalAlignment="Left" MaxWidth="1000">
+
+                <InfoBar x:Name="LocalInfoBar" IsOpen="False" Severity="Informational" Title="新しいフォルダが見つかりました" IsClosable="True" CloseButtonClick="LocalInfoBar_CloseButtonClick">
+                    <InfoBar.ActionButton>
+                        <Button x:Name="LocalInfoBarButton" Content="登録する" Click="LocalInfoBarButton_Click" />
+                    </InfoBar.ActionButton>
+                </InfoBar>
+
+                <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" CornerRadius="8" Padding="32">
+                    <StackPanel Spacing="16">
+                        <TextBlock Text="プレイ" Style="{StaticResource TitleTextBlockStyle}"/>
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <ComboBox x:Name="ModSelector" Width="300" PlaceholderText="起動する環境を選択"/>
+                            <Button Content="ゲームを起動" Click="LaunchButton_Click" Style="{StaticResource AccentButtonStyle}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+
+                <Grid ColumnDefinitions="*, *">
+                    <StackPanel Spacing="16" Margin="0,0,16,0">
+                        <TextBlock Text="お知らせ" Style="{StaticResource TitleTextBlockStyle}"/>
+                        <ListView x:Name="NewsListView" Height="300" IsItemClickEnabled="True" ItemClick="NewsListView_ItemClick" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" CornerRadius="4">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Padding="12">
+                                        <TextBlock Text="{Binding Title}" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding Date}" FontSize="12" Foreground="Gray"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Spacing="16">
+                        <TextBlock Text="アップデート情報" Style="{StaticResource TitleTextBlockStyle}"/>
+                        <ListView x:Name="UpdateListView" Height="300" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" CornerRadius="4">
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="local:ModUpdateStatus">
+                                    <Grid Padding="12" ColumnDefinitions="*, Auto">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="{x:Bind ModName}" FontWeight="Bold"/>
+                                            <TextBlock Text="{x:Bind StatusText}" FontSize="12" Foreground="Gray"/>
+                                        </StackPanel>
+                                        <Button Grid.Column="1" Content="更新" 
+                                                IsEnabled="{x:Bind CanUpdate}" 
+                                                Visibility="{x:Bind CanUpdate, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                VerticalAlignment="Center"
+                                                Click="HomeUpdateBtn_Click" 
+                                                Tag="{x:Bind}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+
+        <ContentDialog x:Name="UpdateProgressDialog" Title="アップデート" CloseButtonText="閉じる">
+            <StackPanel Spacing="10" Margin="0,10,0,0">
+                <TextBlock x:Name="UpdateStatusText" Text="準備中..."/>
+                <ProgressBar x:Name="UpdateProgressBar" IsIndeterminate="True"/>
+            </StackPanel>
+        </ContentDialog>
+    </Grid>
+</Page>

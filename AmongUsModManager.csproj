@@ -1,0 +1,103 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<RootNamespace>AmongUsModManager</RootNamespace>
+		<Platforms>x86;x64;ARM64</Platforms>
+		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
+		<PublishProfile>win-$(Platform).pubxml</PublishProfile>
+		<UseWinUI>true</UseWinUI>
+		<WinUISDKReferences>false</WinUISDKReferences>
+		<EnableMsixTooling>false</EnableMsixTooling>
+		<HasPackageAndPublishMenu>false</HasPackageAndPublishMenu>
+		<Nullable>enable</Nullable>
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+		<EnableXamlMarkupCompilerInterop>false</EnableXamlMarkupCompilerInterop>
+		
+		<!-- シングルファイルならtrue -->
+		<PublishSingleFile>false</PublishSingleFile>
+		<IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
+		<!-- バージョン情報 -->
+		<ApplicationDisplayVersion>1.4.1</ApplicationDisplayVersion>
+		<ApplicationVersion>1.4.1</ApplicationVersion>
+	</PropertyGroup>
+	<ItemGroup Condition="'$(MsixPackaging)'=='true'">
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251105000" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="Resources\**" />
+	  <EmbeddedResource Remove="Resources\**" />
+	  <None Remove="Resources\**" />
+	  <Page Remove="Resources\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="Pages\NewsDetailPage.xaml" />
+		<None Remove="Pages\SetupPage.xaml" />
+	</ItemGroup>
+	<ItemGroup>
+		<Page Remove="Pages\HomePage.xaml" />
+		<Page Remove="Pages\LibraryPage.xaml" />
+		<Page Remove="Pages\ModInstallPage.xaml" />
+		<Page Remove="Pages\SettingsPage.xaml" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Manifest Include="$(ApplicationManifest)" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+		<ProjectCapability Include="Msix" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="Pages\LibraryPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</None>
+		<None Update="Pages\ModInstallPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</None>
+		<Page Update="Pages\NewsDetailPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Update="Pages\SetupPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
+		<PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">False</PublishReadyToRun>
+		<PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
+		<PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
+		<ApplicationIcon>Resource\icon.ico</ApplicationIcon>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<DefaultLanguage>ja-JP</DefaultLanguage>
+	</PropertyGroup>
+	<ItemGroup>
+		<Page Include="Pages\HomePage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+		<Page Include="Pages\LibraryPage.xaml" />
+		<Page Include="Pages\ModInstallPage.xaml" />
+		<Page Include="Pages\SettingsPage.xaml">
+			<Generator>MSBuild:Compile</Generator>
+		</Page>
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.251107005" />
+		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3179.45" />
+		<PackageReference Include="System.Text.Json" Version="9.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PRIResource Remove="Resources\**" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Include="Resource\icon.ico" />
+	</ItemGroup>
+</Project>

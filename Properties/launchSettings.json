@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AmongUsModManager (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "AmongUsModManager (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

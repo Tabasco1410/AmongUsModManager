@@ -361,21 +361,3 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-
-# --- Project-specific excludes ---
-
-# Among Us Mod Manager build artifacts
-Among Us_ModManager/bin/
-Among Us_ModManager/obj/
-
-# Updater build artifacts
-Among Us_ModManager_Updater/bin/
-Among Us_ModManager_Updater/obj/
-
-# 念のため Logs や実行ログ類も無視（任意）
-Among Us_ModManager/Logs/
-Among Us_ModManager/Log/
-Among Us_ModManager/logs/
-Among Us_ModManager/log/
-
-# ReSharperやIDE生成ディレクトリ（.vs含む）は既にOK
