@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
@@ -11,6 +11,7 @@ using Windows.Storage.Pickers;
 using WinRT.Interop;
 using AmongUsModManager.Services;
 using AmongUsModManager.Models;
+using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager.Pages
 {
@@ -19,7 +20,7 @@ namespace AmongUsModManager.Pages
         public ObservableCollection<VanillaPathInfo> VanillaPaths { get; } = new ObservableCollection<VanillaPathInfo>();
         public ObservableCollection<string> DetectedPaths { get; } = new ObservableCollection<string>();
 
-        private string _pendingTag;
+        private string _pendingTag = "";
 
         public SettingsPage()
         {
@@ -36,14 +37,137 @@ namespace AmongUsModManager.Pages
                 if (config.VanillaPaths != null)
                 {
                     foreach (var info in config.VanillaPaths)
-                    {
-                      
                         VanillaPaths.Add(new VanillaPathInfo { Name = info.Name, Path = info.Path });
-                    }
                 }
                 ModDataPathTextBox.Text = config.ModDataPath ?? string.Empty;
+                StartWithWindowsToggle.IsOn = config.StartWithWindows;
+                StartMinimizedToggle.IsOn = config.StartMinimized;
+                LogAppendModeToggle.IsOn = config.LogAppendMode;
+                MinimizeToTrayToggle.IsOn = config.MinimizeToTray;
+                
+
+                string platformLabel = config.Platform switch
+                {
+                    "Epic"    => "Epic Games",
+                    "Steam"   => "Steam",
+                    "MSStore" => "Microsoft Store",
+                    "Itch"    => "itch.io",
+                    "Manual"  => "手動指定",
+                    _         => "未設定"
+                };
+                CurrentPlatformText.Text = $"現在のプラットフォーム: {platformLabel}";
+
+                bool isEpic = config.Platform == "Epic";
+                EpicSettingsSection.Visibility   = isEpic ? Visibility.Visible : Visibility.Collapsed;
+                EpicLaunchViaLauncherToggle.IsOn = config.EpicLaunchViaLauncher;
+
+                if (isEpic) RefreshEpicStatus();
+
+                LoadMainPlatformUI(config);
             }
-         
+        }
+
+        private static readonly (string Tag, string Label)[] PlatformOptions =
+        {
+            ("Steam",   "Steam"),
+            ("Epic",    "Epic Games"),
+            ("MSStore", "Microsoft Store"),
+            ("Itch",    "itch.io"),
+        };
+
+        private void LoadMainPlatformUI(Models.AppConfig config)
+        {
+            string current = !string.IsNullOrEmpty(config.Platform) ? config.Platform : "";
+
+            MainPlatformLabel.Text = current switch
+            {
+                "Steam"   => "Steam",
+                "Epic"    => "Epic Games",
+                "MSStore" => "Microsoft Store",
+                "Itch"    => "itch.io",
+                _         => "未設定"
+            };
+            MainPlatformIcon.Glyph = current == "Epic" ? "\uE83B" : "\uE7FC";
+
+            PlatformSwitchPanel.Children.Clear();
+            PlatformSwitchHint.Visibility = Visibility.Collapsed;
+
+            foreach (var (tag, label) in PlatformOptions)
+            {
+                bool isCurrent = tag == current;
+                var btn = new Button
+                {
+                    Content = isCurrent ? $"✅ {label}（現在）" : $"{label} に変更",
+                    IsEnabled = !isCurrent,
+                    Tag = tag,
+                    Padding = new Microsoft.UI.Xaml.Thickness(14, 8, 14, 8),
+                    HorizontalAlignment = Microsoft.UI.Xaml.HorizontalAlignment.Left
+                };
+                if (isCurrent)
+                    btn.Style = (Microsoft.UI.Xaml.Style)Application.Current.Resources["AccentButtonStyle"];
+                btn.Click += SwitchMainPlatform_Click;
+                PlatformSwitchPanel.Children.Add(btn);
+            }
+        }
+
+        private void SwitchMainPlatform_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+        {
+            if (sender is not Button btn || btn.Tag is not string tag) return;
+
+            var config = ConfigService.Load();
+            config.Platform     = tag;
+            config.MainPlatform = tag;
+            config.EpicLaunchViaLauncher = tag == "Epic";
+
+            ConfigService.Save(config);
+            LogService.Info("SettingsPage", $"メインプラットフォーム切り替え: {tag}");
+
+            // Epic設定セクションの表示を更新
+            EpicSettingsSection.Visibility = tag == "Epic" ? Visibility.Visible : Visibility.Collapsed;
+            if (tag == "Epic") RefreshEpicStatus();
+
+            LoadMainPlatformUI(config);
+        }
+
+        private void RefreshEpicStatus()
+        {
+            var config = ConfigService.Load();
+            bool loggedIn = EpicLoginService.IsLoggedIn(config);
+            LogService.Debug("SettingsPage", $"Epicログイン状態: {(loggedIn ? "ログイン済み" : "未ログイン")}");
+
+            if (loggedIn)
+            {
+                EpicStatusText.Text      = $"✅ ログイン済み — {config.EpicDisplayName}（Epic Games Launcher 不要）";
+                EpicStatusIcon.Glyph     = "\uE73E";
+                EpicStatusIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.SeaGreen);
+            }
+            else
+            {
+                EpicStatusText.Text      = "❌ 未ログイン — アカウントページでログインしてください";
+                EpicStatusIcon.Glyph     = "\uE711";
+                EpicStatusIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Tomato);
+            }
+        }
+
+        private void EpicOpenLauncher_Click(object sender, RoutedEventArgs e)
+        {
+            LogService.Info("SettingsPage", "Epic Launcher 起動");
+            EpicLoginService.LaunchEpicLauncher();
+        }
+
+        private async void EpicRecheck_Click(object sender, RoutedEventArgs e)
+        {
+            LogService.Info("SettingsPage", "Epic ログイン状態再確認");
+            await System.Threading.Tasks.Task.Delay(500);
+            RefreshEpicStatus();
+        }
+
+        private void EpicLaunchViaLauncherToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var config = ConfigService.Load();
+            config.EpicLaunchViaLauncher = EpicLaunchViaLauncherToggle.IsOn;
+            ConfigService.Save(config);
+            LogService.Info("SettingsPage", $"EpicLaunchViaLauncher: {config.EpicLaunchViaLauncher}");
         }
 
         public bool HasUnsavedChanges()
@@ -68,21 +192,15 @@ namespace AmongUsModManager.Pages
         public void ShowUnsavedWarning(string tag)
         {
             _pendingTag = tag;
-            UnsavedChangesBar.IsOpen = true; 
+            UnsavedChangesBar.IsOpen = true;
         }
 
         private void SaveAndExit_Click(object sender, RoutedEventArgs e)
         {
-            
             ExecuteSave();
-
             UnsavedChangesBar.IsOpen = false;
-
-          
             if (App.MainWindowInstance is MainWindow mw)
-            {
                 mw.NavigateToPendingPage(_pendingTag);
-            }
         }
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
@@ -92,19 +210,44 @@ namespace AmongUsModManager.Pages
             StatusMessage.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 128, 0));
         }
 
-     
         private void ExecuteSave()
         {
             var config = ConfigService.Load() ?? new AppConfig();
             config.VanillaPaths = VanillaPaths.ToList();
             config.ModDataPath = ModDataPathTextBox.Text;
             if (VanillaPaths.Count > 0) config.GameInstallPath = VanillaPaths[0].Path;
+            config.StartWithWindows = StartWithWindowsToggle.IsOn;
+            config.StartMinimized   = StartMinimizedToggle.IsOn;
+            config.LogAppendMode    = LogAppendModeToggle.IsOn;
+            config.MinimizeToTray   = MinimizeToTrayToggle.IsOn;
 
             ConfigService.Save(config);
-            UnsavedChangesBar.IsOpen = false; 
+            ApplyStartupSetting(config.StartWithWindows);
+            UnsavedChangesBar.IsOpen = false;
         }
 
-       
+        private void ApplyStartupSetting(bool enable)
+        {
+            try
+            {
+                string exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName ?? "";
+                if (string.IsNullOrEmpty(exePath)) return;
+
+                using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
+                    @"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", writable: true);
+                if (key == null) return;
+
+                const string appName = "AmongUsModManager";
+                if (enable)
+                    key.SetValue(appName, $"\"{exePath}\"");
+                else
+                    key.DeleteValue(appName, throwOnMissingValue: false);
+            }
+            catch { }
+        }
+
+        private void StartWithWindowsToggle_Toggled(object sender, RoutedEventArgs e) { }
+
         private async Task<StorageFolder?> SelectFolder()
         {
             var folderPicker = new FolderPicker();
@@ -190,10 +333,24 @@ namespace AmongUsModManager.Pages
                 VanillaPaths.Remove(info);
         }
 
+        private void LogAppendModeToggle_Toggled(object sender, RoutedEventArgs e) { }
+
+        private void MinimizeToTrayToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var config = ConfigService.Load();
+            config.MinimizeToTray = MinimizeToTrayToggle.IsOn;
+            ConfigService.Save(config);
+            // MainWindowにトレイ設定を通知
+            if (App.MainWindowInstance is MainWindow mw)
+                mw.UpdateTrayBehavior(MinimizeToTrayToggle.IsOn);
+        }
+
         private async void ChangeModPath_Click(object sender, RoutedEventArgs e)
         {
             var folder = await SelectFolder();
             if (folder != null) ModDataPathTextBox.Text = folder.Path;
         }
+
+       
     }
 }

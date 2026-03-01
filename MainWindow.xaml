@@ -8,60 +8,157 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Title="AmongUsModManager">
+
     <Window.SystemBackdrop>
         <MicaBackdrop />
     </Window.SystemBackdrop>
 
-    <Grid Grid.Row="1">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+
         
+        <Grid Grid.Row="0" Height="48"
+              IsHitTestVisible="False"
+              Background="{ThemeResource NavigationViewDefaultPaneBackground}"
+              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+              BorderThickness="0,0,0,1">
+            <Grid Margin="16,0,16,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="16,8,0,8" Grid.Row="0">
-            <Image Source="/Resource/Icon.png" Width="16" Height="16" Margin="0,0,12,0"/>
-            <TextBlock Text="AmongUsModManager" Style="{StaticResource TitleTextBlockStyle}" VerticalAlignment="Center" FontWeight="Bold"/>
-        </StackPanel>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Image Source="/Resource/Icon.png" Width="22" Height="22" Margin="0,0,10,0"
+                           VerticalAlignment="Center"/>
+                    <TextBlock x:Name="AppTitleText" Text="AmongUsModManager"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
 
-        <NavigationView x:Name="NavView" 
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="8">
+                    <TextBlock x:Name="VersionText" Text="" VerticalAlignment="Center" Opacity="0.8"/>
+                    <Border x:Name="PreReleaseIcon" Visibility="Collapsed" Background="#FFDD9933" CornerRadius="4" VerticalAlignment="Center">
+                        <TextBlock Text="PRE" Padding="6,2" FontSize="11"/>
+                    </Border>
+                    <Border x:Name="DebugIcon" Visibility="Collapsed" Background="#FF5577CC" CornerRadius="4" VerticalAlignment="Center">
+                        <TextBlock Text="Debug" Padding="6,2" FontSize="11"/>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Grid>
+
+        <NavigationView x:Name="NavView"
                         Grid.Row="1"
-                        PaneDisplayMode="Left" 
+                        PaneDisplayMode="Left"
                         IsBackButtonVisible="Collapsed"
-                        IsSettingsVisible="True"                       
-                        SelectionChanged="NavView_SelectionChanged">
+                        IsSettingsVisible="False"
+                        SelectionChanged="NavView_SelectionChanged"
+                        OpenPaneLength="200">
+
+          
+            <NavigationView.PaneHeader>
+                <StackPanel Margin="16,8,16,4">
+                    <Button x:Name="AppUpdatePaneBtn"
+                            Content="アップデート"
+                            HorizontalAlignment="Stretch"
+                            Visibility="Collapsed"
+                            Click="AppUpdatePaneBtn_Click"
+                            Style="{StaticResource AccentButtonStyle}"
+                            FontSize="12"/>
+                </StackPanel>
+            </NavigationView.PaneHeader>
+
             <NavigationView.MenuItems>
                 <NavigationViewItem x:Name="HomeItem" Content="ホーム" Tag="Home">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE80F;"/>
-                    </NavigationViewItem.Icon>
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE80F;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem x:Name="ModInstallItem" Content="Modインストール" Tag="ModInstall">
+                <NavigationViewItem x:Name="ModInstallItem" Content="インストール" Tag="ModInstall">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE7BF;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItem x:Name="LibraryItem" Content="Modライブラリ" Tag="Library">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE8B1;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+               
+                <NavigationViewItem Tag="Notification">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xEA8F;"/></NavigationViewItem.Icon>
+                    <NavigationViewItem.Content>
+                        <Grid>
+                            <TextBlock Text="お知らせ" VerticalAlignment="Center"/>
+                            <Border x:Name="NotifSidebarBadge"
+                                    Background="Red"
+                                    CornerRadius="8"
+                                    MinWidth="16" Height="16"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Margin="0,-2,-4,0"
+                                    Padding="3,0"
+                                    Visibility="Collapsed">
+                                <TextBlock x:Name="NotifSidebarCount"
+                                           Text="0"
+                                           FontSize="10"
+                                           Foreground="White"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                    </NavigationViewItem.Content>
+                </NavigationViewItem>
+
+                <NavigationViewItem Content="問い合わせ" Tag="Contact">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE939;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItem Content="チャットボット" Tag="ChatBot">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE8F2;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+               
+                <NavigationViewItem x:Name="DiscordNavItem" Tag="Discord">
                     <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE7BF;"/>
+                        <FontIcon Glyph="&#xE8BD;" Foreground="#5865F2"/>
                     </NavigationViewItem.Icon>
+                    <NavigationViewItem.Content>
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="Discord🔗" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </NavigationViewItem.Content>
                 </NavigationViewItem>
 
                 <NavigationViewItemSeparator x:Name="NavSeparator"/>
 
-                <NavigationViewItem x:Name="LibraryItem" Content="ライブラリ" Tag="Library">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE8B1;"/>
-                    </NavigationViewItem.Icon>
-                </NavigationViewItem>              
-                
+                <NavigationViewItem Content="データ管理" Tag="DataManagement">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE9F5;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItem Content="統計・実績" Tag="Stats">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE9D2;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItem Content="アプリについて" Tag="About">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE946;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
             </NavigationView.MenuItems>
+
+            
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem x:Name="InfoItem" Content="このアプリについて" Tag="Information">
-                    <NavigationViewItem.Icon>
-                        <FontIcon Glyph="&#xE946;"/>
-                    </NavigationViewItem.Icon>
+                <NavigationViewItem Content="アカウント" Tag="Account">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE77B;"/></NavigationViewItem.Icon>
+                </NavigationViewItem>
+
+                <NavigationViewItem Content="設定" Tag="Settings">
+                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE713;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>
 
-            <Frame x:Name="ContentFrame" Grid.Row="1"/>
-
+            <Frame x:Name="ContentFrame"/>
         </NavigationView>
     </Grid>
 </Window>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="AmongUsModManager.Pages.StatsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AmongUsModManager.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="16" Margin="28,20,28,32">
+
+            <TextBlock Text="統計・実績" FontSize="26" FontWeight="SemiBold"/>
+            <TextBlock Text="起動履歴・プレイ統計・アプリ実績"
+                       FontSize="13"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       Margin="0,-8,0,0"/>
+
+            
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="24,18">
+                <StackPanel Spacing="14">
+                    <TextBlock Text="起動統計" FontSize="14" FontWeight="SemiBold"/>
+                    <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="12">
+                        <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="16,12">
+                            <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                <FontIcon Glyph="&#xE7FC;" FontSize="24"
+                                          Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <TextBlock x:Name="TotalLaunchCount" Text="0"
+                                           FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="総起動回数" FontSize="11"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="16,12" Grid.Column="1">
+                            <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                <FontIcon Glyph="&#xE787;" FontSize="24"
+                                          Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <TextBlock x:Name="MonthlyLaunchCount" Text="0"
+                                           FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="今月の起動" FontSize="11"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="16,12" Grid.Column="2">
+                            <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                <FontIcon Glyph="&#xE8B1;" FontSize="24"
+                                          Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <TextBlock x:Name="RegisteredModCount" Text="0"
+                                           FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="登録Mod数" FontSize="11"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                        <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="16,12" Grid.Column="3">
+                            <StackPanel Spacing="4" HorizontalAlignment="Center">
+                                <FontIcon Glyph="&#xE916;" FontSize="24"
+                                          Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                <TextBlock x:Name="LastLaunchText" Text="--"
+                                           FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                <TextBlock Text="最終起動" FontSize="11"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="24,18">
+                <StackPanel Spacing="12">
+                    <RelativePanel>
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="起動履歴" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="最近の起動ログ" FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                        <Button Content="履歴をクリア"
+                                RelativePanel.AlignRightWithPanel="True"
+                                RelativePanel.AlignVerticalCenterWithPanel="True"
+                                x:Name="ClearHistoryBtn" Click="ClearHistory_Click"/>
+                    </RelativePanel>
+                    <ListView x:Name="LaunchHistoryView" SelectionMode="None" MaxHeight="300">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Setter Property="Padding" Value="0"/>
+                                <Setter Property="Margin" Value="0,1"/>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="local:LaunchHistoryItem">
+                                <Grid ColumnDefinitions="Auto, *, Auto"
+                                      ColumnSpacing="12" Padding="8,6">
+                                    <FontIcon Glyph="&#xE7FC;" FontSize="14"
+                                              VerticalAlignment="Center"
+                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind ModName}"
+                                               FontSize="13" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="2" Text="{x:Bind LaunchedAtText}"
+                                               FontSize="11"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                    <TextBlock x:Name="HistoryEmptyText"
+                               Text="起動履歴がありません"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                               FontSize="13" HorizontalAlignment="Center"
+                               Margin="0,12" Visibility="Collapsed"/>
+                </StackPanel>
+            </Border>
+
+            
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="24,18">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="実績" FontSize="14" FontWeight="SemiBold"/>
+                    <StackPanel HorizontalAlignment="Center" Spacing="12" Padding="0,16">
+                        <FontIcon Glyph="&#xE734;" FontSize="40"
+                                  Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                  HorizontalAlignment="Center"/>
+                        <Border Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+                                CornerRadius="8" Padding="20,12">
+                            <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                <TextBlock Text="🚧  開発中" FontSize="14" FontWeight="SemiBold"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="実績機能は現在開発中です。&#x0a;今後のアップデートで追加予定です。"
+                                           TextWrapping="Wrap" FontSize="12" TextAlignment="Center"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
