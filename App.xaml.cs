@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.UI.Xaml;
 using AmongUsModManager.Services;
 using AmongUsModManager.Models.Services;
@@ -9,13 +9,13 @@ namespace AmongUsModManager
     {
         public Window m_window { get; private set; } = null!;
         public static Window? MainWindowInstance { get; private set; }
-        public static string AppVersion { get; } = "1.4.2";
+        public static string AppVersion { get; } = "1.4.3";
         /// <summary>
         /// プレリリースかどうか。
         /// true にすると、デバッグビルドのときに自動アップデートチェックが無効になる。
         /// リリースビルドでは常にfalse扱い。
         /// </summary>
-        public const bool IsPreRelease = true;
+        public const bool IsPreRelease = false;
 
         public App()
         {

@@ -9,56 +9,56 @@
   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   IgnorableNamespaces="uap rescap uap18 desktop">
 
-  <Identity
-    Name="1e7a4ff8-c441-4452-9827-7406d18d3394"
-    Publisher="CN=Tabasco"
-    Version="1.4.2.0" />
+	<Identity
+	  Name="Tabasco1410.AmongUsModManager"
+	  Publisher="CN=Tabasco"
+	  Version="1.4.3.0" />
 
-  <mp:PhoneIdentity PhoneProductId="1e7a4ff8-c441-4452-9827-7406d18d3394" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+	<mp:PhoneIdentity PhoneProductId="Tabasco1410.AmongUsModManager" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
-  <Properties>
-    <DisplayName>AmongUsModManager</DisplayName>
-    <PublisherDisplayName>Tabasco</PublisherDisplayName>
-    <Logo>Assets\StoreLogo.png</Logo>
-  </Properties>
+	<Properties>
+		<DisplayName>AmongUsModManager</DisplayName>
+		<PublisherDisplayName>Tabasco</PublisherDisplayName>
+		<Logo>Assets\StoreLogo.png</Logo>
+	</Properties>
 
-  <Dependencies>
-    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
-  </Dependencies>
+	<Dependencies>
+		<TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+		<TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+	</Dependencies>
 
-  <Resources>
-    <Resource Language="x-generate"/>
-  </Resources>
+	<Resources>
+		<Resource Language="x-generate"/>
+	</Resources>
 
-  <Applications>
-    <Application Id="App"
-      Executable="$targetnametoken$.exe"
-      EntryPoint="$targetentrypoint$">
-      <uap:VisualElements
-        DisplayName="AmongUsModManager"
-        Description="AmongUsModManager"
-        BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
-        <uap:SplashScreen Image="Assets\SplashScreen.png" />
-        <uap:InitialRotationPreference>
-          <uap:Rotation Preference="landscape"/>
-        </uap:InitialRotationPreference>
-      </uap:VisualElements>
-      <Extensions>
-        <desktop:Extension Category="windows.toastNotificationActivation">
-          <desktop:ToastNotificationActivation ToastActivatorCLSID="6B4A5B6C-1234-5678-ABCD-1E7A4FF8C441" />
-        </desktop:Extension>
-      </Extensions>
-    </Application>
-  </Applications>
+	<Applications>
+		<Application Id="App"
+		  Executable="$targetnametoken$.exe"
+		  EntryPoint="$targetentrypoint$">
+			<uap:VisualElements
+			  DisplayName="AmongUsModManager"
+			  Description="AmongUsModManager"
+			  BackgroundColor="transparent"
+			  Square150x150Logo="Assets\Square150x150Logo.png"
+			  Square44x44Logo="Assets\Square44x44Logo.png">
+				<uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
+				<uap:SplashScreen Image="Assets\SplashScreen.png" />
+				<uap:InitialRotationPreference>
+					<uap:Rotation Preference="landscape"/>
+				</uap:InitialRotationPreference>
+			</uap:VisualElements>
+			<Extensions>
+				<desktop:Extension Category="windows.toastNotificationActivation">
+					<desktop:ToastNotificationActivation ToastActivatorCLSID="6B4A5B6C-1234-5678-ABCD-1E7A4FF8C441" />
+				</desktop:Extension>
+			</Extensions>
+		</Application>
+	</Applications>
 
-  <Capabilities>
-    <rescap:Capability Name="runFullTrust" />
-    <Capability Name="privateNetworkClientServer"/>
-    <Capability Name="internetClient"/>
-    <Capability Name="internetClientServer"/>
-  </Capabilities>
+	<Capabilities>
+		<rescap:Capability Name="runFullTrust" />
+		<Capability Name="privateNetworkClientServer"/>
+		<Capability Name="internetClient"/>
+		<Capability Name="internetClientServer"/>
+	</Capabilities>
 </Package>
