@@ -472,38 +472,6 @@ namespace AmongUsModManager.Pages
             await LoadLibraryAsync();
         }
 
-        private async void DeleteMod_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is not MenuFlyoutItem { Tag: VanillaPathInfo mod }) return;
-
-            var dlg = new ContentDialog
-            {
-                Title = "MODの削除確認",
-                Content = mod.Name + " をどのように削除しますか？\n\n登録解除：アプリのリストから消します（ファイルは残ります）\n完全削除：フォルダごと物理的に削除します",
-                PrimaryButtonText = "登録解除のみ",
-                SecondaryButtonText = "フォルダごと削除",
-                CloseButtonText = "キャンセル",
-                DefaultButton = ContentDialogButton.Primary,
-                XamlRoot = this.XamlRoot
-            };
-
-            var result = await dlg.ShowAsync();
-            if (result == ContentDialogResult.None) return;
-
-            var config = ConfigService.Load();
-            if (result == ContentDialogResult.Secondary)
-            {
-                try { if (Directory.Exists(mod.Path)) Directory.Delete(mod.Path, true); }
-                catch (Exception ex) { Debug.WriteLine("削除エラー: " + ex.Message); }
-            }
-            config.VanillaPaths?.RemoveAll(v => v.Path == mod.Path);
-            ConfigService.Save(config);
-            _lastLoadedAt = DateTime.MinValue;
-            await LoadLibraryAsync();
-        }
-
-        private void RenameMod_Click(object sender, RoutedEventArgs e) { }
-
         private async void LinkGitHub_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not MenuFlyoutItem { Tag: VanillaPathInfo mod }) return;

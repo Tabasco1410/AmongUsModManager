@@ -90,6 +90,7 @@
 		<AppInstallerUri>https://github.com/Tabasco/AmongUsModManager/releases/latest/download/</AppInstallerUri>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 		<AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
+		<AppxPackageDir>AppPackages\</AppxPackageDir>
 	</PropertyGroup>
 	<ItemGroup>
 		<Page Include="Pages\HomePage.xaml">
@@ -104,7 +105,7 @@
 	<ItemGroup>
 		<PackageReference Include="Markdig" Version="1.0.0" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.251107005" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251105000" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3179.45" />
 		<PackageReference Include="System.Text.Json" Version="9.0.0" />
 	</ItemGroup>
@@ -112,8 +113,8 @@
 		<PRIResource Remove="Resources\**" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Content Include="Resource\icon.ico">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
+		<Content Include="Resource\icon.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 </Project>
