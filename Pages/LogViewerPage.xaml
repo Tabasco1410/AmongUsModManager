@@ -1,0 +1,56 @@
+<Page
+    x:Class="AmongUsModManager.Pages.LogViewerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d">
+
+    <Grid Padding="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="ログビューア" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+        <!-- ツールバー -->
+        <Grid Grid.Row="1" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="220"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" Text="ファイル:" VerticalAlignment="Center" FontSize="13"/>
+
+            <!-- ログファイル選択 -->
+            <ComboBox x:Name="LogFileCombo" Grid.Column="2"
+                      HorizontalAlignment="Stretch"
+                      SelectionChanged="LogFileCombo_SelectionChanged"
+                      VerticalAlignment="Center"/>
+
+            <!-- 右側ボタン群 -->
+            <Button Grid.Column="4" Content="更新" Click="Refresh_Click"
+                    Style="{StaticResource AccentButtonStyle}"/>
+            <Button Grid.Column="6" Content="ログフォルダを開く" Click="OpenFolder_Click"/>
+            <Button Grid.Column="8" Content="クリア" Click="Clear_Click"/>
+        </Grid>
+
+        <!-- ログ本文 -->
+        <ScrollViewer Grid.Row="2" x:Name="LogScrollViewer"
+                      Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+                      CornerRadius="8" Padding="12">
+            <TextBlock x:Name="LogText"
+                       FontFamily="Consolas" FontSize="12"
+                       TextWrapping="Wrap" IsTextSelectionEnabled="True"/>
+        </ScrollViewer>
+    </Grid>
+</Page>

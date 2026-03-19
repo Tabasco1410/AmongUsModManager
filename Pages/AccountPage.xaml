@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="AmongUsModManager.Pages.AccountPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Spacing="16" Margin="28,20,28,32" MaxWidth="640">
+
+            <TextBlock Text="アカウント連携" FontSize="26" FontWeight="SemiBold"/>
+            <TextBlock Text="各サービスと連携することで、追加機能が利用できます。"
+                       FontSize="13" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                       Margin="0,-8,0,0"/>
+
+            
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="24,18">
+                <StackPanel Spacing="14">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon Glyph="&#xE943;" FontSize="24"
+                                  Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                  VerticalAlignment="Center"/>
+                        <StackPanel>
+                            <TextBlock Text="GitHub" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock Text="Modのアップデート確認に使用。接続するとAPI制限が 60回 → 5,000回/時間 に緩和されます。"
+                                       FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <Border x:Name="GitHubStatusBadge"
+                            Background="{ThemeResource SystemFillColorNeutralBackgroundBrush}"
+                            CornerRadius="6" Padding="12,8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon x:Name="GitHubStatusIcon" Glyph="&#xE783;" FontSize="16"
+                                      VerticalAlignment="Center"/>
+                            <TextBlock x:Name="GitHubStatusText"
+                                       Text="未接続（レートリミット：60回/時間）"
+                                       FontSize="13" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    
+                    <StackPanel x:Name="GitHubLoginPanel" Spacing="12">
+
+                        
+                        <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="16,14">
+                            <StackPanel Spacing="10">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE72E;" FontSize="14"
+                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                              VerticalAlignment="Center"/>
+                                    <TextBlock Text="ブラウザでログイン（おすすめ）"
+                                               FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <Border Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                            CornerRadius="4" Padding="6,2">
+                                        <TextBlock Text="かんたん" FontSize="11" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock FontSize="12" TextWrapping="Wrap"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           Text="ボタンを押すとコードが表示されます。ブラウザで GitHub を開いてコードを入力するだけでログインできます。トークンの発行は不要です。"/>
+
+                                
+                                <Border x:Name="DeviceCodePanel" Visibility="Collapsed"
+                                        Background="{ThemeResource SystemFillColorNeutralBackgroundBrush}"
+                                        CornerRadius="6" Padding="14,12">
+                                    <StackPanel Spacing="8">
+                                        <TextBlock Text="① 以下のコードをコピーしてください"
+                                                   FontSize="12"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="10">
+                                            <TextBlock x:Name="DeviceUserCodeText"
+                                                       FontSize="28" FontWeight="Bold"
+                                                       FontFamily="Consolas" CharacterSpacing="200"/>
+                                            <Button x:Name="CopyDeviceCodeBtn"
+                                                    Content="📋 コピー" Padding="10,4"
+                                                    VerticalAlignment="Center"
+                                                    Click="CopyDeviceCode_Click"/>
+                                        </StackPanel>
+                                        <TextBlock Text="② ブラウザで github.com/login/device を開き、コードを入力してください"
+                                                   FontSize="12" TextWrapping="Wrap"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                        <Button Content="🌐 ブラウザで GitHub を開く"
+                                                Click="OpenGitHubBrowser_Click" Padding="12,6"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                            <ProgressRing x:Name="DeviceFlowProgress"
+                                                          IsActive="True" Width="16" Height="16"
+                                                          VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="DeviceFlowStatusText"
+                                                       Text="認証を待っています..."
+                                                       FontSize="12"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button x:Name="StartDeviceFlowBtn"
+                                            Content="🔑 GitHubでログイン"
+                                            Style="{StaticResource AccentButtonStyle}"
+                                            Click="StartDeviceFlow_Click" Padding="16,8"/>
+                                    <Button x:Name="CancelDeviceFlowBtn"
+                                            Content="キャンセル" Visibility="Collapsed"
+                                            Click="CancelDeviceFlow_Click" Padding="16,8"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        
+                        <Expander HorizontalAlignment="Stretch"
+                                  HorizontalContentAlignment="Stretch">
+                            <Expander.Header>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE8C8;" FontSize="14" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Personal Access Token を手動入力（上級者向け）"
+                                               FontSize="13" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Expander.Header>
+                            <StackPanel Spacing="8" Margin="0,8,0,0">
+                                <TextBlock FontSize="12" TextWrapping="Wrap"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                    <Run Text="GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic) で発行。"/>
+                                    <Run Text="必要なスコープは「public_repo」のみです。"/>
+                                </TextBlock>
+                                <Grid ColumnSpacing="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <PasswordBox x:Name="GitHubTokenBox"
+                                                 PlaceholderText="ghp_xxxxxxxxxxxxxxxxxxxx"
+                                                 PasswordRevealMode="Peek"/>
+                                    <Button Grid.Column="1" x:Name="GitHubConnectBtn"
+                                            Content="接続" Style="{StaticResource AccentButtonStyle}"
+                                            Click="GitHubConnect_Click" Padding="16,8"/>
+                                    <Button Grid.Column="2" x:Name="GitHubDisconnectBtn"
+                                            Content="切断" Click="GitHubDisconnect_Click"
+                                            Visibility="Collapsed" Padding="16,8"/>
+                                </Grid>
+                                <HyperlinkButton Content="🔗 GitHub でトークンを発行する（ブラウザで開く）"
+                                                 NavigateUri="https://github.com/settings/tokens/new?scopes=public_repo&amp;description=AmongUsModManager"
+                                                 FontSize="12" Padding="0"/>
+                            </StackPanel>
+                        </Expander>
+                    </StackPanel>
+
+                    
+                    <Button x:Name="GitHubDisconnectMainBtn"
+                            Content="接続を解除する" Visibility="Collapsed"
+                            Click="GitHubDisconnect_Click" Padding="14,7"/>
+                </StackPanel>
+            </Border>
+
+            
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="24,18">
+                <StackPanel Spacing="14">
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon Glyph="&#xE7FC;" FontSize="24"
+                                  Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                  VerticalAlignment="Center"/>
+                        <StackPanel>
+                            <TextBlock Text="Steam" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock Text="Steamアカウントと連携します。APIキー不要でブラウザからログインできます。"
+                                       FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    
+                    <Border x:Name="SteamStatusBadge"
+                            Background="{ThemeResource SystemFillColorNeutralBackgroundBrush}"
+                            CornerRadius="6" Padding="12,8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon x:Name="SteamStatusIcon" Glyph="&#xE783;" FontSize="16"
+                                      VerticalAlignment="Center"/>
+                            <TextBlock x:Name="SteamStatusText" Text="未接続"
+                                       FontSize="13" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    
+                    <Border x:Name="SteamProfilePanel" Visibility="Collapsed"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1" CornerRadius="6" Padding="14,12">
+                        <StackPanel Spacing="6">
+                            <TextBlock x:Name="SteamUserNameText" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="SteamIdText" FontSize="12" FontFamily="Consolas"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <HyperlinkButton x:Name="SteamProfileLink"
+                                             Content="Steam プロフィールを開く"
+                                             FontSize="12" Padding="0"/>
+                        </StackPanel>
+                    </Border>
+
+                    
+                    <StackPanel x:Name="SteamLoginPanel" Spacing="12">
+                        <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="16,14">
+                            <StackPanel Spacing="10">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE72E;" FontSize="14"
+                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                              VerticalAlignment="Center"/>
+                                    <TextBlock Text="ブラウザでログイン（おすすめ）"
+                                               FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                    <Border Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                            CornerRadius="4" Padding="6,2">
+                                        <TextBlock Text="APIキー不要" FontSize="11" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock FontSize="12" TextWrapping="Wrap"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           Text="ボタンを押すとブラウザでSteamのログインページが開きます。ログインするとアプリに自動で戻ります。"/>
+
+                                
+                                <StackPanel x:Name="SteamWaitingPanel" Visibility="Collapsed"
+                                            Orientation="Horizontal" Spacing="8">
+                                    <ProgressRing x:Name="SteamProgress"
+                                                  IsActive="True" Width="16" Height="16"
+                                                  VerticalAlignment="Center"/>
+                                    <TextBlock Text="ブラウザでのログインを待っています..."
+                                               FontSize="12"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Button x:Name="SteamLoginBtn"
+                                            Content="🎮 Steamでログイン"
+                                            Style="{StaticResource AccentButtonStyle}"
+                                            Click="SteamLogin_Click" Padding="16,8"/>
+                                    <Button x:Name="SteamCancelBtn"
+                                            Content="キャンセル" Visibility="Collapsed"
+                                            Click="SteamCancel_Click" Padding="16,8"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    
+                    <Button x:Name="SteamDisconnectBtn"
+                            Content="接続を解除する" Visibility="Collapsed"
+                            Click="SteamDisconnect_Click" Padding="14,7"/>
+                </StackPanel>
+            </Border>
+
+            
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="24,18">
+                <StackPanel Spacing="14">
+
+                    
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <FontIcon Glyph="&#xE83B;" FontSize="24"
+                                  Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                  VerticalAlignment="Center"/>
+                        <StackPanel>
+                            <TextBlock Text="Epic Games" FontSize="16" FontWeight="SemiBold"/>
+                            <TextBlock FontSize="12" TextWrapping="Wrap"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Text="Epic版プレイヤー向け。ランチャーにログインすると、Epic Games Launcher なしでもオンライン機能が使えます。"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    
+                    <Border x:Name="EpicStatusBadge"
+                            Background="{ThemeResource SystemFillColorNeutralBackgroundBrush}"
+                            CornerRadius="6" Padding="12,8">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <FontIcon x:Name="EpicStatusIcon" Glyph="&#xE783;" FontSize="16"
+                                      VerticalAlignment="Center"/>
+                            <TextBlock x:Name="EpicStatusText" Text="確認中..."
+                                       FontSize="13" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    
+                    <InfoBar x:Name="EpicNotApplicableBar" IsOpen="False" IsClosable="False"
+                             Severity="Informational"
+                             Title="Steam版またはその他プラットフォームをご利用中"
+                             Message="Epic版以外のプラットフォームではこの設定は不要です。"/>
+
+                    
+                    <Border x:Name="EpicProfilePanel" Visibility="Collapsed"
+                            Background="{ThemeResource LayerFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1" CornerRadius="6" Padding="14,12">
+                        <StackPanel Spacing="6">
+                            <TextBlock x:Name="EpicDisplayNameText"
+                                       FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="EpicAccountIdText"
+                                       FontSize="12" FontFamily="Consolas"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock FontSize="11" TextWrapping="Wrap"
+                                       Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                       Text="✅ Epic Games Launcher なしでもゲームを直接起動できます。"/>
+                        </StackPanel>
+                    </Border>
+
+                    
+                    <StackPanel x:Name="EpicLoginPanel" Spacing="12">
+                        <Border Background="{ThemeResource LayerFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                BorderThickness="1" CornerRadius="6" Padding="16,14">
+                            <StackPanel Spacing="10">
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <FontIcon Glyph="&#xE72E;" FontSize="14"
+                                              Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                              VerticalAlignment="Center"/>
+                                    <TextBlock Text="ウィンドウでログイン"
+                                               FontSize="13" FontWeight="SemiBold"
+                                               VerticalAlignment="Center"/>
+                                    <Border Background="{ThemeResource AccentFillColorDefaultBrush}"
+                                            CornerRadius="4" Padding="6,2">
+                                        <TextBlock Text="EpicLauncher不要" FontSize="11" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock FontSize="12" TextWrapping="Wrap"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           Text="ボタンを押すとログインウィンドウが開きます。Epic アカウントでサインインすると自動的に認証が完了します。ログイン後、ランチャーなしで Among Us を直接起動できるようになります。"/>
+
+                                <!-- ログイン中ステータス -->
+                                <StackPanel x:Name="EpicLoginProgressPanel"
+                                            Orientation="Horizontal" Spacing="8"
+                                            Visibility="Collapsed">
+                                    <ProgressRing IsActive="True" Width="16" Height="16"
+                                                  VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="EpicLoginStatusText"
+                                               Text="ログインウィンドウが開いています..."
+                                               FontSize="12"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <Button x:Name="EpicLoginBtn"
+                                        Content="🎮 Epic でログイン"
+                                        Style="{StaticResource AccentButtonStyle}"
+                                        Click="EpicLogin_Click" Padding="16,8"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    
+                    <Button x:Name="EpicLogoutBtn"
+                            Content="ログアウト" Visibility="Collapsed"
+                            Click="EpicLogout_Click" Padding="14,7"/>
+
+                </StackPanel>
+            </Border>
+
+            
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="24,18">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="GitHub API 利用状況" FontSize="15" FontWeight="SemiBold"/>
+                    <Grid ColumnSpacing="16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="残りリクエスト数" FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock x:Name="RateLimitRemaining" Text="--"
+                                       FontSize="22" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock Text="上限（/時間）" FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock x:Name="RateLimitMax" Text="--"
+                                       FontSize="22" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Grid>
+                    <ProgressBar x:Name="RateLimitBar" Minimum="0" Maximum="100" Value="0"
+                                 Height="6" CornerRadius="3"/>
+                    <TextBlock x:Name="RateLimitResetText" Text=""
+                               FontSize="11" Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                    <Button Content="API 利用状況を確認" Click="CheckRateLimit_Click" Padding="12,6"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

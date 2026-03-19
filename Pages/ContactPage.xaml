@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="AmongUsModManager.Pages.ContactPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Spacing="20" MaxWidth="480" Padding="24">
+
+            <FontIcon Glyph="&#xE939;" FontSize="56"
+                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                      HorizontalAlignment="Center"/>
+
+            <TextBlock Text="問い合わせ" FontSize="22" FontWeight="SemiBold"
+                       HorizontalAlignment="Center"/>
+
+            <Border Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+                    CornerRadius="8" Padding="20,16">
+                <StackPanel Spacing="8" HorizontalAlignment="Center">
+                    <TextBlock Text="🚧  開発中" FontSize="16" FontWeight="SemiBold"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" TextAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                        お問い合わせ機能は現在開発中です。&#x0a;バグ報告・要望・質問は Discord サーバーでお願いします。
+                    </TextBlock>
+                </StackPanel>
+            </Border>
+
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                    BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1" CornerRadius="8" Padding="20,16">
+                <StackPanel Spacing="12">
+                    <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                        <FontIcon Glyph="&#xE8BD;" FontSize="28"
+                                  Foreground="#5865F2" VerticalAlignment="Center"/>
+                        <StackPanel Spacing="2" VerticalAlignment="Center">
+                            <TextBlock Text="Discord サーバー" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock Text="バグ報告・機能要望・質問はこちら"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <Button x:Name="DiscordBtn"
+                            Content="Discord を開く"
+                            HorizontalAlignment="Stretch"
+                            Style="{StaticResource AccentButtonStyle}"
+                            Click="DiscordBtn_Click"/>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </Grid>
+</Page>

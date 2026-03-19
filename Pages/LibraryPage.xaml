@@ -9,36 +9,36 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
-        <local:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <models:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <models:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
     </Page.Resources>
 
     <Grid Padding="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
         <InfoBar x:Name="VersionIssueBar"
                  Grid.Row="0"
-                 Title="バージョンの不一致"
-                 Message="GitHubのリリースタグとの連携の再設定を行ってください。"
+                 Title="バージョン不一致のModがあります"
+                 Message="GitHubの最新タグとインストール済みバージョンが異なるModがあります。"
                  Severity="Warning"
                  IsOpen="False"
-                 Margin="0,0,0,10">
+                 Margin="0,0,0,8">
             <InfoBar.ActionButton>
-                <Button Content="詳細を確認して解決" Click="ResolveVersionIssues_Click"/>
+                <Button x:Name="VersionIssueActionBtn" Content="確認して解決する" Click="ResolveVersionIssues_Click"/>
             </InfoBar.ActionButton>
         </InfoBar>
-
-        <RelativePanel Grid.Row="1" Margin="0,0,0,24">
-            <StackPanel x:Name="HeaderPanel" Spacing="5">
+        <RelativePanel Grid.Row="1" Margin="0,0,0,16">
+            <StackPanel x:Name="HeaderPanel" Spacing="2">
                 <TextBlock Text="Modライブラリ" FontSize="28" FontWeight="SemiBold"/>
                 <TextBlock Text="ドラッグで並び替えが可能です" Foreground="Gray" FontSize="12"/>
             </StackPanel>
-
-            <StackPanel Orientation="Horizontal" Spacing="10" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignVerticalCenterWithPanel="True">
+            <StackPanel Orientation="Horizontal" Spacing="8"
+                        RelativePanel.AlignRightWithPanel="True"
+                        RelativePanel.AlignVerticalCenterWithPanel="True">
                 <Button Click="GridModeBtn_Click" ToolTipService.ToolTip="グリッド表示">
                     <SymbolIcon Symbol="ViewAll"/>
                 </Button>
@@ -47,53 +47,104 @@
                 </Button>
             </StackPanel>
         </RelativePanel>
-
-        <GridView Grid.Row="2" x:Name="LibraryGridView" 
-                  CanReorderItems="True" AllowDrop="True" DragItemsCompleted="LibraryGridView_DragItemsCompleted"
+        <ProgressBar x:Name="LoadingBar"
+                     Grid.Row="2"
+                     IsIndeterminate="True"
+                     Visibility="Collapsed"
+                     Margin="0,0,0,8"/>
+        <GridView Grid.Row="3" x:Name="LibraryGridView"
+                  CanReorderItems="True" AllowDrop="True"
+                  DragItemsCompleted="LibraryGridView_DragItemsCompleted"
                   SelectionMode="None">
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="models:VanillaPathInfo">
-                    <RelativePanel x:Name="ItemPanel" MinWidth="310" Height="170" Margin="0,0,12,12" Padding="16"
-                                   Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" CornerRadius="8">
-                        <TextBlock x:Name="NameTxt" Text="{x:Bind Name, Mode=OneWay}" FontSize="18" FontWeight="Bold"/>
-                        <TextBlock x:Name="VerTxt" Text="{x:Bind CurrentVersion, Mode=OneWay}" RelativePanel.Below="NameTxt" Foreground="Gray" FontSize="11"/>
-
-                        <StackPanel Orientation="Horizontal" RelativePanel.Below="VerTxt" Margin="0,5,0,0" Spacing="5">
-                            <Border Background="SteelBlue" CornerRadius="4" Padding="4,1" 
-                                    Visibility="{x:Bind GitHubRepo, Converter={StaticResource StringToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}">
-                                <TextBlock Text="連携済み" FontSize="9" Foreground="White"/>
-                            </Border>
-                            <Border Background="SeaGreen" CornerRadius="4" Padding="4,1" 
-                                    Visibility="{x:Bind IsAutoUpdateEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}">
-                                <TextBlock Text="自動更新:ON" FontSize="9" Foreground="White"/>
-                            </Border>
-                        </StackPanel>
-
-                        <StackPanel Orientation="Horizontal" Spacing="8" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True">
-                            <Button Content="フォルダ" Click="OpenFolder_Click" Tag="{x:Bind Path}"/>
-                            <Button Content="起動" Style="{StaticResource AccentButtonStyle}" Click="LaunchMod_Click" Tag="{x:Bind Path}"/>
-                            <Button Content="...">
-                                <Button.Flyout>
-                                    <MenuFlyout>
-                                        <MenuFlyoutItem Text="名前変更" Icon="Edit" Click="RenameMod_Click" Tag="{x:Bind}"/>
-                                        <MenuFlyoutItem Text="GitHub連携" Icon="Link" Click="LinkGitHub_Click" Tag="{x:Bind}"/>
-                                        <MenuFlyoutItem Text="今すぐアップデート" Icon="Refresh" Click="UpdateMod_Click" Tag="{x:Bind}"/>
-                                        <ToggleMenuFlyoutItem Text="自動アップデート" IsChecked="{x:Bind IsAutoUpdateEnabled, Mode=TwoWay}"/>
-                                        <MenuFlyoutSeparator/>
-                                        <MenuFlyoutItem Text="削除" Foreground="Red" Icon="Delete" Click="DeleteMod_Click" Tag="{x:Bind}"/>
-                                    </MenuFlyout>
-                                </Button.Flyout>
-                            </Button>
-                        </StackPanel>
-                    </RelativePanel>
+                    <Border MinWidth="280" MaxWidth="340" Margin="0,0,12,12" CornerRadius="10"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1">
+                        <Grid RowDefinitions="120,Auto">
+                            <Grid Grid.Row="0" CornerRadius="10,10,0,0">
+                                <Image x:Name="ModBannerImage"
+                                       Stretch="UniformToFill"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"/>
+                                <Border x:Name="PlaceholderBg"
+                                        Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
+                                        Visibility="{x:Bind GitHubRepo, Converter={StaticResource StringToVisibilityConverter},
+                                                     ConverterParameter=invert, Mode=OneWay, FallbackValue=Visible}">
+                                    <FontIcon Glyph="&#xE7FC;" FontSize="40"
+                                              Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Background="#66000000" CornerRadius="10,10,0,0"
+                                        Visibility="{x:Bind GitHubRepo, Converter={StaticResource StringToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}"/>
+                                <StackPanel Orientation="Horizontal" Spacing="4"
+                                            VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                                            Margin="10,0,0,8">
+                                    <Border Background="#BB1565C0" CornerRadius="4" Padding="5,2"
+                                            Visibility="{x:Bind GitHubRepo, Converter={StaticResource StringToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}">
+                                        <TextBlock Text="GitHub連携" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                    <Border Background="#BB2E7D32" CornerRadius="4" Padding="5,2"
+                                            Visibility="{x:Bind IsAutoUpdateEnabled, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}">
+                                        <TextBlock Text="自動更新ON" FontSize="9" Foreground="White"/>
+                                    </Border>
+                                </StackPanel>
+                            </Grid>
+                            <StackPanel Grid.Row="1" Padding="14,10,14,12" Spacing="4">
+                                <TextBlock Text="{x:Bind Name, Mode=OneWay}"
+                                           FontSize="15" FontWeight="SemiBold"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="{x:Bind CurrentVersion, Mode=OneWay}"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                           FontSize="11"/>
+                                <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,6,0,0">
+                                    <Button Content="フォルダ" Click="OpenFolder_Click"
+                                            Tag="{x:Bind Path}" Padding="10,5"/>
+                                    <Button Content="▶ 起動"
+                                            Style="{StaticResource AccentButtonStyle}"
+                                            Click="LaunchMod_Click" Tag="{x:Bind Path}" Padding="10,5"/>
+                                    <Button Content="···" Padding="8,5">
+                                        <Button.Flyout>
+                                            <MenuFlyout>
+                                                <MenuFlyoutItem Text="名前変更" Icon="Edit"
+                                                                Click="RenameMod_Click" Tag="{x:Bind}"/>
+                                                <MenuFlyoutItem Text="GitHub連携" Icon="Link"
+                                                                Click="LinkGitHub_Click" Tag="{x:Bind}"/>
+                                                <MenuFlyoutItem Text="GitHub連携を解除" Icon="UnSyncFolder"
+                                                                Click="UnlinkGitHub_Click" Tag="{x:Bind}"
+                                                                Visibility="{x:Bind GitHubRepo, Converter={StaticResource StringToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}"/>
+                                                <MenuFlyoutItem Text="今すぐアップデート" Icon="Refresh"
+                                                                Click="UpdateMod_Click" Tag="{x:Bind}"
+                                                                Visibility="{x:Bind GitHubRepo, Converter={StaticResource StringToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}"/>
+                                                <ToggleMenuFlyoutItem Text="自動アップデート"
+                                                                      IsChecked="{x:Bind IsAutoUpdateEnabled, Mode=TwoWay}"
+                                                                      Visibility="{x:Bind GitHubRepo, Converter={StaticResource StringToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}"
+                                                                      Click="AutoUpdateToggle_Click" Tag="{x:Bind}"/>
+                                                <MenuFlyoutItem Text="バージョン設定を変更" Icon="Tag"
+                                                                Click="SetVersionTag_Click" Tag="{x:Bind}"
+                                                                Visibility="{x:Bind GitHubRepo, Converter={StaticResource StringToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}"/>
+                                                <MenuFlyoutSeparator/>
+                                                <MenuFlyoutItem Text="共有コードを生成" Icon="Share"
+                                                                Click="GenerateShareCode_Click" Tag="{x:Bind}"
+                                                                Visibility="{x:Bind GitHubRepo, Converter={StaticResource StringToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}"/>
+                                                <MenuFlyoutSeparator/>
+                                                <MenuFlyoutItem Text="削除" Foreground="Red" Icon="Delete"
+                                                                Click="DeleteMod_Click" Tag="{x:Bind}"/>
+                                            </MenuFlyout>
+                                        </Button.Flyout>
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
                 </DataTemplate>
             </GridView.ItemTemplate>
         </GridView>
-
         <ContentDialog x:Name="UpdateProgressDialog" Title="アップデート中" CloseButtonText="閉じる">
-            <StackPanel Spacing="15" Width="300">
+            <StackPanel Spacing="16" Width="300">
                 <TextBlock x:Name="UpdateStatusText" Text="準備中..."/>
-                <ProgressBar x:Name="UpdateProgressBar" Minimum="0" Maximum="100" IsIndeterminate="True"/>
+                <ProgressBar x:Name="UpdateProgressBar" IsIndeterminate="True"/>
             </StackPanel>
         </ContentDialog>
     </Grid>

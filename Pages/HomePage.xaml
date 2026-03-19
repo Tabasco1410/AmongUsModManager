@@ -1,4 +1,5 @@
-﻿<Page
+<?xml version="1.0" encoding="utf-8"?>
+<Page
     x:Class="AmongUsModManager.Pages.HomePage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,77 +7,538 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="using:AmongUsModManager.Pages"
     xmlns:models="using:AmongUsModManager.Models"
+    xmlns:wv2="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d">
 
     <Page.Resources>
-        <local:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <models:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <models:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
     </Page.Resources>
 
     <Grid>
-        <ScrollViewer>
-            <StackPanel Spacing="32" Margin="32,24,32,24" HorizontalAlignment="Left" MaxWidth="1000">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="12" Margin="28,20,28,32">
 
-                <InfoBar x:Name="LocalInfoBar" IsOpen="False" Severity="Informational" Title="新しいフォルダが見つかりました" IsClosable="True" CloseButtonClick="LocalInfoBar_CloseButtonClick">
+                
+                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="20">
+                    <TextBlock Text="ホーム" FontSize="26" FontWeight="SemiBold"
+                               VerticalAlignment="Center"/>
+                    <InfoBar x:Name="EmergencyBar"
+                             Grid.Column="1"
+                             IsOpen="False" IsClosable="True"
+                             Severity="Error"
+                             VerticalAlignment="Center"/>
+                </Grid>
+
+                
+                <InfoBar x:Name="RateLimitBar"
+                         IsOpen="False" IsClosable="True"
+                         Severity="Warning"
+                         Title="GitHub API の制限に達しました（Rate Limit）">
+                    <InfoBar.Content>
+                        <StackPanel Spacing="6" Margin="0,4,0,4">
+                            <TextBlock TextWrapping="Wrap" FontSize="13"
+                                       Text="GitHub への問い合わせ回数が一時的な上限に達したため、Mod の最新情報を取得できませんでした。"/>
+                            <TextBlock TextWrapping="Wrap" FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                       Text="しばらく（目安：1時間）待ってから「更新」ボタンを押してください。GitHub アカウントでサインインすると制限が緩和されます。"/>
+                        </StackPanel>
+                    </InfoBar.Content>
+                </InfoBar>
+
+                
+                <InfoBar x:Name="LocalInfoBar"
+                         IsOpen="False" IsClosable="True"
+                         Severity="Informational"
+                         Title="新しいフォルダが見つかりました"
+                         CloseButtonClick="LocalInfoBar_CloseButtonClick">
                     <InfoBar.ActionButton>
-                        <Button x:Name="LocalInfoBarButton" Content="登録する" Click="LocalInfoBarButton_Click" />
+                        <Button x:Name="LocalInfoBarButton" Content="登録する"
+                                Click="LocalInfoBarButton_Click"/>
                     </InfoBar.ActionButton>
                 </InfoBar>
 
-                <Grid Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" CornerRadius="8" Padding="32">
-                    <StackPanel Spacing="16">
-                        <TextBlock Text="プレイ" Style="{StaticResource TitleTextBlockStyle}"/>
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <ComboBox x:Name="ModSelector" Width="300" PlaceholderText="起動する環境を選択"/>
-                            <Button Content="ゲームを起動" Click="LaunchButton_Click" Style="{StaticResource AccentButtonStyle}"/>
+                
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1" CornerRadius="8" Padding="24,18">
+                    <Grid ColumnDefinitions="*, Auto" ColumnSpacing="16">
+                        <StackPanel Spacing="10" VerticalAlignment="Center">
+                            <TextBlock Text="Among Us を起動"
+                                       FontSize="14" FontWeight="SemiBold"/>
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <ComboBox x:Name="ModSelector" Width="300"
+                                          PlaceholderText="起動する環境を選択..."/>
+                                <Button Content="フォルダを開く"
+                                        Click="OpenFolderButton_Click"/>
+                            </StackPanel>
                         </StackPanel>
-                    </StackPanel>
-                </Grid>
+                        <Button Grid.Column="1"
+                                x:Name="LaunchBtn"
+                                Content="▶  ゲームを起動"
+                                Style="{StaticResource AccentButtonStyle}"
+                                Width="160" Height="48"
+                                VerticalAlignment="Center"
+                                Click="LaunchButton_Click"/>
+                    </Grid>
+                </Border>
 
-                <Grid ColumnDefinitions="*, *">
-                    <StackPanel Spacing="16" Margin="0,0,16,0">
-                        <TextBlock Text="お知らせ" Style="{StaticResource TitleTextBlockStyle}"/>
-                        <ListView x:Name="NewsListView" Height="300" IsItemClickEnabled="True" ItemClick="NewsListView_ItemClick" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" CornerRadius="4">
-                            <ListView.ItemTemplate>
-                                <DataTemplate>
-                                    <StackPanel Padding="12">
-                                        <TextBlock Text="{Binding Title}" FontWeight="Bold"/>
-                                        <TextBlock Text="{Binding Date}" FontSize="12" Foreground="Gray"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
-                    </StackPanel>
+                
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1" CornerRadius="8" Padding="24,18">
+                    <StackPanel Spacing="12">
 
-                    <StackPanel Grid.Column="1" Spacing="16">
-                        <TextBlock Text="アップデート情報" Style="{StaticResource TitleTextBlockStyle}"/>
-                        <ListView x:Name="UpdateListView" Height="300" BorderThickness="1" BorderBrush="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}" CornerRadius="4">
+                        
+                        <RelativePanel>
+                            <StackPanel x:Name="ReleaseHeaderPanel" Spacing="2">
+                                <TextBlock Text="Mod リリース情報"
+                                           FontSize="14" FontWeight="SemiBold"/>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock x:Name="ReleaseLastUpdatedText"
+                                               Text="最終確認: --"
+                                               FontSize="11"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <TextBlock x:Name="ReleaseCacheStatusText"
+                                               Text=""
+                                               FontSize="11"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8"
+                                        RelativePanel.AlignRightWithPanel="True"
+                                        RelativePanel.AlignVerticalCenterWithPanel="True">
+                                <ProgressRing x:Name="UpdateLoadingRing"
+                                              IsActive="True" Width="18" Height="18"
+                                              VerticalAlignment="Center"/>
+                                <Button x:Name="ReleaseInfoRefreshBtn"
+                                        Content="🔄 今すぐ更新"
+                                        Click="ReleaseInfoForceRefresh_Click"
+                                        ToolTipService.ToolTip="キャッシュを無視してGitHub APIから再取得"/>
+                            </StackPanel>
+                        </RelativePanel>
+
+                        
+                        <ListView x:Name="ReleaseListView"
+                                  SelectionMode="None"
+                                  IsItemClickEnabled="True"
+                                  ItemClick="ReleaseItem_Click">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0,2"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
-                                <DataTemplate x:DataType="local:ModUpdateStatus">
-                                    <Grid Padding="12" ColumnDefinitions="*, Auto">
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="{x:Bind ModName}" FontWeight="Bold"/>
-                                            <TextBlock Text="{x:Bind StatusText}" FontSize="12" Foreground="Gray"/>
+                                <DataTemplate x:DataType="local:ReleaseItem">
+                                    <Grid ColumnDefinitions="Auto, *, Auto, Auto"
+                                          ColumnSpacing="12" Padding="12,10"
+                                          Background="{ThemeResource SubtleFillColorTransparentBrush}"
+                                          CornerRadius="6">
+
+                                        
+                                        <Ellipse Width="8" Height="8" VerticalAlignment="Center"
+                                                 Fill="{x:Bind StatusColor}"/>
+
+                                        
+                                        <StackPanel Grid.Column="1" Spacing="2"
+                                                    VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="{x:Bind ModName}"
+                                                           FontWeight="SemiBold" FontSize="13"/>
+                                                <Border Background="{x:Bind BadgeColor}"
+                                                        CornerRadius="4" Padding="6,2"
+                                                        VerticalAlignment="Center">
+                                                    <TextBlock Text="{x:Bind BadgeText}"
+                                                               FontSize="10" Foreground="White"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock FontSize="12"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                                <Run Text="{x:Bind LatestTag}"/>
+                                                <Run Text=" · "/>
+                                                <Run Text="{x:Bind PublishedAt}"/>
+                                            </TextBlock>
                                         </StackPanel>
-                                        <Button Grid.Column="1" Content="更新" 
-                                                IsEnabled="{x:Bind CanUpdate}" 
-                                                Visibility="{x:Bind CanUpdate, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                VerticalAlignment="Center"
-                                                Click="HomeUpdateBtn_Click" 
-                                                Tag="{x:Bind}"/>
+
+                                        
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{x:Bind CurrentVersion}"
+                                                   FontSize="12"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                   VerticalAlignment="Center"
+                                                   FontFamily="Consolas"/>
+
+                                        
+                                        <StackPanel Grid.Column="3" Orientation="Horizontal"
+                                                    Spacing="6" VerticalAlignment="Center">
+                                            <Button Content="更新"
+                                                    Visibility="{x:Bind CanUpdate, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                    Style="{StaticResource AccentButtonStyle}"
+                                                    Click="QuickUpdate_Click"
+                                                    Tag="{x:Bind}"
+                                                    Padding="12,6"/>
+                                            <Button Content="インストール"
+                                                    Visibility="{x:Bind CanInstall, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                    Click="QuickInstall_Click"
+                                                    Tag="{x:Bind}"
+                                                    Padding="12,6"/>
+                                            <Button Content="詳細"
+                                                    Click="ReleaseDetail_Click"
+                                                    Tag="{x:Bind}"
+                                                    Padding="12,6"/>
+                                        </StackPanel>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
+
+                        
+                        <TextBlock x:Name="ReleaseEmptyText"
+                                   Text="Modが登録されていません。まずModをインストールしてください。"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   FontSize="13" HorizontalAlignment="Center"
+                                   Margin="0,12" Visibility="Collapsed"/>
                     </StackPanel>
-                </Grid>
+                </Border>
+
+                
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1" CornerRadius="8" Padding="24,18">
+                    <StackPanel Spacing="12">
+                        <RelativePanel>
+                            <StackPanel x:Name="AllReleaseHeaderPanel" Spacing="2">
+                                <TextBlock Text="全Modリリース一覧"
+                                           FontSize="14" FontWeight="SemiBold"/>
+                                
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock x:Name="AllReleaseLastUpdatedText"
+                                               Text="最終確認: --"
+                                               FontSize="11"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                    <TextBlock x:Name="AllReleaseCacheStatusText"
+                                               Text=""
+                                               FontSize="11"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8"
+                                        RelativePanel.AlignRightWithPanel="True"
+                                        RelativePanel.AlignVerticalCenterWithPanel="True">
+                                <ProgressRing x:Name="AllReleaseLoadingRing"
+                                              IsActive="False" Width="18" Height="18"/>
+                                
+                                <Button x:Name="AllReleaseRefreshBtn"
+                                        Content="🔄 今すぐ更新"
+                                        Click="AllReleaseForceRefresh_Click"
+                                        ToolTipService.ToolTip="キャッシュを無視してGitHub APIから最新情報を取得"/>
+                            </StackPanel>
+                        </RelativePanel>
+
+                        
+                        <StackPanel Orientation="Horizontal" Spacing="8" FlowDirection="LeftToRight">
+                            <ComboBox x:Name="AllReleaseModFilter"
+                                      PlaceholderText="Modで絞り込み"
+                                      Width="180"
+                                      SelectionChanged="AllReleaseFilter_Changed"/>
+                            <ComboBox x:Name="AllReleaseSortFilter"
+                                      Width="150"
+                                      SelectionChanged="AllReleaseFilter_Changed">
+                                <ComboBoxItem Content="新しい順" Tag="newest" IsSelected="True"/>
+                                <ComboBoxItem Content="古い順" Tag="oldest"/>
+                                <ComboBoxItem Content="Mod名順" Tag="name"/>
+                            </ComboBox>
+                            <ToggleButton x:Name="AllReleaseLatestOnly"
+                                          Content="最新のみ"
+                                          Checked="AllReleaseFilter_Changed"
+                                          Unchecked="AllReleaseFilter_Changed"/>
+                        </StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <ComboBox x:Name="AllReleasePeriodFilter"
+                                      PlaceholderText="期間で絞り込み"
+                                      Width="160"
+                                      SelectionChanged="AllReleaseFilter_Changed">
+                                <ComboBoxItem Content="すべて" Tag="all" IsSelected="True"/>
+                                <ComboBoxItem Content="今日" Tag="today"/>
+                                <ComboBoxItem Content="今週（7日以内）" Tag="week"/>
+                                <ComboBoxItem Content="今月（30日以内）" Tag="month"/>
+                                <ComboBoxItem Content="3ヶ月以内" Tag="3months"/>
+                                <ComboBoxItem Content="半年以内" Tag="6months"/>
+                                <ComboBoxItem Content="1年以内" Tag="1year"/>
+                            </ComboBox>
+                            <TextBlock Text="表示件数:" VerticalAlignment="Center" FontSize="12"/>
+                            <ComboBox x:Name="AllReleasePageSizeFilter"
+                                      Width="90"
+                                      SelectionChanged="AllReleaseFilter_Changed">
+                                <ComboBoxItem Content="10件" Tag="10" IsSelected="True"/>
+                                <ComboBoxItem Content="20件" Tag="20"/>
+                                <ComboBoxItem Content="50件" Tag="50"/>
+                                <ComboBoxItem Content="100件" Tag="100"/>
+                                <ComboBoxItem Content="すべて" Tag="all"/>
+                            </ComboBox>
+                            <TextBlock x:Name="AllReleaseTotalText"
+                                       VerticalAlignment="Center" FontSize="12" Opacity="0.7"/>
+                        </StackPanel>
+
+                        
+                        <ListView x:Name="AllReleaseListView"
+                                  SelectionMode="None"
+                                  IsItemClickEnabled="True"
+                                  ItemClick="AllReleaseItem_Click"
+                                  MaxHeight="480">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0,2"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="local:AllReleaseItem">
+                                    <Grid ColumnDefinitions="Auto, *, Auto, Auto"
+                                          ColumnSpacing="12" Padding="12,10"
+                                          CornerRadius="6">
+                                        <Ellipse Width="8" Height="8" VerticalAlignment="Center"
+                                                 Fill="{x:Bind StatusColor}"/>
+                                        <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                                <TextBlock Text="{x:Bind ModName}"
+                                                           FontWeight="SemiBold" FontSize="13"/>
+                                                <Border Background="{x:Bind TypeColor}"
+                                                        CornerRadius="4" Padding="6,2"
+                                                        VerticalAlignment="Center">
+                                                    <TextBlock Text="{x:Bind ModType}"
+                                                               FontSize="10" Foreground="White"/>
+                                                </Border>
+                                            </StackPanel>
+                                            <TextBlock FontSize="12"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                                <Run Text="{x:Bind TagName}"/>
+                                                <Run Text=" · "/>
+                                                <Run Text="{x:Bind PublishedAt}"/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{x:Bind GitHubRepo}"
+                                                   FontSize="11"
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                   VerticalAlignment="Center"/>
+                                        <Button Grid.Column="3" Content="詳細"
+                                                Tag="{x:Bind}"
+                                                Click="AllReleaseDetail_Click"
+                                                Padding="10,4"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                        <TextBlock x:Name="AllReleaseEmptyText"
+                                   Text="読み込み中..."
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   FontSize="13" HorizontalAlignment="Center"
+                                   Margin="0,8"/>
+                    </StackPanel>
+                </Border>
+
+                
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1" CornerRadius="8" Padding="24,18">
+                    <StackPanel Spacing="12">
+
+                        
+                        <RelativePanel>
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="お知らせ"
+                                           FontSize="14" FontWeight="SemiBold"/>
+                                <TextBlock Text="アプリからのお知らせ"
+                                           FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="8"
+                                        RelativePanel.AlignRightWithPanel="True"
+                                        RelativePanel.AlignVerticalCenterWithPanel="True">
+                                <ProgressRing x:Name="NewsLoadingRing"
+                                              IsActive="False" Width="16" Height="16"
+                                              VerticalAlignment="Center"/>
+                                <Button Content="すべて既読"
+                                        Click="MarkAllRead_Click"/>
+                            </StackPanel>
+                        </RelativePanel>
+
+                        
+                        <ListView x:Name="NewsListView"
+                                  SelectionMode="None"
+                                  IsItemClickEnabled="True"
+                                  ItemClick="NewsItem_Click">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0,2"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="local:NewsDisplayItem">
+                                    <Grid ColumnDefinitions="Auto, *, Auto, Auto"
+                                          ColumnSpacing="12" Padding="12,10"
+                                          CornerRadius="6">
+                                        
+                                        <Ellipse Width="8" Height="8" VerticalAlignment="Center"
+                                                 Fill="{x:Bind UnreadDotColor}"/>
+                                        
+                                        <StackPanel Grid.Column="1" Spacing="2"
+                                                    VerticalAlignment="Center">
+                                            <TextBlock Text="{x:Bind Title}" FontSize="14" FontWeight="SemiBold"
+                                                       Opacity="{x:Bind TitleOpacity}"/>
+                                            <TextBlock Text="{x:Bind Content}"
+                                                       FontSize="12"
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                       TextTrimming="CharacterEllipsis"
+                                                       Opacity="{x:Bind ContentOpacity}"/>
+                                        </StackPanel>
+                                        
+                                        <TextBlock Grid.Column="2"
+                                                   Text="{x:Bind Date}"
+                                                   FontSize="12"
+                                                   Foreground="{ThemeResource TextFillColorTertiaryBrush}"
+                                                   VerticalAlignment="Center"/>
+                                        
+                                        <Button Grid.Column="3"
+                                                Content="既読"
+                                                FontSize="12"
+                                                Padding="8,4"
+                                                VerticalAlignment="Center"
+                                                Click="MarkReadBtn_Click"
+                                                Tag="{x:Bind}"
+                                                Visibility="{x:Bind UnreadButtonVisibility}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                        <TextBlock x:Name="NewsEmptyText"
+                                   Text="お知らせはありません"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   FontSize="13" HorizontalAlignment="Center"
+                                   Margin="0,8" Visibility="Collapsed"/>
+                    </StackPanel>
+                </Border>
+
+                
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1" CornerRadius="8" Padding="24,18">
+                    <StackPanel Spacing="14">
+                        <StackPanel Spacing="2">
+                            <TextBlock Text="クイックインストール"
+                                       FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock Text="ファイル・共有コード・前回の方法から素早くインストール"
+                                       FontSize="12"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            
+                            <Button Click="QuickInstallFromFile_Click" Width="180" Height="72">
+                                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                    <FontIcon Glyph="&#xE8E5;" FontSize="22"/>
+                                    <TextBlock Text="ファイルから" FontSize="12"/>
+                                </StackPanel>
+                            </Button>
+
+                            
+                            <Button Click="QuickInstallFromCode_Click" Width="180" Height="72">
+                                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                    <FontIcon Glyph="&#xE716;" FontSize="22"/>
+                                    <TextBlock Text="共有コードから" FontSize="12"/>
+                                </StackPanel>
+                            </Button>
+
+                            
+                            <Button x:Name="LastMethodBtn"
+                                    Click="QuickInstallLastMethod_Click"
+                                    Width="180" Height="72">
+                                <StackPanel Spacing="6" HorizontalAlignment="Center">
+                                    <FontIcon Glyph="&#xE81C;" FontSize="22"/>
+                                    <TextBlock x:Name="LastMethodText"
+                                               Text="前回の方法を適用" FontSize="12"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
             </StackPanel>
         </ScrollViewer>
 
-        <ContentDialog x:Name="UpdateProgressDialog" Title="アップデート" CloseButtonText="閉じる">
-            <StackPanel Spacing="10" Margin="0,10,0,0">
-                <TextBlock x:Name="UpdateStatusText" Text="準備中..."/>
+        
+        <ContentDialog x:Name="UpdateProgressDialog" Title="アップデート中"
+                       CloseButtonText="閉じる">
+            <StackPanel Spacing="10" Margin="0,10,0,0" Width="300">
+                <TextBlock x:Name="UpdateStatusText" Text="準備中..." TextWrapping="Wrap"/>
                 <ProgressBar x:Name="UpdateProgressBar" IsIndeterminate="True"/>
             </StackPanel>
         </ContentDialog>
+
+        
+        <ContentDialog x:Name="ReleaseDetailDialog"
+                       PrimaryButtonText="更新する"
+                       SecondaryButtonText="ファイルをDL"
+                       CloseButtonText="閉じる">
+            <ScrollViewer MaxHeight="400">
+                <StackPanel Spacing="12" Width="420">
+                    <StackPanel Spacing="4">
+                        <TextBlock x:Name="DetailModName"
+                                   FontSize="18" FontWeight="Bold"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock x:Name="DetailTag"
+                                       FontFamily="Consolas" FontSize="13"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <TextBlock x:Name="DetailDate"
+                                       FontSize="13"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <MenuFlyoutSeparator/>
+                    
+                    <WebView2 x:Name="DetailBodyWebView"
+                              Height="280"
+                              HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </ScrollViewer>
+        </ContentDialog>
+
+        
+        <ContentDialog x:Name="ShareCodeDialog"
+                       Title="共有コードからインストール"
+                       PrimaryButtonText="インストール"
+                       CloseButtonText="キャンセル">
+            <StackPanel Spacing="12" Width="340">
+                <TextBlock Text="共有コードを入力してください。"
+                           FontSize="13"
+                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                <TextBox x:Name="ShareCodeBox"
+                         Header="共有コード" FontFamily="Consolas"
+                         PlaceholderText="例: AUMM-XXXXXXXX"/>
+            </StackPanel>
+        </ContentDialog>
+
+        
+        <ContentDialog x:Name="AppUpdateDialog"
+                       Title="アップデートがあります 🎉"
+                       PrimaryButtonText="今すぐダウンロード"
+                       SecondaryButtonText="今後表示しない"
+                       CloseButtonText="後で">
+            <StackPanel Spacing="12" Width="340">
+                <TextBlock x:Name="AppUpdateBody" TextWrapping="Wrap" FontSize="13"/>
+                <InfoBar IsOpen="True" IsClosable="False" Severity="Informational"
+                         Title="変更点" Message="GitHubのリリースノートをご確認ください。"/>
+            </StackPanel>
+        </ContentDialog>
+
     </Grid>
 </Page>

@@ -9,32 +9,34 @@
 		<PublishProfile>win-$(Platform).pubxml</PublishProfile>
 		<UseWinUI>true</UseWinUI>
 		<WinUISDKReferences>false</WinUISDKReferences>
-		<EnableMsixTooling>false</EnableMsixTooling>
-		<HasPackageAndPublishMenu>false</HasPackageAndPublishMenu>
+		<EnableMsixTooling>true</EnableMsixTooling>
+		<HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
 		<Nullable>enable</Nullable>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<EnableXamlMarkupCompilerInterop>false</EnableXamlMarkupCompilerInterop>
-		
+
 		<!-- シングルファイルならtrue -->
 		<PublishSingleFile>false</PublishSingleFile>
 		<IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
 		<!-- バージョン情報 -->
-		<ApplicationDisplayVersion>1.4.1</ApplicationDisplayVersion>
-		<ApplicationVersion>1.4.1</ApplicationVersion>
+		<ApplicationDisplayVersion>1.4.2</ApplicationDisplayVersion>
+		<ApplicationVersion>1.4.2</ApplicationVersion>
+		<AssemblyVersion>1.4.2.0</AssemblyVersion>
+		<FileVersion>1.4.2.0</FileVersion>
 	</PropertyGroup>
 	<ItemGroup Condition="'$(MsixPackaging)'=='true'">
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251105000" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Compile Remove="Resources\**" />
-	  <EmbeddedResource Remove="Resources\**" />
-	  <None Remove="Resources\**" />
-	  <Page Remove="Resources\**" />
+		<Compile Remove="Resources\**" />
+		<EmbeddedResource Remove="Resources\**" />
+		<None Remove="Resources\**" />
+		<Page Remove="Resources\**" />
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="Pages\NewsDetailPage.xaml" />
-		<None Remove="Pages\SetupPage.xaml" />
+		<None Remove="Resource\icon.ico" />
 	</ItemGroup>
 	<ItemGroup>
 		<Page Remove="Pages\HomePage.xaml" />
@@ -74,9 +76,20 @@
 		<PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">False</PublishReadyToRun>
 		<PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
 		<PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
+		<DefaultLanguage>ja-JP</DefaultLanguage>
 		<ApplicationIcon>Resource\icon.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<DefaultLanguage>ja-JP</DefaultLanguage>
+		<GenerateAppInstallerFile>True</GenerateAppInstallerFile>
+		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+		<PackageCertificateThumbprint>EC092C0C695B2652C741C788605AA8A6463F4C41</PackageCertificateThumbprint>
+		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
+		<AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+		<GenerateTestArtifacts>True</GenerateTestArtifacts>
+		<AppxBundle>Auto</AppxBundle>
+		<AppInstallerUri>https://github.com/Tabasco/AmongUsModManager/releases/latest/download/</AppInstallerUri>
+		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+		<AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
 	</PropertyGroup>
 	<ItemGroup>
 		<Page Include="Pages\HomePage.xaml">
@@ -89,15 +102,18 @@
 		</Page>
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="Markdig" Version="1.0.0" />
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
 		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.251107005" />
 		<PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3179.45" />
 		<PackageReference Include="System.Text.Json" Version="9.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <PRIResource Remove="Resources\**" />
+		<PRIResource Remove="Resources\**" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Content Include="Resource\icon.ico" />
+	  <Content Include="Resource\icon.ico">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 </Project>

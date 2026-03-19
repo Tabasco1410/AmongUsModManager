@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="AmongUsModManager.Pages.ConflictCheckPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:AmongUsModManager.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d">
+
+    <Grid Padding="28,20,28,28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ヘッダー -->
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <TextBlock Text="競合チェック" FontSize="26" FontWeight="SemiBold"/>
+                <ProgressRing x:Name="CheckingRing" IsActive="False" Width="22" Height="22"
+                              VerticalAlignment="Center"/>
+            </StackPanel>
+            <TextBlock Text="各ModフォルダのBepInEx/pluginsにある重複DLLを検出します。"
+                       FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+        </StackPanel>
+
+        <!-- ツールバー -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8" Margin="0,0,0,12">
+            <Button Content="🔍 チェック開始" Click="StartCheck_Click"
+                    Style="{StaticResource AccentButtonStyle}"/>
+            <TextBlock x:Name="SummaryText" VerticalAlignment="Center" FontSize="12"
+                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+        </StackPanel>
+
+        <!-- 結果リスト -->
+        <ScrollViewer Grid.Row="2">
+            <StackPanel x:Name="ResultPanel" Spacing="12">
+
+                <!-- 空状態 -->
+                <StackPanel x:Name="EmptyState" HorizontalAlignment="Center"
+                            VerticalAlignment="Center" Spacing="12" Margin="0,60,0,0">
+                    <FontIcon Glyph="&#xE9CE;" FontSize="48" Foreground="Gray"
+                              HorizontalAlignment="Center"/>
+                    <TextBlock Text="「チェック開始」を押すと競合を検出します"
+                               Foreground="Gray" HorizontalAlignment="Center" FontSize="14"/>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>
