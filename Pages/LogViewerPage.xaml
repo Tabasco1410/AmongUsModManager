@@ -15,6 +15,7 @@
 
         <TextBlock Text="ログビューア" FontSize="28" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
+<<<<<<< HEAD
         <!-- ツールバー -->
         <Grid Grid.Row="1" Margin="0,0,0,12">
             <Grid.ColumnDefinitions>
@@ -45,6 +46,14 @@
         </Grid>
 
         <!-- ログ本文 -->
+=======
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="0,0,0,12">
+            <Button Content="更新" Click="Refresh_Click" Style="{StaticResource AccentButtonStyle}"/>
+            <Button Content="ログフォルダを開く" Click="OpenFolder_Click"/>
+            <Button Content="クリア" Click="Clear_Click"/>
+        </StackPanel>
+
+>>>>>>> 9b70396323094b50176708b54875479518ab7e99
         <ScrollViewer Grid.Row="2" x:Name="LogScrollViewer"
                       Background="{ThemeResource SystemControlBackgroundChromeMediumLowBrush}"
                       CornerRadius="8" Padding="12">

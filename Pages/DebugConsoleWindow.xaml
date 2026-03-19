@@ -72,9 +72,14 @@
         <!-- ログ表示 -->
         <ScrollViewer x:Name="LogScrollViewer" Grid.Row="1"
                       HorizontalScrollBarVisibility="Auto"
+<<<<<<< HEAD
                       VerticalScrollBarVisibility="Auto"
                       Padding="0,0,0,0">
             <ItemsControl x:Name="LogItemsControl" Padding="4,4,4,48">
+=======
+                      VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="LogItemsControl" Padding="4,4,4,4">
+>>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Text}"

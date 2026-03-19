@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,11 +11,15 @@ using Microsoft.UI.Xaml.Media;
 using AmongUsModManager.Models;
 using AmongUsModManager.Models.Services;
 using AmongUsModManager.Services;
+=======
+using Microsoft.UI.Xaml.Controls;
+>>>>>>> 9b70396323094b50176708b54875479518ab7e99
 
 namespace AmongUsModManager.Pages
 {
     public sealed partial class ConflictCheckPage : Page
     {
+<<<<<<< HEAD
         // 競合チェックから除外するDLL（Reactor本体・BepInExコア等）
         private static readonly HashSet<string> ExcludedDlls = new(StringComparer.OrdinalIgnoreCase)
         {
@@ -29,10 +34,13 @@ namespace AmongUsModManager.Pages
             "MiraAPI.dll",
         };
 
+=======
+>>>>>>> 9b70396323094b50176708b54875479518ab7e99
         public ConflictCheckPage()
         {
             this.InitializeComponent();
         }
+<<<<<<< HEAD
 
         private async void StartCheck_Click(object sender, RoutedEventArgs e)
         {
@@ -189,5 +197,7 @@ namespace AmongUsModManager.Pages
             public string DllName { get; set; } = "";
             public List<(string ModName, string DllPath)> Entries { get; set; } = new();
         }
+=======
+>>>>>>> 9b70396323094b50176708b54875479518ab7e99
     }
 }

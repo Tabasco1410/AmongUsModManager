@@ -111,9 +111,12 @@
                                                                 Click="RenameMod_Click" Tag="{x:Bind}"/>
                                                 <MenuFlyoutItem Text="GitHub連携" Icon="Link"
                                                                 Click="LinkGitHub_Click" Tag="{x:Bind}"/>
+<<<<<<< HEAD
                                                 <MenuFlyoutItem Text="GitHub連携を解除" Icon="UnSyncFolder"
                                                                 Click="UnlinkGitHub_Click" Tag="{x:Bind}"
                                                                 Visibility="{x:Bind GitHubRepo, Converter={StaticResource StringToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}"/>
+=======
+>>>>>>> 9b70396323094b50176708b54875479518ab7e99
                                                 <MenuFlyoutItem Text="今すぐアップデート" Icon="Refresh"
                                                                 Click="UpdateMod_Click" Tag="{x:Bind}"
                                                                 Visibility="{x:Bind GitHubRepo, Converter={StaticResource StringToVisibilityConverter}, Mode=OneWay, FallbackValue=Collapsed}"/>
