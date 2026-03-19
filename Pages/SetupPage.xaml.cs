@@ -1,5 +1,4 @@
 using System;
-<<<<<<< HEAD
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,16 +10,6 @@ using AmongUsModManager.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-=======
-using System.Diagnostics;
-using System.IO;
-using System.Collections.Generic;
-using AmongUsModManager.Models;
-using AmongUsModManager.Services;
-using AmongUsModManager.Models.Services;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Controls;
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
@@ -29,10 +18,7 @@ namespace AmongUsModManager.Pages
     public sealed partial class SetupPage : Page
     {
         private string _selectedPlatformTag = "";
-<<<<<<< HEAD
         private List<string> _detectedExistingMods = new();
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 
         private const string DiscordSupportUrl = "https://discord.gg/nFhkYmf9At";
 
@@ -69,7 +55,6 @@ namespace AmongUsModManager.Pages
             }
 
             AutoDetectButton.IsEnabled = _selectedPlatformTag != "Manual";
-<<<<<<< HEAD
             PathTextBox.Text = "";
             SetValidation(false, "");
             NotFoundPanel.Visibility  = Visibility.Collapsed;
@@ -137,59 +122,17 @@ namespace AmongUsModManager.Pages
             loginWindow.Activate();
         }
 
-=======
-
-            PathTextBox.Text = "";
-            SetValidation(false, "");
-            NotFoundPanel.Visibility  = Visibility.Collapsed;
-            EpicLoginPanel.Visibility = Visibility.Collapsed;
-            FinishButton.IsEnabled    = false;
-
-            if (_selectedPlatformTag == "Epic")
-                CheckEpicLoginStatus();
-        }
-
-        private void CheckEpicLoginStatus()
-        {
-            var config = ConfigService.Load();
-            bool loggedIn = EpicLoginService.IsLoggedIn(config);
-            LogService.Info("SetupPage", $"Epicログイン状態: {(loggedIn ? "ログイン済み" : "未ログイン")}");
-
-            EpicLoginPanel.Visibility = Visibility.Visible;
-
-            if (loggedIn)
-            {
-                EpicStatusText.Text      = $"✅ ログイン済み — {config.EpicDisplayName}（Epic Games Launcher 不要で起動できます）";
-                EpicStatusIcon.Glyph     = "\uE73E";
-                EpicStatusIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.SeaGreen);
-                EpicLaunchLauncherBtn.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                EpicStatusText.Text      = "❌ 未ログイン — セットアップ後にアカウントページでログインしてください";
-                EpicStatusIcon.Glyph     = "\uE711";
-                EpicStatusIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Tomato);
-                EpicLaunchLauncherBtn.Visibility = Visibility.Collapsed;
-            }
-        }
-
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         private void EpicLaunchLauncher_Click(object sender, RoutedEventArgs e)
         {
             LogService.Info("SetupPage", "Epic Launcher 起動ボタン");
             EpicLoginService.LaunchEpicLauncher();
             DispatcherQueue.TryEnqueue(async () =>
             {
-<<<<<<< HEAD
                 await Task.Delay(3000);
-=======
-                await System.Threading.Tasks.Task.Delay(3000);
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 if (_selectedPlatformTag == "Epic") CheckEpicLoginStatus();
             });
         }
 
-<<<<<<< HEAD
         // ─── GitHub 連携 ──────────────────────────────────────────────
         private void RefreshGitHubStatus()
         {
@@ -267,8 +210,6 @@ namespace AmongUsModManager.Pages
         }
 
         // ─── フォルダ検出 ─────────────────────────────────────────────
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         private void AutoDetectButton_Click(object sender, RoutedEventArgs e)
         {
             LogService.Info("SetupPage", $"自動検出開始: {_selectedPlatformTag}");
@@ -291,11 +232,7 @@ namespace AmongUsModManager.Pages
             }
             else
             {
-<<<<<<< HEAD
                 LogService.Warn("SetupPage", "自動検出失敗");
-=======
-                LogService.Warn("SetupPage", "自動検出失敗: Among Usが見つかりませんでした");
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 SetValidation(false, "Among Us が見つかりませんでした。「参照...」で手動指定するか、下の案内からインストールしてください。");
                 NotFoundPanel.Visibility = Visibility.Visible;
             }
@@ -327,26 +264,19 @@ namespace AmongUsModManager.Pages
             {
                 SetValidation(true, $"✔  Among Us.exe を確認しました：{path}");
                 NotFoundPanel.Visibility = Visibility.Collapsed;
-<<<<<<< HEAD
                 // パスが確定したらインストール済みModを検出
                 DetectExistingMods(path);
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             }
             else
             {
                 SetValidation(false, "このフォルダに Among Us.exe が見つかりません。正しいインストールフォルダを選択してください。");
                 NotFoundPanel.Visibility = Visibility.Visible;
-<<<<<<< HEAD
                 ExistingModPanel.Visibility = Visibility.Collapsed;
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             }
 
             FinishButton.IsEnabled = valid;
         }
 
-<<<<<<< HEAD
         // ─── インストール済みMod 検出 ─────────────────────────────────
         private void DetectExistingMods(string gamePath)
         {
@@ -443,8 +373,6 @@ namespace AmongUsModManager.Pages
         }
 
         // ─── その他ボタン ─────────────────────────────────────────────
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         private void SetValidation(bool success, string message)
         {
             if (string.IsNullOrEmpty(message))
@@ -475,7 +403,6 @@ namespace AmongUsModManager.Pages
             Process.Start(new ProcessStartInfo(DiscordSupportUrl) { UseShellExecute = true });
         }
 
-<<<<<<< HEAD
         // ─── セットアップ完了 ─────────────────────────────────────────
         private void FinishButton_Click(object sender, RoutedEventArgs e)
         {
@@ -498,26 +425,6 @@ namespace AmongUsModManager.Pages
                 config.VanillaPaths = new List<VanillaPathInfo>();
             if (!config.VanillaPaths.Any(v => v.Path == gamePath))
                 config.VanillaPaths.Insert(0, new VanillaPathInfo { Name = "バニラ（Modなし）", Path = gamePath });
-=======
-        private void FinishButton_Click(object sender, RoutedEventArgs e)
-        {
-            string vanillaPath = PathTextBox.Text;
-            string? commonPath = Path.GetDirectoryName(vanillaPath);
-
-            LogService.Info("SetupPage", $"セットアップ完了: platform={_selectedPlatformTag}, path={vanillaPath}");
-
-            var config = new AppConfig
-            {
-                VanillaPaths = new List<VanillaPathInfo>
-                {
-                    new VanillaPathInfo { Name = "バニラ（Modなし）", Path = vanillaPath }
-                },
-                GameInstallPath       = vanillaPath,
-                ModDataPath           = commonPath ?? vanillaPath,
-                Platform              = _selectedPlatformTag,
-                EpicLaunchViaLauncher = _selectedPlatformTag == "Epic",
-            };
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 
             ConfigService.Save(config);
 

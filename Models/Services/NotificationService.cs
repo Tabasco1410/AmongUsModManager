@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using AmongUsModManager.Models;
 using AmongUsModManager.Services;
-<<<<<<< HEAD
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 
@@ -48,35 +47,19 @@ namespace AmongUsModManager.Models.Services
             key.SetValue("IconBackgroundColor", "FF1A1A2E");
         }
 
-=======
-
-namespace AmongUsModManager.Models.Services
-    //通知
-{
-    public static class NotificationService
-    {
-        private static readonly List<NotificationItem> _items = new();
-        public static event Action<NotificationItem>? NotificationAdded;
-
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         public static void Push(string title, string message,
             NotificationKind kind = NotificationKind.Info, string tag = "")
         {
             var item = new NotificationItem
             {
-<<<<<<< HEAD
                 Title = title,
                 Message = message,
                 Kind = kind,
                 Tag = tag
-=======
-                Title = title, Message = message, Kind = kind, Tag = tag
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             };
             _items.Add(item);
             LogService.Info("NotificationService", $"通知追加: [{kind}] {title}");
             NotificationAdded?.Invoke(item);
-<<<<<<< HEAD
 
             SendToast(title, message, kind);
         }
@@ -116,10 +99,6 @@ namespace AmongUsModManager.Models.Services
         private static string EncodeXml(string s)
             => s.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace("\"", "&quot;");
 
-=======
-        }
-
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         public static List<NotificationItem> GetAll() => _items.ToList();
         public static int UnreadCount() => _items.Count(i => !i.IsRead);
         public static void MarkAllRead() { foreach (var i in _items) i.IsRead = true; }
@@ -128,10 +107,6 @@ namespace AmongUsModManager.Models.Services
             var item = _items.FirstOrDefault(i => i.Id == id);
             if (item != null) item.IsRead = true;
         }
-<<<<<<< HEAD
-=======
-
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         public static void MarkReadByTag(string tag)
         {
             foreach (var item in _items.Where(i => i.Tag == tag))

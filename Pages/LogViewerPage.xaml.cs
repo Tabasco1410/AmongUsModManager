@@ -1,9 +1,6 @@
 using System;
 using System.IO;
-<<<<<<< HEAD
 using System.Linq;
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using AmongUsModManager.Services;
@@ -12,23 +9,16 @@ namespace AmongUsModManager.Pages
 {
     public sealed partial class LogViewerPage : Page
     {
-<<<<<<< HEAD
         private static readonly string LogFolder = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "AmongUsModManager");
 
         // 現在選択中のログファイルパス
         private string? _currentLogPath;
-=======
-        private static readonly string LogPath = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "AmongUsModManager", "LogOutput.log");
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 
         public LogViewerPage()
         {
             this.InitializeComponent();
-<<<<<<< HEAD
             RefreshFileList();
         }
 
@@ -43,19 +33,10 @@ namespace AmongUsModManager.Pages
                 .ToList();
 
             if (files.Count == 0)
-=======
-            LoadLog();
-        }
-
-        private void LoadLog()
-        {
-            if (!File.Exists(LogPath))
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             {
                 LogText.Text = "ログファイルがまだ存在しません。";
                 return;
             }
-<<<<<<< HEAD
 
             // ComboBox に表示名をセット
             LogFileCombo.Items.Clear();
@@ -84,12 +65,6 @@ namespace AmongUsModManager.Pages
                 using var reader = new StreamReader(fs, System.Text.Encoding.UTF8);
                 LogText.Text = reader.ReadToEnd();
 
-=======
-            try
-            {
-                LogText.Text = File.ReadAllText(LogPath, System.Text.Encoding.UTF8);
-                
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 LogScrollViewer.UpdateLayout();
                 LogScrollViewer.ChangeView(null, LogScrollViewer.ScrollableHeight, null);
             }
@@ -99,7 +74,6 @@ namespace AmongUsModManager.Pages
             }
         }
 
-<<<<<<< HEAD
         // ─── イベント ─────────────────────────────────────────────────
         private void LogFileCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -119,39 +93,22 @@ namespace AmongUsModManager.Pages
         {
             if (Directory.Exists(LogFolder))
                 await Windows.System.Launcher.LaunchFolderPathAsync(LogFolder);
-=======
-        private void Refresh_Click(object sender, RoutedEventArgs e) => LoadLog();
-
-        private async void OpenFolder_Click(object sender, RoutedEventArgs e)
-        {
-            string folder = Path.GetDirectoryName(LogPath) ?? "";
-            if (Directory.Exists(folder))
-                await Windows.System.Launcher.LaunchFolderPathAsync(folder);
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         }
 
         private async void Clear_Click(object sender, RoutedEventArgs e)
         {
-<<<<<<< HEAD
             if (_currentLogPath == null) return;
 
             var dialog = new ContentDialog
             {
                 Title = "ログをクリア",
                 Content = $"{Path.GetFileName(_currentLogPath)} の内容を削除しますか？",
-=======
-            var dialog = new ContentDialog
-            {
-                Title = "ログをクリア",
-                Content = "LogOutput.log の内容を削除しますか？",
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 PrimaryButtonText = "削除",
                 CloseButtonText = "キャンセル",
                 XamlRoot = this.XamlRoot
             };
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)
             {
-<<<<<<< HEAD
                 try
                 {
                     File.WriteAllText(_currentLogPath, "", System.Text.Encoding.UTF8);
@@ -171,11 +128,5 @@ namespace AmongUsModManager.Pages
             public string FilePath    { get; set; } = "";
             public override string ToString() => DisplayName;
         }
-=======
-                try { File.WriteAllText(LogPath, "", System.Text.Encoding.UTF8); LoadLog(); }
-                catch (Exception ex) { LogText.Text = $"クリアエラー: {ex.Message}"; }
-            }
-        }
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
     }
 }

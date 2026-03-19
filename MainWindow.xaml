@@ -18,7 +18,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-<<<<<<< HEAD
 
         <!-- タイトルバー -->
         <Grid Grid.Row="0" Height="48"
@@ -48,36 +47,6 @@
                     </Border>
                     <Border x:Name="DebugIcon" Visibility="Collapsed" Background="#FF5577CC"
                             CornerRadius="4" VerticalAlignment="Center">
-=======
-
-        
-        <Grid Grid.Row="0" Height="48"
-              IsHitTestVisible="False"
-              Background="{ThemeResource NavigationViewDefaultPaneBackground}"
-              BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-              BorderThickness="0,0,0,1">
-            <Grid Margin="16,0,16,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Image Source="/Resource/Icon.png" Width="22" Height="22" Margin="0,0,10,0"
-                           VerticalAlignment="Center"/>
-                    <TextBlock x:Name="AppTitleText" Text="AmongUsModManager"
-                               FontSize="16"
-                               FontWeight="SemiBold"
-                               VerticalAlignment="Center"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="8">
-                    <TextBlock x:Name="VersionText" Text="" VerticalAlignment="Center" Opacity="0.8"/>
-                    <Border x:Name="PreReleaseIcon" Visibility="Collapsed" Background="#FFDD9933" CornerRadius="4" VerticalAlignment="Center">
-                        <TextBlock Text="PRE" Padding="6,2" FontSize="11"/>
-                    </Border>
-                    <Border x:Name="DebugIcon" Visibility="Collapsed" Background="#FF5577CC" CornerRadius="4" VerticalAlignment="Center">
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         <TextBlock Text="Debug" Padding="6,2" FontSize="11"/>
                     </Border>
                 </StackPanel>
@@ -92,15 +61,9 @@
                         SelectionChanged="NavView_SelectionChanged"
                         OpenPaneLength="200">
 
-<<<<<<< HEAD
             <NavigationView.PaneHeader>
                 <StackPanel Margin="16,8,16,4" Spacing="6">
                     <!-- アップデートボタン -->
-=======
-          
-            <NavigationView.PaneHeader>
-                <StackPanel Margin="16,8,16,4">
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                     <Button x:Name="AppUpdatePaneBtn"
                             Content="アップデート"
                             HorizontalAlignment="Stretch"
@@ -108,7 +71,6 @@
                             Click="AppUpdatePaneBtn_Click"
                             Style="{StaticResource AccentButtonStyle}"
                             FontSize="12"/>
-<<<<<<< HEAD
                     <!-- テーマ切替ボタン -->
                     <Button x:Name="ThemeToggleBtn"
                             HorizontalAlignment="Stretch"
@@ -120,8 +82,6 @@
                             <TextBlock x:Name="ThemeLabel" Text="ダークモード"/>
                         </StackPanel>
                     </Button>
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 </StackPanel>
             </NavigationView.PaneHeader>
 
@@ -138,18 +98,13 @@
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE8B1;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-<<<<<<< HEAD
                 <!-- お知らせ（バッジ付き） -->
-=======
-               
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 <NavigationViewItem Tag="Notification">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xEA8F;"/></NavigationViewItem.Icon>
                     <NavigationViewItem.Content>
                         <Grid>
                             <TextBlock Text="お知らせ" VerticalAlignment="Center"/>
                             <Border x:Name="NotifSidebarBadge"
-<<<<<<< HEAD
                                     Background="Red" CornerRadius="8"
                                     MinWidth="16" Height="16"
                                     HorizontalAlignment="Right" VerticalAlignment="Top"
@@ -158,22 +113,6 @@
                                 <TextBlock x:Name="NotifSidebarCount" Text="0"
                                            FontSize="10" Foreground="White"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
-=======
-                                    Background="Red"
-                                    CornerRadius="8"
-                                    MinWidth="16" Height="16"
-                                    HorizontalAlignment="Right"
-                                    VerticalAlignment="Top"
-                                    Margin="0,-2,-4,0"
-                                    Padding="3,0"
-                                    Visibility="Collapsed">
-                                <TextBlock x:Name="NotifSidebarCount"
-                                           Text="0"
-                                           FontSize="10"
-                                           Foreground="White"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"/>
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                             </Border>
                         </Grid>
                     </NavigationViewItem.Content>
@@ -183,30 +122,16 @@
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE939;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-<<<<<<< HEAD
                 <NavigationViewItem Content="サポート" Tag="ChatBot">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE8F2;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-=======
-                <NavigationViewItem Content="チャットボット" Tag="ChatBot">
-                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE8F2;"/></NavigationViewItem.Icon>
-                </NavigationViewItem>
-
-               
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 <NavigationViewItem x:Name="DiscordNavItem" Tag="Discord">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE8BD;" Foreground="#5865F2"/>
                     </NavigationViewItem.Icon>
                     <NavigationViewItem.Content>
-<<<<<<< HEAD
                         <TextBlock Text="Discord🔗" VerticalAlignment="Center"/>
-=======
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock Text="Discord🔗" VerticalAlignment="Center"/>
-                        </StackPanel>
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                     </NavigationViewItem.Content>
                 </NavigationViewItem>
 
@@ -216,14 +141,9 @@
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE9F5;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-<<<<<<< HEAD
                 <!-- 競合チェック -->
                 <NavigationViewItem Content="競合チェック" Tag="ConflictCheck">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE9CE;"/></NavigationViewItem.Icon>
-=======
-                <NavigationViewItem Content="統計・実績" Tag="Stats">
-                    <NavigationViewItem.Icon><FontIcon Glyph="&#xE9D2;"/></NavigationViewItem.Icon>
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 </NavigationViewItem>
 
                 <NavigationViewItem Content="アプリについて" Tag="About">
@@ -231,18 +151,10 @@
                 </NavigationViewItem>
             </NavigationView.MenuItems>
 
-<<<<<<< HEAD
-=======
-            
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             <NavigationView.FooterMenuItems>
                 <NavigationViewItem Content="アカウント" Tag="Account">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE77B;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
-<<<<<<< HEAD
-=======
-
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 <NavigationViewItem Content="設定" Tag="Settings">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE713;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>

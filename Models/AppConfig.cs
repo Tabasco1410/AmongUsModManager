@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace AmongUsModManager.Models
@@ -12,11 +12,8 @@ namespace AmongUsModManager.Models
         public string? CurrentVersion { get; set; }
         public bool IsAutoUpdateEnabled { get; set; }
         public DateTime LastChecked { get; set; }
-<<<<<<< HEAD
         // true のとき自動GitHub連携を行わない（ユーザーが意図的に解除した場合）
         public bool GitHubLinkDisabled { get; set; } = false;
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
     }
 
     public class AppConfig
@@ -25,20 +22,10 @@ namespace AmongUsModManager.Models
         public List<VanillaPathInfo> VanillaPaths { get; set; } = new List<VanillaPathInfo>();
         public string ModDataPath { get; set; } = "";
 
-<<<<<<< HEAD
         public string Platform { get; set; } = "";
         public bool EpicLaunchViaLauncher { get; set; } = true;
 
         public string EpicAccountId { get; set; } = "";
-=======
-        
-        public string Platform { get; set; } = "";
-        public bool EpicLaunchViaLauncher { get; set; } = true;  
-
-        
-        
-        public string EpicAccountId   { get; set; } = "";
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         public string EpicDisplayName { get; set; } = "";
         public bool CheckUpdateOnStartup { get; set; } = true;
 
@@ -58,7 +45,6 @@ namespace AmongUsModManager.Models
         public bool SaveGameLogs { get; set; } = true;
         public bool RecordMatchStats { get; set; } = true;
 
-<<<<<<< HEAD
         // ログ: false=起動ごとに新ファイル, true=追記
         public bool LogAppendMode { get; set; } = false;
 
@@ -70,31 +56,10 @@ namespace AmongUsModManager.Models
         public string GitHubLoginMethod { get; set; } = "";
         public string GitHubUserName { get; set; } = "";
 
-=======
-       
-        public bool LogAppendMode { get; set; } = false;
-
-        // トレイ常駐設定
-        public bool MinimizeToTray { get; set; } = false;
-
-        // AI APIキー
-        public string ClaudeApiKey { get; set; } = "";
-
-       
-        public string GitHubToken { get; set; } = "";
-
-      
-        public string GitHubLoginMethod { get; set; } = "";
-       
-        public string GitHubUserName { get; set; } = "";
-
-      
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         public string SteamApiKey { get; set; } = "";
         public string SteamUserId { get; set; } = "";
         public string SteamUserName { get; set; } = "";
 
-<<<<<<< HEAD
         public string MainPlatform { get; set; } = "";
 
         public double WindowWidth { get; set; } = 1100;
@@ -103,17 +68,6 @@ namespace AmongUsModManager.Models
         // NaN を JSON にシリアライズするとエラーになるため nullable double に変更
         public double? WindowX { get; set; } = null;
         public double? WindowY { get; set; } = null;
-=======
-       
-        public string MainPlatform { get; set; } = "";
-
-     
-        public double WindowWidth  { get; set; } = 1100;
-        public double WindowHeight { get; set; } = 700;
-        
-        public double WindowX { get; set; } = double.NaN;
-        public double WindowY { get; set; } = double.NaN;
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         public bool IsWindowMaximized { get; set; } = false;
 
         public List<FriendEntry> Friends { get; set; } = new List<FriendEntry>();

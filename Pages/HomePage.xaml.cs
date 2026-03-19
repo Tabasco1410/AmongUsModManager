@@ -603,10 +603,6 @@ namespace AmongUsModManager.Pages
                     }
                     LogService.Debug("HomePage", $"  → 取得成功: {releases.Count}件");
 
-<<<<<<< HEAD
-=======
-                    bool addedToFilter = false;
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                     foreach (var release in releases)
                     {
                         _allReleaseRaw.Add(new AllReleaseItem

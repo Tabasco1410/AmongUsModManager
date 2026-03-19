@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -30,15 +30,6 @@ namespace AmongUsModManager.Pages
         }
 
         protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
-<<<<<<< HEAD
-=======
-        {
-            base.OnNavigatedTo(e);
-            _ = LoadLibraryAsync();
-        }
-
-        private async Task LoadLibraryAsync(bool forceVersionCheck = false)
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         {
             base.OnNavigatedTo(e);
             _ = LoadLibraryAsync();
@@ -51,7 +42,6 @@ namespace AmongUsModManager.Pages
             var config = ConfigService.Load();
             var mods = config.VanillaPaths ?? new List<VanillaPathInfo>();
 
-<<<<<<< HEAD
             // CurrentVersion が null/空のものだけ "Unknown" にする
             // ※ 保存済みのバージョン文字列を "Unknown" で上書きしない
             foreach (var m in mods)
@@ -77,25 +67,16 @@ namespace AmongUsModManager.Pages
                 config.VanillaPaths = mods;
                 ConfigService.Save(config);
             }
-=======
-            foreach (var m in mods)
-                if (string.IsNullOrEmpty(m.CurrentVersion)) m.CurrentVersion = "Unknown";
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 
             LibraryGridView.ItemsSource = null;
             LibraryGridView.ItemsSource = mods;
 
             _ = LoadImagesAfterLayoutAsync(mods);
 
-<<<<<<< HEAD
             // forceVersionCheck か、前回から5分経過か、件数変化か、強制リセット時
             bool shouldCheck = forceVersionCheck
                 || _lastLoadedMods == null
                 || mods.Count != _lastLoadedMods.Count
-=======
-            bool shouldCheck = forceVersionCheck
-                || mods.Count != (_lastLoadedMods?.Count ?? -1)
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 || (DateTime.Now - _lastLoadedAt).TotalMinutes > 5;
 
             if (shouldCheck)
@@ -117,7 +98,6 @@ namespace AmongUsModManager.Pages
                     catch { }
                 }
 
-<<<<<<< HEAD
                 // キャッシュは件数ではなくコピーで保持する（参照共有を避ける）
                 _lastLoadedMods = mods.Select(m => new VanillaPathInfo
                 {
@@ -135,14 +115,6 @@ namespace AmongUsModManager.Pages
                     (string.IsNullOrEmpty(m.CurrentVersion) || string.Equals(m.CurrentVersion, "Unknown", StringComparison.OrdinalIgnoreCase))
                     && !string.IsNullOrEmpty(m.GitHubOwner)).ToList();
 
-=======
-                _lastLoadedMods = mods;
-                _lastLoadedAt = DateTime.Now;
-                LoadingBar.Visibility = Visibility.Collapsed;
-
-                var unknownMods = mods.Where(m => string.Equals(m.CurrentVersion, "Unknown", StringComparison.OrdinalIgnoreCase)
-                                                   && !string.IsNullOrEmpty(m.GitHubOwner)).ToList();
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 if (unknownMods.Count > 0)
                 {
                     VersionIssueBar.Title = "バージョンが登録されていません";
@@ -252,7 +224,6 @@ namespace AmongUsModManager.Pages
                 switch (combo.SelectedIndex)
                 {
                     case 0:
-<<<<<<< HEAD
                         {
                             string apiUrl = "https://api.github.com/repos/" + mod.GitHubOwner + "/" + mod.GitHubRepo + "/releases/latest";
                             var rel = await _http.GetFromJsonAsync<GitHubRelease>(apiUrl);
@@ -263,18 +234,6 @@ namespace AmongUsModManager.Pages
                             }
                             break;
                         }
-=======
-                    {
-                        string apiUrl = "https://api.github.com/repos/" + mod.GitHubOwner + "/" + mod.GitHubRepo + "/releases/latest";
-                        var rel = await _http.GetFromJsonAsync<GitHubRelease>(apiUrl);
-                        if (rel?.tag_name != null)
-                        {
-                            await PerformUpdateWithUI(mod, rel.tag_name);
-                            UpdateVersionInConfig(config, mod.Path, rel.tag_name);
-                        }
-                        break;
-                    }
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                     case 1:
                         await ShowTagPickerAsync(mod, downloadFile: true);
                         break;
@@ -296,17 +255,10 @@ namespace AmongUsModManager.Pages
             try
             {
                 string latestUrl = "https://api.github.com/repos/" + mod.GitHubOwner + "/" + mod.GitHubRepo + "/releases/latest";
-<<<<<<< HEAD
                 string listUrl = "https://api.github.com/repos/" + mod.GitHubOwner + "/" + mod.GitHubRepo + "/releases?per_page=50";
                 var t1 = _http.GetFromJsonAsync<GitHubRelease>(latestUrl);
                 var t2 = _http.GetFromJsonAsync<List<GitHubRelease>>(listUrl);
                 latest = await t1;
-=======
-                string listUrl   = "https://api.github.com/repos/" + mod.GitHubOwner + "/" + mod.GitHubRepo + "/releases?per_page=50";
-                var t1 = _http.GetFromJsonAsync<GitHubRelease>(latestUrl);
-                var t2 = _http.GetFromJsonAsync<List<GitHubRelease>>(listUrl);
-                latest   = await t1;
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 releases = await t2;
             }
             catch (Exception ex)
@@ -419,11 +371,7 @@ namespace AmongUsModManager.Pages
         {
             if (sender is not MenuFlyoutItem { Tag: VanillaPathInfo mod }) return;
             if (string.IsNullOrEmpty(mod.GitHubOwner)) return;
-<<<<<<< HEAD
             await PerformUpdateWithUI(mod, tag: null);
-=======
-            await PerformUpdateWithUI(mod, null);
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             var config = ConfigService.Load();
             string apiUrl = "https://api.github.com/repos/" + mod.GitHubOwner + "/" + mod.GitHubRepo + "/releases/latest";
             var rel = await _http.GetFromJsonAsync<GitHubRelease>(apiUrl);
@@ -446,7 +394,6 @@ namespace AmongUsModManager.Pages
             var config = ConfigService.Load();
             var t = config.VanillaPaths?.FirstOrDefault(v => v.Path == mod.Path);
             if (t != null) { t.IsAutoUpdateEnabled = mod.IsAutoUpdateEnabled; ConfigService.Save(config); }
-<<<<<<< HEAD
         }
 
         private async void DeleteMod_Click(object sender, RoutedEventArgs e)
@@ -523,8 +470,6 @@ namespace AmongUsModManager.Pages
 
             _lastLoadedAt = DateTime.MinValue;
             await LoadLibraryAsync();
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         }
 
         private async void DeleteMod_Click(object sender, RoutedEventArgs e)
@@ -563,7 +508,6 @@ namespace AmongUsModManager.Pages
         {
             if (sender is not MenuFlyoutItem { Tag: VanillaPathInfo mod }) return;
 
-<<<<<<< HEAD
             // ── Step 1: SupportedMods 全リスト表示（名前一致があれば自動選択） ──
             var allPresets = ModInstallPage.SupportedMods;
             var autoMatch = FindPresetByName(mod.Name);
@@ -718,41 +662,10 @@ namespace AmongUsModManager.Pages
                     Title = "検索結果（" + result.items.Count + "件）",
                     Content = list,
                     PrimaryButtonText = "このリポジトリと連携",
-=======
-            var presets = ModInstallPage.SupportedMods
-                .Where(p => mod.Name.Contains(p.Name, StringComparison.OrdinalIgnoreCase)
-                         || p.Name.Contains(mod.Name, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            if (presets.Count > 0)
-            {
-                var list = new ListView { SelectionMode = ListViewSelectionMode.Single, MaxHeight = 280 };
-                list.ItemsSource = presets.Select(p =>
-                {
-                    var sp = new StackPanel { Margin = new Thickness(0, 4, 0, 4) };
-                    sp.Children.Add(new TextBlock { Text = p.Name, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold });
-                    sp.Children.Add(new TextBlock
-                    {
-                        Text = "github.com/" + p.Owner + "/" + p.Repository,
-                        FontSize = 11,
-                        Foreground = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["TextFillColorSecondaryBrush"]
-                    });
-                    return (object)sp;
-                }).ToList();
-                list.SelectedIndex = 0;
-
-                var presetDlg = new ContentDialog
-                {
-                    Title = mod.Name + " の候補リポジトリ",
-                    Content = list,
-                    PrimaryButtonText = "連携する",
-                    SecondaryButtonText = "GitHubで検索...",
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                     CloseButtonText = "キャンセル",
                     XamlRoot = this.XamlRoot
                 };
 
-<<<<<<< HEAD
                 if (await dlg.ShowAsync() == ContentDialogResult.Primary
                     && list.SelectedItem is GitHubRepoItem sel
                     && sel.owner?.login != null
@@ -778,130 +691,6 @@ namespace AmongUsModManager.Pages
         }
 
         private async void GenerateShareCode_Click(object sender, RoutedEventArgs e)
-=======
-                var r = await presetDlg.ShowAsync();
-                if (r == ContentDialogResult.Primary && list.SelectedIndex >= 0)
-                {
-                    var chosen = presets[list.SelectedIndex];
-                    await ApplyGitHubLink(mod.Path, chosen.Owner, chosen.Repository);
-                    return;
-                }
-                if (r != ContentDialogResult.Secondary) return;
-            }
-
-            string defaultText = !string.IsNullOrEmpty(mod.GitHubOwner)
-                ? "https://github.com/" + mod.GitHubOwner + "/" + mod.GitHubRepo
-                : mod.Name;
-
-            var input = new TextBox
-            {
-                Header = "GitHubリポジトリURLまたはキーワード",
-                PlaceholderText = "例: TownOfHost  または  https://github.com/xxx/yyy",
-                Text = defaultText
-            };
-            var searchDlg = new ContentDialog
-            {
-                Title = "GitHubで検索",
-                Content = input,
-                PrimaryButtonText = "検索",
-                CloseButtonText = "キャンセル",
-                XamlRoot = this.XamlRoot
-            };
-            if (await searchDlg.ShowAsync() != ContentDialogResult.Primary) return;
-
-            string text = input.Text.Trim();
-            if (string.IsNullOrEmpty(text)) return;
-
-            if (Uri.TryCreate(text, UriKind.Absolute, out var uri) && uri.Host == "github.com")
-            {
-                var parts = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length >= 2) await ApplyGitHubLink(mod.Path, parts[0], parts[1]);
-                return;
-            }
-
-            await ShowGitHubSearchCandidatesAsync(mod, text);
-        }
-
-        private async Task ShowGitHubSearchCandidatesAsync(VanillaPathInfo mod, string keyword)
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
-        {
-            if (sender is not MenuFlyoutItem { Tag: VanillaPathInfo mod }) return;
-            try
-            {
-<<<<<<< HEAD
-                var config = ConfigService.Load();
-                string platform = !string.IsNullOrEmpty(config.MainPlatform) ? config.MainPlatform : config.Platform;
-                string shareCode = ShareCodeService.Generate(mod, platform,
-                    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                                 "AmongUsModManager", "SharedCodes"));
-
-                var copyBtn = new Button { Content = "コピー", Padding = new Thickness(16, 8, 16, 8), HorizontalAlignment = HorizontalAlignment.Left };
-                copyBtn.Click += (_, _) =>
-                {
-                    var dp = new Windows.ApplicationModel.DataTransfer.DataPackage();
-                    dp.SetText(shareCode);
-                    Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(dp);
-                    copyBtn.Content = "コピーしました";
-                };
-
-                var content = new StackPanel { Spacing = 10 };
-                content.Children.Add(new TextBlock { Text = "共有コードを生成しました。", TextWrapping = TextWrapping.Wrap });
-                content.Children.Add(new TextBox { Text = shareCode, FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Consolas"), FontSize = 13, IsReadOnly = true, TextWrapping = TextWrapping.Wrap });
-                content.Children.Add(copyBtn);
-
-                await new ContentDialog { Title = "共有コード", Content = content, CloseButtonText = "閉じる", XamlRoot = this.XamlRoot }.ShowAsync();
-            }
-=======
-                var client = GitHubAuthService.GetClient();
-                string q = Uri.EscapeDataString(keyword + " topic:among-us");
-                var result = await client.GetFromJsonAsync<GitHubSearchResult>(
-                    "https://api.github.com/search/repositories?q=" + q + "&sort=stars&order=desc&per_page=30");
-
-                if (result?.items == null || result.items.Count == 0)
-                {
-                    string q2 = Uri.EscapeDataString(keyword + " among-us in:name,description");
-                    result = await client.GetFromJsonAsync<GitHubSearchResult>(
-                        "https://api.github.com/search/repositories?q=" + q2 + "&sort=stars&order=desc&per_page=30");
-                }
-
-                if (result?.items == null || result.items.Count == 0)
-                {
-                    await ShowError("見つかりませんでした", keyword + " に一致するリポジトリが見つかりませんでした。");
-                    return;
-                }
-
-                var list = new ListView { SelectionMode = ListViewSelectionMode.Single, MaxHeight = 380 };
-                list.ItemsSource = result.items;
-                list.DisplayMemberPath = "full_name";
-
-                var dlg = new ContentDialog
-                {
-                    Title = "検索結果（" + result.items.Count + "件）",
-                    Content = list,
-                    PrimaryButtonText = "このリポジトリと連携",
-                    CloseButtonText = "キャンセル",
-                    XamlRoot = this.XamlRoot
-                };
-
-                if (await dlg.ShowAsync() == ContentDialogResult.Primary
-                    && list.SelectedItem is GitHubRepoItem sel
-                    && sel.owner?.login != null
-                    && sel.name != null)
-                    await ApplyGitHubLink(mod.Path, sel.owner.login, sel.name);
-            }
-            catch (Exception ex) { await ShowError("検索エラー", ex.Message); }
-        }
-
-        private async Task ApplyGitHubLink(string modPath, string owner, string repo)
-        {
-            var config = ConfigService.Load();
-            var t = config.VanillaPaths?.FirstOrDefault(v => v.Path == modPath);
-            if (t != null) { t.GitHubOwner = owner; t.GitHubRepo = repo; ConfigService.Save(config); }
-            _lastLoadedAt = DateTime.MinValue;
-            await LoadLibraryAsync();
-        }
-
-        private async void GenerateShareCode_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not MenuFlyoutItem { Tag: VanillaPathInfo mod }) return;
             try
@@ -928,7 +717,6 @@ namespace AmongUsModManager.Pages
 
                 await new ContentDialog { Title = "共有コード", Content = content, CloseButtonText = "閉じる", XamlRoot = this.XamlRoot }.ShowAsync();
             }
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             catch (Exception ex) { await ShowError("エラー", "共有コードの生成に失敗しました: " + ex.Message); }
         }
 
@@ -984,17 +772,10 @@ namespace AmongUsModManager.Pages
 
     public class GitHubRepoItem
     {
-<<<<<<< HEAD
         public string? name { get; set; }
         public string? full_name { get; set; }
         public string? description { get; set; }
         public int stargazers_count { get; set; }
-=======
-        public string? name          { get; set; }
-        public string? full_name     { get; set; }
-        public string? description   { get; set; }
-        public int stargazers_count  { get; set; }
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         public GitHubOwnerItem? owner { get; set; }
     }
 

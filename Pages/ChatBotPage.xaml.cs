@@ -15,14 +15,8 @@ namespace AmongUsModManager.Pages
         {
             this.InitializeComponent();
             AddBubble("assistant",
-<<<<<<< HEAD
                 "こんにちは！AmongUsModManager サポートです 👋\n\n" +
                 "下のボタンからご質問の内容を選んでください。");
-=======
-                "こんにちは！AmongUsModManager サポートBOT (β) です\n\n" +
-                "下のボタンからご質問の内容を選んでください。\n" +
-                "※ このチャットボットはβ版です。内容が不正確な場合はDiscordでお知らせください。");
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         }
 
         private async void QuickBtn_Click(object sender, RoutedEventArgs e)
@@ -30,21 +24,13 @@ namespace AmongUsModManager.Pages
             if (sender is not Button btn) return;
             string tag = btn.Tag?.ToString() ?? "";
 
-<<<<<<< HEAD
-=======
-            // Discord は即時処理
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             if (tag == "discord")
             {
                 AddBubble("user", "Discordサーバーを教えて");
                 await Task.Delay(150);
                 AddBubble("assistant",
                     "Discord サーバーはこちらです！\n" +
-<<<<<<< HEAD
                     "バグ報告・質問・要望など何でもどうぞ 🎉\n\n" +
-=======
-                    "バグ報告・質問・要望など何でもどうぞ\n\n" +
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                     "https://discord.com/invite/nFhkYmf9At");
                 Process.Start(new ProcessStartInfo("https://discord.com/invite/nFhkYmf9At") { UseShellExecute = true });
                 return;
@@ -52,7 +38,6 @@ namespace AmongUsModManager.Pages
 
             string question = tag switch
             {
-<<<<<<< HEAD
                 "what_is_this" => "このアプリって何？",
                 "install"      => "Modのインストール方法を教えてください",
                 "library"      => "ライブラリの使い方を教えてください",
@@ -66,15 +51,6 @@ namespace AmongUsModManager.Pages
                 "notification" => "通知やお知らせの使い方を教えてください",
                 "settings"     => "設定画面の使い方を教えてください",
                 _              => tag
-=======
-                "install"  => "Modのインストール方法を教えてください",
-                "library"  => "Modライブラリの使い方を教えてください",
-                "error"    => "エラーが出たときの対処法を教えてください",
-                "github"   => "GitHub連携の設定方法を教えてください",
-                "update"   => "アプリやModのアップデート方法を教えてください",
-                "version"  => "バージョン管理について教えてください",
-                _          => tag
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             };
 
             AddBubble("user", question);
@@ -89,7 +65,6 @@ namespace AmongUsModManager.Pages
             AddBubble("assistant", "会話をリセットしました。ボタンから質問を選んでください！");
         }
 
-<<<<<<< HEAD
         // ─── 回答 ───────────────────────────────────────────────────────
         private static string GetReply(string tag) => tag switch
         {
@@ -104,16 +79,10 @@ namespace AmongUsModManager.Pages
                 "・お知らせ・更新通知の受け取り\n\n" +
                 "開発者向け機能（デバッグコンソール・ログ表示など）も搭載しています。",
 
-=======
-        // ─── 固定回答 ────────────────────────────────────────────────
-        private static string GetReply(string tag) => tag switch
-        {
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             "install" =>
                 "Modのインストール手順：\n\n" +
                 "1. 左メニューの「インストール」を開く\n" +
                 "2. インストールしたいModのカードを選択\n" +
-<<<<<<< HEAD
                 "3. バージョン・ファイルを選んで「インストールを実行」\n" +
                 "4. 完了後は「ライブラリ」から起動できます\n\n" +
                 "⚠️ Among Us のバージョンに合ったModを選んでください。\n" +
@@ -160,32 +129,11 @@ namespace AmongUsModManager.Pages
                 "・「ランチャー経由で起動」ON → オンラインマッチ・実績が正常に動作\n" +
                 "・「ランチャー経由で起動」OFF → exe を直接起動（オフラインMod専用向け）\n\n" +
                 "Epic のログイン状態は「アカウント」ページで確認できます。",
-=======
-                "3. バージョン・ファイルを選んで「インストールを実行」\n\n" +
-                "※ Among UsのバージョンにあったModを選んでください。",
-
-            "library" =>
-                "Modライブラリでできること：\n\n" +
-                "・インストール済みModの一覧を確認\n" +
-                "・ゲームの起動\n" +
-                "・Modフォルダを開く\n" +
-                "・GitHub連携でバージョン管理\n\n" +
-                "左メニューの「ライブラリ」から開けます。",
-
-            "error" =>
-                "エラーが発生した場合の対処法：\n\n" +
-                "1. アプリを再起動してもう一度試す\n" +
-                "2. 設定のログ表示でエラー内容を確認\n" +
-                "3. Among UsのバージョンとModの対応表を確認\n" +
-                "4. Modを一度アンインストールして再インストール\n\n" +
-                "解決しない場合はDiscordへ！\nhttps://discord.com/invite/nFhkYmf9At",
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 
             "github" =>
                 "GitHub連携の設定手順：\n\n" +
                 "1. 左メニューの「アカウント」を開く\n" +
                 "2. 「GitHubでログイン」をクリック\n" +
-<<<<<<< HEAD
                 "3. 表示されたコードをブラウザで入力して認証\n\n" +
                 "連携すると：\n" +
                 "・Modの最新バージョンを自動チェック\n" +
@@ -203,29 +151,11 @@ namespace AmongUsModManager.Pages
                 "2. 更新があるModに「更新あり」バッジが表示される\n" +
                 "3. カードを選んで「アップデート」を押す\n\n" +
                 "GitHub連携をしておくと更新検出が自動で行われます。",
-=======
-                "3. ブラウザで認証を完了する\n\n" +
-                "連携すると：\n" +
-                "・Modの最新バージョンを自動チェック\n" +
-                "・ワンクリックでアップデート\n" +
-                "・プライベートリポジトリにも対応",
-
-            "update" =>
-                "アップデート方法：\n\n" +
-                "【アプリ本体】\n" +
-                "起動時に自動で新しいバージョンを確認します。\n" +
-                "通知が出たら「アップデート」ボタンを押してください。\n\n" +
-                "【Mod】\n" +
-                "1. ライブラリを開く\n" +
-                "2. 更新があるModに「↑」バッジが表示される\n" +
-                "3. カードを選択して「アップデート」を押す",
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 
             "version" =>
                 "バージョン管理について：\n\n" +
                 "・インストール済みModのバージョンはライブラリで確認できます\n" +
                 "・GitHub連携を設定するとリリース情報が自動で取得されます\n" +
-<<<<<<< HEAD
                 "・古いバージョンに戻したい場合はインストール画面でバージョンを指定できます\n" +
                 "  →「インストール」→ Modを選択 →「バージョンを選ぶ」\n\n" +
                 "Among Us のバージョンに合ったModを使うことが重要です。\n" +
@@ -268,10 +198,6 @@ namespace AmongUsModManager.Pages
                 "【ログ設定】\n" +
                 "ログファイルの管理方法を設定します。\n" +
                 "「新規ファイル」モードでは起動ごとに別のファイルが作成されます。",
-=======
-                "・古いバージョンに戻したい場合はインストール画面でバージョンを指定できます\n\n" +
-                "Among Usのバージョンに合ったModを使うことが重要です。",
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 
             _ =>
                 "ご質問ありがとうございます。\n" +

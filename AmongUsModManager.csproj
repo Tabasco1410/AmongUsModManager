@@ -79,7 +79,6 @@
 		<DefaultLanguage>ja-JP</DefaultLanguage>
 		<ApplicationIcon>Resource\icon.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-<<<<<<< HEAD
 		<GenerateAppInstallerFile>True</GenerateAppInstallerFile>
 		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 		<PackageCertificateThumbprint>EC092C0C695B2652C741C788605AA8A6463F4C41</PackageCertificateThumbprint>
@@ -91,8 +90,6 @@
 		<AppInstallerUri>https://github.com/Tabasco/AmongUsModManager/releases/latest/download/</AppInstallerUri>
 		<HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
 		<AppxBundlePlatforms>x86|x64|arm64</AppxBundlePlatforms>
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 	</PropertyGroup>
 	<ItemGroup>
 		<Page Include="Pages\HomePage.xaml">

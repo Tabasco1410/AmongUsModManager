@@ -7,10 +7,7 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Text;
-<<<<<<< HEAD
 using System.Threading.Tasks;
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -69,20 +66,13 @@ namespace AmongUsModManager
             CheckAppUpdateForPaneAsync();
             CheckEpicLoginForNotification();
 
-<<<<<<< HEAD
             // 起動時にバックグラウンドでニュース未読数を取得してバッジに反映
             _ = PrefetchNewsUnreadCountAsync();
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 
             InitTrayIcon();
             var cfg = ConfigService.Load();
             _minimizeToTray = cfg.MinimizeToTray;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             this.AppWindow.Closing += AppWindow_Closing;
 
 #if DEBUG
@@ -91,7 +81,6 @@ namespace AmongUsModManager
             LogService.Info("MainWindow", "ウィンドウ初期化完了");
         }
 
-<<<<<<< HEAD
         // 起動時にニュースをバックグラウンド取得してバッジ数を更新する
         // HomePage と同じ NewsUrl（JSON）からフェッチして未読数をキャッシュに反映する
         private const string NewsUrl = "https://amongusmodmanager.web.app/News.json";
@@ -121,8 +110,6 @@ namespace AmongUsModManager
             }
         }
 
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         private void SetVersionInTitle()
         {
             try
@@ -141,11 +128,7 @@ namespace AmongUsModManager
         {
             try
             {
-<<<<<<< HEAD
                 string? icoPath = ResolveIconPath();
-=======
-                string icoPath = ResolveIconPath();
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 if (icoPath != null)
                 {
                     this.AppWindow.SetIcon(icoPath);
@@ -162,15 +145,10 @@ namespace AmongUsModManager
             }
         }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         public static string? ResolveIconPath()
         {
             string base_ = AppContext.BaseDirectory;
             string[] candidates = {
-<<<<<<< HEAD
                 // 実行フォルダ直下
                 Path.Combine(base_, "icon.ico"),
                 Path.Combine(base_, "Icon.ico"),
@@ -190,17 +168,6 @@ namespace AmongUsModManager
                 try { if (File.Exists(p)) return Path.GetFullPath(p); }
                 catch { }
             }
-=======
-                Path.Combine(base_, "icon.ico"),
-                Path.Combine(base_, "Icon.ico"),
-                Path.Combine(base_, "Resource", "icon.ico"),
-                Path.Combine(base_, "Resource", "Icon.ico"),
-                Path.Combine(base_, "Assets", "icon.ico"),
-                Path.Combine(base_, "Assets", "Icon.ico"),
-            };
-            foreach (var p in candidates)
-                if (File.Exists(p)) return p;
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             return null;
         }
 
@@ -220,18 +187,11 @@ namespace AmongUsModManager
                 LogService.Debug("MainWindow", $"ウィンドウサイズ復元: {w}x{h} (scale={scale:F2})");
                 try
                 {
-<<<<<<< HEAD
                     // WindowX/Y は nullable double に変更済み（NaNではなくnullで「未設定」を表す）
                     if (config.WindowX.HasValue && config.WindowY.HasValue)
                     {
                         int px = (int)(config.WindowX.Value * scale);
                         int py = (int)(config.WindowY.Value * scale);
-=======
-                    if (!double.IsNaN(config.WindowX) && !double.IsNaN(config.WindowY))
-                    {
-                        int px = (int)(config.WindowX * scale);
-                        int py = (int)(config.WindowY * scale);
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         this.AppWindow.Move(new PointInt32(px, py));
                         LogService.Debug("MainWindow", $"ウィンドウ位置復元: {config.WindowX},{config.WindowY}");
                     }
@@ -273,10 +233,6 @@ namespace AmongUsModManager
                 double w = size.Width / scale;
                 double h = size.Height / scale;
 
-<<<<<<< HEAD
-=======
-                
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 try
                 {
                     var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
@@ -317,12 +273,6 @@ namespace AmongUsModManager
         {
             try
             {
-<<<<<<< HEAD
-=======
-                var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-                var wndId = Win32Interop.GetWindowIdFromWindow(hwnd);
-                var display = DisplayArea.GetFromWindowId(wndId, DisplayAreaFallback.Primary);
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 return (double)this.AppWindow.Size.Width /
                        Math.Max(1, ((FrameworkElement)this.Content).ActualWidth);
             }
@@ -339,23 +289,15 @@ namespace AmongUsModManager
             if (root == null) return;
             root.RequestedTheme = config?.Theme switch
             {
-<<<<<<< HEAD
                 "Dark"  => ElementTheme.Dark,
                 "Light" => ElementTheme.Light,
                 _       => ElementTheme.Default
             };
             UpdateThemeButton(config?.Theme ?? "Default");
-=======
-                "Dark" => ElementTheme.Dark,
-                "Light" => ElementTheme.Light,
-                _ => ElementTheme.Default
-            };
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         }
 
         public void ReapplyTheme() => ApplyTheme();
 
-<<<<<<< HEAD
         private void UpdateThemeButton(string theme)
         {
             try
@@ -388,8 +330,6 @@ namespace AmongUsModManager
             LogService.Info("MainWindow", $"テーマ変更: {config.Theme}");
         }
 
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         private async void CheckAppUpdateForPaneAsync()
         {
             var result = await AppUpdateService.CheckAsync();
@@ -543,7 +483,6 @@ namespace AmongUsModManager
             ContentFrame.Navigate(typeof(NewsDetailPage), item);
         }
 
-<<<<<<< HEAD
 #if DEBUG
         private void InitDebugConsoleShortcut()
         {
@@ -551,21 +490,10 @@ namespace AmongUsModManager
             {
                 // WinUI 3 では Window.Current.CoreWindow が null になるため
                 // InputKeyboardSource.GetKeyStateForCurrentThread を使う
-=======
-
-
-#if DEBUG
-        private void InitDebugConsoleShortcut()
-        {
-           
-            if (this.Content is FrameworkElement fe)
-            {
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 fe.KeyDown += (s, e) =>
                 {
                     try
                     {
-<<<<<<< HEAD
                         if (e.Key == VirtualKey.L)
                         {
                             var ctrlState  = Microsoft.UI.Input.InputKeyboardSource
@@ -581,14 +509,6 @@ namespace AmongUsModManager
                                 ToggleDebugConsole();
                                 e.Handled = true;
                             }
-=======
-                        if (e.Key == VirtualKey.L &&
-                            (Window.Current.CoreWindow.GetKeyState(VirtualKey.Control) & Windows.UI.Core.CoreVirtualKeyStates.Down) != 0 &&
-                            (Window.Current.CoreWindow.GetKeyState(VirtualKey.Shift) & Windows.UI.Core.CoreVirtualKeyStates.Down) != 0)
-                        {
-                            ToggleDebugConsole();
-                            e.Handled = true;
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         }
                     }
                     catch { }
@@ -608,10 +528,6 @@ namespace AmongUsModManager
             }
             else
             {
-<<<<<<< HEAD
-=======
-                // 既に開いている場合は最前面に持ってくるだけ（閉じるには×ボタン）。
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 _debugConsole.Activate();
             }
         }

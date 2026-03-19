@@ -9,27 +9,14 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
-<<<<<<< HEAD
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-=======
-            
-            <RowDefinition Height="Auto"/>
-            
-        </Grid.RowDefinitions>
-
-        
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                         Spacing="20" Width="520" Margin="0,40,0,24">
 
-<<<<<<< HEAD
                 <!-- ヘッダー -->
-=======
-                
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 <StackPanel Spacing="8" HorizontalAlignment="Center">
                     <Image Source="/Resource/Icon.png" Width="56" Height="56"
                            HorizontalAlignment="Center"/>
@@ -41,11 +28,7 @@
                                TextAlignment="Center" TextWrapping="Wrap"/>
                 </StackPanel>
 
-<<<<<<< HEAD
                 <!-- ① プラットフォーム選択 -->
-=======
-                
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16">
@@ -62,11 +45,6 @@
                             <ComboBoxItem Content="itch.io"          Tag="Itch"/>
                             <ComboBoxItem Content="手動でフォルダを指定" Tag="Manual"/>
                         </ComboBox>
-<<<<<<< HEAD
-=======
-
-                        
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         <TextBlock x:Name="PlatformHint"
                                    Text=""
                                    FontSize="12"
@@ -76,42 +54,24 @@
                     </StackPanel>
                 </Border>
 
-<<<<<<< HEAD
                 <!-- ② フォルダ指定 -->
-=======
-                
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16">
                     <StackPanel Spacing="12">
                         <TextBlock Text="② Among Us のインストールフォルダを指定"
                                    FontSize="13" FontWeight="SemiBold"/>
-<<<<<<< HEAD
-=======
-
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         <TextBlock FontSize="12"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                    TextWrapping="Wrap">
                             「Among Us.exe」が入っているフォルダを指定してください。
                         </TextBlock>
-<<<<<<< HEAD
-=======
-
-                        
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         <Button x:Name="AutoDetectButton"
                                 Content="🔍 自動検出"
                                 HorizontalAlignment="Stretch"
                                 IsEnabled="False"
                                 Click="AutoDetectButton_Click"
                                 Style="{StaticResource AccentButtonStyle}"/>
-<<<<<<< HEAD
-=======
-
-                        
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
                             <TextBox x:Name="PathTextBox"
                                      PlaceholderText="フォルダのパスがここに表示されます"
@@ -121,29 +81,19 @@
                                     Click="BrowseButton_Click"
                                     VerticalAlignment="Center"/>
                         </Grid>
-<<<<<<< HEAD
-=======
-
-                        
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         <InfoBar x:Name="ValidateInfoBar"
                                  IsOpen="False"
                                  IsClosable="False"/>
                     </StackPanel>
                 </Border>
 
-<<<<<<< HEAD
                 <!-- ③ Epic Games ログイン（Epic 選択時のみ表示） -->
-=======
-                
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 <Border x:Name="EpicLoginPanel"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16"
                         Visibility="Collapsed">
                     <StackPanel Spacing="10">
-<<<<<<< HEAD
                         <TextBlock Text="③ Epic Games アカウントにログイン"
                                    FontSize="13" FontWeight="SemiBold"/>
                         <TextBlock FontSize="12" TextWrapping="Wrap"
@@ -151,10 +101,6 @@
                             ログインしておくと Epic Games Launcher なしで直接起動できます。
                             オフラインでMod専用プレイのみなら省略できます。
                         </TextBlock>
-=======
-                        <TextBlock Text="Epic Games ログイン状態"
-                                   FontSize="13" FontWeight="SemiBold"/>
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
                             <FontIcon x:Name="EpicStatusIcon" Glyph="&#xE7BA;" FontSize="18"
                                       VerticalAlignment="Center"/>
@@ -165,7 +111,6 @@
                                        VerticalAlignment="Center"
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>
-<<<<<<< HEAD
                         <!-- セットアップ内でそのままログインできるボタン -->
                         <Button x:Name="EpicLoginInSetupBtn"
                                 Content="🔑 Epic Games にログイン"
@@ -178,22 +123,10 @@
                                 Click="EpicLaunchLauncher_Click"
                                 Visibility="Collapsed"
                                 HorizontalAlignment="Stretch"
-=======
-                        <TextBlock FontSize="11" TextWrapping="Wrap"
-                                   Foreground="{ThemeResource TextFillColorTertiaryBrush}">
-                            Epic版のオンライン機能を使うには Epic Games Launcher 経由での起動が必要です。
-                            セットアップ後もランチャー経由で起動することを推奨します。
-                        </TextBlock>
-                        <Button x:Name="EpicLaunchLauncherBtn"
-                                Content="🚀 Epic Games Launcher を起動"
-                                Click="EpicLaunchLauncher_Click"
-                                Visibility="Collapsed"
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                                 Padding="12,6"/>
                     </StackPanel>
                 </Border>
 
-<<<<<<< HEAD
                 <!-- ④ GitHub 連携（任意） -->
                 <Border x:Name="GitHubLoginPanel"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
@@ -254,9 +187,6 @@
                 </Border>
 
                 <!-- 見つからなかった場合 -->
-=======
-                
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 <Border x:Name="NotFoundPanel"
                         Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -273,10 +203,6 @@
                         <TextBlock TextWrapping="Wrap" FontSize="12"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}">
                             インストール先が正しいか確認してください。Among Us.exe が含まれているフォルダを「参照...」から直接指定することもできます。
-<<<<<<< HEAD
-=======
-                            まだ Among Us をお持ちでない場合は、以下からインストール後に再度「自動検出」をお試しください。
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         </TextBlock>
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <Button Content="Steam で入手"      Click="OpenSteamStore_Click" Padding="12,6"/>
@@ -286,11 +212,7 @@
                     </StackPanel>
                 </Border>
 
-<<<<<<< HEAD
                 <!-- セットアップ完了ボタン -->
-=======
-                
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 <Button x:Name="FinishButton"
                         Content="セットアップ完了"
                         HorizontalAlignment="Stretch"
@@ -302,11 +224,7 @@
             </StackPanel>
         </ScrollViewer>
 
-<<<<<<< HEAD
         <!-- フッター -->
-=======
-        
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         <Border Grid.Row="1"
                 Background="{ThemeResource NavigationViewDefaultPaneBackground}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -320,11 +238,6 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-<<<<<<< HEAD
-=======
-
-                
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 <StackPanel VerticalAlignment="Center" Spacing="2">
                     <TextBlock FontSize="12" FontWeight="SemiBold"
                                Text="フォルダが見つからない・エラーが出る場合"/>
@@ -334,41 +247,10 @@
                         「参照...」でフォルダを直接指定するか、Discord でお問い合わせください。
                     </TextBlock>
                 </StackPanel>
-<<<<<<< HEAD
                 <Button Grid.Column="1" Content="Steam で入手"      Click="OpenSteamStore_Click" Padding="12,6" VerticalAlignment="Center"/>
                 <Button Grid.Column="2" Content="Epic で入手"        Click="OpenEpicStore_Click"  Padding="12,6" VerticalAlignment="Center"/>
                 <Button Grid.Column="3" Content="itch.io で入手"     Click="OpenItchStore_Click"  Padding="12,6" VerticalAlignment="Center"/>
                 <Button Grid.Column="4" Content="Discord サポート"   Click="OpenDiscordSupport_Click" Padding="12,6" VerticalAlignment="Center">
-=======
-
-                
-                <Button Grid.Column="1"
-                        Content="Steam で入手"
-                        Click="OpenSteamStore_Click"
-                        Padding="12,6"
-                        VerticalAlignment="Center"/>
-
-                
-                <Button Grid.Column="2"
-                        Content="Epic で入手"
-                        Click="OpenEpicStore_Click"
-                        Padding="12,6"
-                        VerticalAlignment="Center"/>
-
-                
-                <Button Grid.Column="3"
-                        Content="itch.io で入手"
-                        Click="OpenItchStore_Click"
-                        Padding="12,6"
-                        VerticalAlignment="Center"/>
-
-                
-                <Button Grid.Column="4"
-                        Content="Discord サポート"
-                        Click="OpenDiscordSupport_Click"
-                        Padding="12,6"
-                        VerticalAlignment="Center">
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                     <Button.Resources>
                         <SolidColorBrush x:Key="ButtonBackground">#5865F2</SolidColorBrush>
                         <SolidColorBrush x:Key="ButtonBackgroundPointerOver">#4752C4</SolidColorBrush>
@@ -380,9 +262,5 @@
                 </Button>
             </Grid>
         </Border>
-<<<<<<< HEAD
-=======
-
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
     </Grid>
 </Page>

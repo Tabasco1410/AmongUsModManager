@@ -42,7 +42,6 @@ namespace AmongUsModManager.Pages
                 ModDataPathTextBox.Text = config.ModDataPath ?? string.Empty;
                 StartWithWindowsToggle.IsOn = config.StartWithWindows;
                 StartMinimizedToggle.IsOn = config.StartMinimized;
-<<<<<<< HEAD
                 MinimizeToTrayToggle.IsOn = config.MinimizeToTray;
 
                 // ログモード（RadioButton）
@@ -66,11 +65,6 @@ namespace AmongUsModManager.Pages
                 NotifyAppUpdateToggle.IsOn  = config.NotifyAppUpdate;
                 NotifyNewsToggle.IsOn       = config.NotifyNews;
 
-=======
-                LogAppendModeToggle.IsOn = config.LogAppendMode;
-                MinimizeToTrayToggle.IsOn = config.MinimizeToTray;
-                
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 
                 string platformLabel = config.Platform switch
                 {
@@ -244,7 +238,6 @@ namespace AmongUsModManager.Pages
             if (VanillaPaths.Count > 0) config.GameInstallPath = VanillaPaths[0].Path;
             config.StartWithWindows = StartWithWindowsToggle.IsOn;
             config.StartMinimized   = StartMinimizedToggle.IsOn;
-<<<<<<< HEAD
             config.MinimizeToTray   = MinimizeToTrayToggle.IsOn;
 
             // ログモード: 上書き=false(追記OFF)、新ファイル=false+LogNewFile
@@ -268,13 +261,6 @@ namespace AmongUsModManager.Pages
             if (App.MainWindowInstance is MainWindow mw)
                 mw.ReapplyTheme();
 
-=======
-            config.LogAppendMode    = LogAppendModeToggle.IsOn;
-            config.MinimizeToTray   = MinimizeToTrayToggle.IsOn;
-
-            ConfigService.Save(config);
-            ApplyStartupSetting(config.StartWithWindows);
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             UnsavedChangesBar.IsOpen = false;
         }
 
@@ -385,13 +371,9 @@ namespace AmongUsModManager.Pages
                 VanillaPaths.Remove(info);
         }
 
-<<<<<<< HEAD
         private void LogMode_Checked(object sender, RoutedEventArgs e) { }
         private void Theme_Checked(object sender, RoutedEventArgs e) { }
         private void NotifyToggle_Toggled(object sender, RoutedEventArgs e) { }
-=======
-        private void LogAppendModeToggle_Toggled(object sender, RoutedEventArgs e) { }
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 
         private void MinimizeToTrayToggle_Toggled(object sender, RoutedEventArgs e)
         {

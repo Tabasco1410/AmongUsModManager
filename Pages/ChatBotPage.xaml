@@ -16,19 +16,8 @@
 
         <!-- ヘッダー -->
         <StackPanel Grid.Row="0" Spacing="2" Margin="0,0,0,14">
-<<<<<<< HEAD
             <TextBlock Text="サポート" FontSize="26" FontWeight="SemiBold"/>
             <TextBlock Text="下のボタンからご質問の内容を選んでください。"
-=======
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <TextBlock Text="AIサポート" FontSize="26" FontWeight="SemiBold"/>
-                <Border Background="{ThemeResource AccentFillColorDefaultBrush}"
-                        CornerRadius="4" Padding="8,3" VerticalAlignment="Center">
-                    <TextBlock Text="β" FontSize="11" Foreground="White" FontWeight="SemiBold"/>
-                </Border>
-            </StackPanel>
-            <TextBlock Text="下のボタンからご質問の内容を選んでください。β版のため内容が不正確な場合があります。"
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                        FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
         </StackPanel>
 
@@ -56,7 +45,6 @@
                             HorizontalAlignment="Right"/>
                 </StackPanel>
 
-<<<<<<< HEAD
                 <!-- ボタン1行目 -->
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
                     <StackPanel Orientation="Horizontal" Spacing="6">
@@ -70,15 +58,6 @@
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon Glyph="&#xE7BF;" FontSize="13"/>
                                 <TextBlock Text="Modのインストール方法" FontSize="12"/>
-=======
-                <!-- ボタン一覧 -->
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Button Tag="install" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE7BF;" FontSize="13"/>
-                                <TextBlock Text="インストール方法" FontSize="12"/>
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                             </StackPanel>
                         </Button>
                         <Button Tag="library" Click="QuickBtn_Click" Padding="12,6">
@@ -87,30 +66,24 @@
                                 <TextBlock Text="ライブラリの使い方" FontSize="12"/>
                             </StackPanel>
                         </Button>
-<<<<<<< HEAD
                         <Button Tag="launch" Click="QuickBtn_Click" Padding="12,6">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon Glyph="&#xE768;" FontSize="13"/>
                                 <TextBlock Text="ゲームの起動方法" FontSize="12"/>
                             </StackPanel>
                         </Button>
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         <Button Tag="error" Click="QuickBtn_Click" Padding="12,6">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon Glyph="&#xE7BA;" FontSize="13"/>
                                 <TextBlock Text="エラーの対処法" FontSize="12"/>
                             </StackPanel>
                         </Button>
-<<<<<<< HEAD
                         <Button Tag="epic" Click="QuickBtn_Click" Padding="12,6">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon Glyph="&#xE83B;" FontSize="13"/>
                                 <TextBlock Text="Epic版について" FontSize="12"/>
                             </StackPanel>
                         </Button>
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         <Button Tag="github" Click="QuickBtn_Click" Padding="12,6">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon Glyph="&#xE8C8;" FontSize="13"/>
@@ -129,7 +102,6 @@
                                 <TextBlock Text="バージョン管理" FontSize="12"/>
                             </StackPanel>
                         </Button>
-<<<<<<< HEAD
                         <Button Tag="vanilla" Click="QuickBtn_Click" Padding="12,6">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon Glyph="&#xE7FC;" FontSize="13"/>
@@ -148,8 +120,6 @@
                                 <TextBlock Text="設定の使い方" FontSize="12"/>
                             </StackPanel>
                         </Button>
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                         <Button Tag="discord" Click="QuickBtn_Click" Padding="12,6">
                             <StackPanel Orientation="Horizontal" Spacing="6">
                                 <FontIcon Glyph="&#xE8BD;" FontSize="13"/>

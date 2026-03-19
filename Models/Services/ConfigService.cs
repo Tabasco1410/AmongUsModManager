@@ -1,13 +1,7 @@
-<<<<<<< HEAD
 using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-=======
-﻿using System;
-using System.IO;
-using System.Text.Json;
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
 using AmongUsModManager.Models;
 using AmongUsModManager.Services;
 
@@ -24,27 +18,16 @@ namespace AmongUsModManager.Models.Services
         private static readonly JsonSerializerOptions _options = new JsonSerializerOptions
         {
             WriteIndented = true,
-<<<<<<< HEAD
             // NaN / Infinity を文字列として書き出す（旧設定ファイルの互換性のため残す）
             NumberHandling = JsonNumberHandling.AllowNamedFloatingPointLiterals,
-=======
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.Create(
                 System.Text.Unicode.UnicodeRanges.All)
         };
 
-<<<<<<< HEAD
-=======
-        // メモリキャッシュ（毎回ファイル読み込みを防ぐ）
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         private static AppConfig? _cache;
         private static DateTime _cacheTime = DateTime.MinValue;
         private static readonly object _lock = new object();
 
-<<<<<<< HEAD
-=======
-        /// キャッシュを強制クリア（設定変更後に呼ぶ）
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         public static void InvalidateCache()
         {
             lock (_lock) { _cache = null; }
@@ -57,10 +40,6 @@ namespace AmongUsModManager.Models.Services
                 Directory.CreateDirectory(AppDataPath);
                 string json = JsonSerializer.Serialize(config, _options);
                 File.WriteAllText(FullPath, json);
-<<<<<<< HEAD
-=======
-                // 保存したものをキャッシュに反映（リセット防止）
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 lock (_lock)
                 {
                     _cache = config;
@@ -111,10 +90,6 @@ namespace AmongUsModManager.Models.Services
         {
             lock (_lock)
             {
-<<<<<<< HEAD
-=======
-                // キャッシュが有効なら即返す（ファイルI/O不要）
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                 if (_cache != null && (DateTime.Now - _cacheTime).TotalSeconds < 30)
                     return _cache;
             }

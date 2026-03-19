@@ -1,4 +1,4 @@
-﻿using AmongUsModManager.Models;
+using AmongUsModManager.Models;
 using AmongUsModManager.Models.Services;
 using AmongUsModManager.Services;
 using Microsoft.UI.Xaml;
@@ -43,10 +43,6 @@ namespace AmongUsModManager.Pages
         private TextBlock?     _statusTextBlock;
         private ProgressBar?   _installProgressBar;
 
-<<<<<<< HEAD
-=======
-        private bool _isListView   = false;
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         private bool _isDetailRight = false;
 
         private static string ToRawUrl(string githubBlobUrl)
@@ -182,10 +178,6 @@ namespace AmongUsModManager.Pages
 
         private void LayoutToggle_Checked(object sender, RoutedEventArgs e)
         {
-<<<<<<< HEAD
-=======
-            _isListView = true;
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             LayoutToggleIcon.Glyph = "\uE8FD";
             ModGridView.Visibility = Visibility.Collapsed;
             ModListView.Visibility = Visibility.Visible;
@@ -195,10 +187,6 @@ namespace AmongUsModManager.Pages
 
         private void LayoutToggle_Unchecked(object sender, RoutedEventArgs e)
         {
-<<<<<<< HEAD
-=======
-            _isListView = false;
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
             LayoutToggleIcon.Glyph = "\uF0E2";
             ModListView.Visibility = Visibility.Collapsed;
             ModGridView.Visibility = Visibility.Visible;
@@ -527,7 +515,6 @@ namespace AmongUsModManager.Pages
                     List<string> assets = _selectedMod?.IsReactor == true
                         ? release.assets.Where(a => a.name.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)).Select(a => a.name).ToList()
                         : release.assets.Where(a => a.name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase)).Select(a => a.name).ToList();
-<<<<<<< HEAD
 
                     AssetCombo.ItemsSource = assets;
 
@@ -546,12 +533,6 @@ namespace AmongUsModManager.Pages
 
                     // フォルダ名はMod名のみ（バージョンは含めない）
                     InstallFolderName.Text = SelectedModTitle.Text;
-=======
-
-                    AssetCombo.ItemsSource = assets;
-                    if (assets.Count > 0) AssetCombo.SelectedIndex = 0;
-                    InstallFolderName.Text = $"{SelectedModTitle.Text}_{tagName.Replace(".", "_")}";
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
                     LogService.Debug("ModInstallPage", $"バージョン選択: {tagName}, アセット数: {assets.Count}");
                 }
             }

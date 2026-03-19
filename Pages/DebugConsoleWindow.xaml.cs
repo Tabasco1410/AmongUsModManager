@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -129,7 +129,6 @@ namespace AmongUsModManager.Pages
         private void ScrollToBottom()
         {
             if (BtnAutoScroll.IsChecked == true)
-<<<<<<< HEAD
             {
                 // UpdateLayout を挟んでから MaxValue でスクロールすることで
                 // 最終行が確実に見える位置に来る（コマンドプロンプト風）
@@ -139,9 +138,6 @@ namespace AmongUsModManager.Pages
                     LogScrollViewer.ChangeView(null, double.MaxValue, null, disableAnimation: true);
                 });
             }
-=======
-                LogScrollViewer.ChangeView(null, LogScrollViewer.ScrollableHeight, null);
->>>>>>> 9b70396323094b50176708b54875479518ab7e99
         }
 
         private void UpdateStatus()
