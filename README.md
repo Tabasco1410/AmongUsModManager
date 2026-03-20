@@ -3,7 +3,7 @@ Among UsのModを選ぶだけで自動で導入を行ってくれるアプリで
 （.zipファイルをご用意いただくことでリストにないmodでもインストールができます）
 
 ホームページは[**こちら**](https://amongusmodmanager.web.app/)<br>
-
+証明書は[こちら](https://github.com/Tabasco1410/AmongUsModManager/releases/download/1.4.3/AmongUsModManager_1.4.3.0_x86_x64_arm64.cer)
 
 ## [Discord](https://discord.gg/nFhkYmf9At)<br>
 
