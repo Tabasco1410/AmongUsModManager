@@ -14,15 +14,15 @@
 		<Nullable>enable</Nullable>
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<EnableXamlMarkupCompilerInterop>false</EnableXamlMarkupCompilerInterop>
-
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<!-- シングルファイルならtrue -->
 		<PublishSingleFile>false</PublishSingleFile>
 		<IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
 		<!-- バージョン情報 -->
-		<ApplicationDisplayVersion>1.4.3</ApplicationDisplayVersion>
-		<ApplicationVersion>1.4.3</ApplicationVersion>
-		<AssemblyVersion>1.4.3.0</AssemblyVersion>
-		<FileVersion>1.4.3.0</FileVersion>
+		<ApplicationDisplayVersion>1.4.4</ApplicationDisplayVersion>
+		<ApplicationVersion>1.4.4</ApplicationVersion>
+		<AssemblyVersion>1.4.4.0</AssemblyVersion>
+		<FileVersion>1.4.4.0</FileVersion>
 	</PropertyGroup>
 	<ItemGroup Condition="'$(MsixPackaging)'=='true'">
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
@@ -79,7 +79,7 @@
 		<ApplicationIcon>Resource\icon.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<GenerateAppInstallerFile>True</GenerateAppInstallerFile>
-		<AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
+		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
 		<PackageCertificateThumbprint>EC092C0C695B2652C741C788605AA8A6463F4C41</PackageCertificateThumbprint>
 		<AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
 		<AppxAutoIncrementPackageRevision>False</AppxAutoIncrementPackageRevision>
