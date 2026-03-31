@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -18,10 +18,10 @@ namespace AmongUsModManager.Models.Services
     // Rust の EpicSession 相当。
     public class EpicSession
     {
-        [JsonPropertyName("access_token")]  public string  AccessToken  { get; set; } = "";
-        [JsonPropertyName("refresh_token")] public string  RefreshToken { get; set; } = "";
-        [JsonPropertyName("account_id")]    public string  AccountId    { get; set; } = "";
-        [JsonPropertyName("display_name")]  public string? DisplayName  { get; set; }
+        [JsonPropertyName("access_token")] public string AccessToken { get; set; } = "";
+        [JsonPropertyName("refresh_token")] public string RefreshToken { get; set; } = "";
+        [JsonPropertyName("account_id")] public string AccountId { get; set; } = "";
+        [JsonPropertyName("display_name")] public string? DisplayName { get; set; }
     }
 
     // Rust の KeyringStorage<EpicSession> 相当。
@@ -55,7 +55,7 @@ namespace AmongUsModManager.Models.Services
             try
             {
                 var vault = new PasswordVault();
-                var cred  = vault.Retrieve(Resource, Username);
+                var cred = vault.Retrieve(Resource, Username);
                 cred.RetrievePassword();
                 var session = JsonSerializer.Deserialize<EpicSession>(cred.Password);
                 LogService.Debug("EpicKeyring", "キーリング読み込み成功。");
@@ -82,15 +82,15 @@ namespace AmongUsModManager.Models.Services
 
     public static class EpicLoginService
     {
-        private const string OAuthHost        = "account-public-service-prod03.ol.epicgames.com";
-        private const string TokenEndpoint    = $"https://{OAuthHost}/account/api/oauth/token";
+        private const string OAuthHost = "account-public-service-prod03.ol.epicgames.com";
+        private const string TokenEndpoint = $"https://{OAuthHost}/account/api/oauth/token";
         private const string ExchangeEndpoint = $"https://{OAuthHost}/account/api/oauth/exchange";
 
-        public const string LauncherClientId     = "34a02cf8f4414e29b15921876da36f9a";
+        public const string LauncherClientId = "34a02cf8f4414e29b15921876da36f9a";
         public const string LauncherClientSecret = "daafbccc737745039dffe53d94fc76cf";
 
-        private const string EpicAppId        = "Hemomancer";
-        private const string EpicSandboxId    = "0a18471f93d448e897a7f7de9e39ae8e";
+        public const string EpicAppId = "Hemomancer";
+        private const string EpicSandboxId = "0a18471f93d448e897a7f7de9e39ae8e";
         private const string EpicDeploymentId = "a5aa686defa64131b1edc48c31b40d1a";
 
         private const string UserAgent =
@@ -153,7 +153,7 @@ namespace AmongUsModManager.Models.Services
 
             // AppConfig には表示用情報だけ残す（トークンは保存しない）。
             var config = ConfigService.Load();
-            config.EpicAccountId   = session.AccountId;
+            config.EpicAccountId = session.AccountId;
             config.EpicDisplayName = session.DisplayName?.Trim() ?? "";
             ConfigService.Save(config);
 
@@ -229,7 +229,7 @@ namespace AmongUsModManager.Models.Services
                 var session = await OAuthRequestAsync(new Dictionary<string, string>
                 {
                     ["grant_type"] = "authorization_code",
-                    ["code"]       = normalized,
+                    ["code"] = normalized,
                     ["token_type"] = "eg1",
                 });
 
@@ -264,9 +264,9 @@ namespace AmongUsModManager.Models.Services
             {
                 var refreshed = await OAuthRequestAsync(new Dictionary<string, string>
                 {
-                    ["grant_type"]    = "refresh_token",
+                    ["grant_type"] = "refresh_token",
                     ["refresh_token"] = session.RefreshToken,
-                    ["token_type"]    = "eg1",
+                    ["token_type"] = "eg1",
                 });
                 if (refreshed == null) throw new Exception("レスポンスがnull");
 
@@ -295,9 +295,9 @@ namespace AmongUsModManager.Models.Services
             {
                 var refreshed = await OAuthRequestAsync(new Dictionary<string, string>
                 {
-                    ["grant_type"]    = "refresh_token",
+                    ["grant_type"] = "refresh_token",
                     ["refresh_token"] = session.RefreshToken,
-                    ["token_type"]    = "eg1",
+                    ["token_type"] = "eg1",
                 });
                 if (refreshed == null) throw new Exception("レスポンスがnull");
 
@@ -345,7 +345,7 @@ namespace AmongUsModManager.Models.Services
             try
             {
                 var proc = Process.Start(new ProcessStartInfo(exePath, args)
-                    { WorkingDirectory = workDir, UseShellExecute = false });
+                { WorkingDirectory = workDir, UseShellExecute = false });
                 return LaunchResult.Ok(proc);
             }
             catch (Exception ex)
@@ -360,7 +360,7 @@ namespace AmongUsModManager.Models.Services
         {
             ClearSession();
             var config = ConfigService.Load();
-            config.EpicAccountId   = "";
+            config.EpicAccountId = "";
             config.EpicDisplayName = "";
             ConfigService.Save(config);
             LogService.Info("EpicLoginService", "Epic ログアウト完了。");
@@ -410,7 +410,7 @@ namespace AmongUsModManager.Models.Services
         private static async Task<EpicSession?> OAuthRequestAsync(Dictionary<string, string> fields)
         {
             var body = new FormUrlEncodedContent(fields);
-            var req  = new HttpRequestMessage(HttpMethod.Post, TokenEndpoint) { Content = body };
+            var req = new HttpRequestMessage(HttpMethod.Post, TokenEndpoint) { Content = body };
             req.Headers.Authorization = new AuthenticationHeaderValue("Basic", BasicAuth);
 
             var resp = await _http.SendAsync(req);
@@ -426,10 +426,10 @@ namespace AmongUsModManager.Models.Services
             var root = doc.RootElement;
             return new EpicSession
             {
-                AccessToken  = root.GetProperty("access_token").GetString()  ?? "",
+                AccessToken = root.GetProperty("access_token").GetString() ?? "",
                 RefreshToken = root.GetProperty("refresh_token").GetString() ?? "",
-                AccountId    = root.GetProperty("account_id").GetString()    ?? "",
-                DisplayName  = root.TryGetProperty("displayName", out var dn) ? dn.GetString() : null,
+                AccountId = root.GetProperty("account_id").GetString() ?? "",
+                DisplayName = root.TryGetProperty("displayName", out var dn) ? dn.GetString() : null,
             };
         }
 
@@ -451,10 +451,10 @@ namespace AmongUsModManager.Models.Services
 
     public class EpicLoginResult
     {
-        public bool   Success     { get; private set; }
+        public bool Success { get; private set; }
         public string DisplayName { get; private set; } = "";
-        public string AccountId   { get; private set; } = "";
-        public string Error       { get; private set; } = "";
+        public string AccountId { get; private set; } = "";
+        public string Error { get; private set; } = "";
 
         public static EpicLoginResult Ok(string displayName, string accountId)
             => new() { Success = true, DisplayName = displayName, AccountId = accountId };
@@ -464,9 +464,9 @@ namespace AmongUsModManager.Models.Services
 
     public class LaunchResult
     {
-        public bool     Success { get; private set; }
+        public bool Success { get; private set; }
         public Process? Process { get; private set; }
-        public string   Error   { get; private set; } = "";
+        public string Error { get; private set; } = "";
 
         public static LaunchResult Ok(Process? proc) => new() { Success = true, Process = proc };
         public static LaunchResult Fail(string error) => new() { Success = false, Error = error };

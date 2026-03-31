@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace AmongUsModManager.Models
@@ -14,6 +14,18 @@ namespace AmongUsModManager.Models
         public DateTime LastChecked { get; set; }
         // true のとき自動GitHub連携を行わない（ユーザーが意図的に解除した場合）
         public bool GitHubLinkDisabled { get; set; } = false;
+        // フォルダが属するプラットフォーム (Steam / Epic / MSStore / Itch / Manual / "")
+        public string? Platform { get; set; } = "";
+        // x:Bind 用の表示ラベル
+        public string PlatformLabel => Platform switch
+        {
+            "Steam" => "Steam",
+            "Epic" => "Epic",
+            "MSStore" => "MS Store",
+            "Itch" => "itch.io",
+            "Manual" => "手動",
+            _ => "その他"
+        };
     }
 
     public class AppConfig

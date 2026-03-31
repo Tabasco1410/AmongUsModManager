@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -19,28 +19,28 @@ namespace AmongUsModManager.Pages
 {
     public class NewsDisplayItem
     {
-        public string Id      { get; set; } = "";
-        public string Title   { get; set; } = "";
+        public string Id { get; set; } = "";
+        public string Title { get; set; } = "";
         public string Content { get; set; } = "";
-        public string Date    { get; set; } = "";
-        public string Url     { get; set; } = "";
-        public bool   IsRead  { get; set; }
-        public NewsItem? OriginalItem { get; set; }  
+        public string Date { get; set; } = "";
+        public string Url { get; set; } = "";
+        public bool IsRead { get; set; }
+        public NewsItem? OriginalItem { get; set; }
 
         public SolidColorBrush UnreadDotColor
             => IsRead ? new SolidColorBrush(Colors.Transparent) : new SolidColorBrush(Colors.DodgerBlue);
-        public double TitleOpacity   => IsRead ? 0.75 : 1.0;
+        public double TitleOpacity => IsRead ? 0.75 : 1.0;
         public double ContentOpacity => IsRead ? 0.65 : 0.9;
         public Visibility UnreadButtonVisibility => IsRead ? Visibility.Collapsed : Visibility.Visible;
     }
 
     public sealed partial class HomePage : Page
     {
-        
+
         private HttpClient _http => GitHubAuthService.GetClient();
-        private Action?    _pendingConfirmAction;
+        private Action? _pendingConfirmAction;
         private Queue<string> _unregisteredFolders = new();
-        private ReleaseItem?  _detailTarget;
+        private ReleaseItem? _detailTarget;
 
         private const string NewsUrl = "https://amongusmodmanager.web.app/News.json";
         private List<NewsDisplayItem> _newsItems = new();
@@ -52,7 +52,7 @@ namespace AmongUsModManager.Pages
             this.InitializeComponent();
             LogService.Info("HomePage", "ページ初期化");
 
-            
+
             _cacheStatusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _cacheStatusTimer.Tick += (_, _) =>
             {
@@ -66,7 +66,7 @@ namespace AmongUsModManager.Pages
             base.OnNavigatedTo(e);
             _cacheStatusTimer.Start();
 
-            
+
             if (!_initialized)
             {
                 _initialized = true;
@@ -90,20 +90,20 @@ namespace AmongUsModManager.Pages
             await CheckAppUpdatePopupAsync();
             await LoadReleaseInfoAsync();
             await LoadNewsAsync();
-            
+
             LogService.Debug("HomePage", "全Modリリース一覧 自動ロード開始");
             await LoadAllReleasesAsync();
             LogService.Debug("HomePage", "InitializeAsync 完了");
         }
 
-        
+
         private void LoadModSelector()
         {
             var config = ConfigService.Load();
             ModSelector.Items.Clear();
             if (config?.VanillaPaths != null)
                 foreach (var info in config.VanillaPaths)
-                    ModSelector.Items.Add(new ComboBoxItem { Content = info.Name, Tag = info.Path });
+                    ModSelector.Items.Add(new ComboBoxItem { Content = info.Name, Tag = info });
             if (ModSelector.Items.Count > 0) ModSelector.SelectedIndex = 0;
 
             _unregisteredFolders.Clear();
@@ -134,10 +134,10 @@ namespace AmongUsModManager.Pages
                 {
                     Name = Path.GetFileName(folder),
                     Path = folder,
-                    CurrentVersion = "Unknown"  
+                    CurrentVersion = "Unknown"
                 });
                 ConfigService.Save(config);
-                ModSelector.Items.Add(new ComboBoxItem { Content = Path.GetFileName(folder), Tag = folder });
+                ModSelector.Items.Add(new ComboBoxItem { Content = Path.GetFileName(folder), Tag = new VanillaPathInfo { Name = Path.GetFileName(folder), Path = folder } });
             };
             LocalInfoBar.IsOpen = true;
         }
@@ -148,10 +148,10 @@ namespace AmongUsModManager.Pages
         private void LocalInfoBar_CloseButtonClick(InfoBar sender, object args)
         { _unregisteredFolders.Dequeue(); ShowNextBanner(); }
 
-        
+
         private System.Diagnostics.Process? _gameProcess;
 
-        
+
         private const string SteamAppId = "945360";
         private const string SteamAppIdFileName = "steam_appid.txt";
 
@@ -159,8 +159,10 @@ namespace AmongUsModManager.Pages
         {
             if (ModSelector.SelectedItem is not ComboBoxItem item) return;
 
-            string path = item.Tag?.ToString() ?? "";
-            string exe  = Path.Combine(path, "Among Us.exe");
+            // Tag に VanillaPathInfo を持たせているので取り出す
+            var selectedInfo = item.Tag as AmongUsModManager.Models.VanillaPathInfo;
+            string path = selectedInfo?.Path ?? item.Tag?.ToString() ?? "";
+            string exe = Path.Combine(path, "Among Us.exe");
             LogService.Info("HomePage", $"ゲーム起動: {exe}");
 
             if (!File.Exists(exe))
@@ -169,9 +171,13 @@ namespace AmongUsModManager.Pages
                 return;
             }
 
-            
+            // 選択フォルダの Platform を優先、未設定ならメインプラットフォームにフォールバック
             var config = ConfigService.Load();
-            if (config.Platform == "Steam")
+            string folderPlatform = !string.IsNullOrEmpty(selectedInfo?.Platform)
+                ? selectedInfo.Platform
+                : config.Platform;
+
+            if (folderPlatform == "Steam")
             {
                 string appIdPath = Path.Combine(path, SteamAppIdFileName);
                 if (!File.Exists(appIdPath))
@@ -188,7 +194,7 @@ namespace AmongUsModManager.Pages
                 }
                 else
                 {
-                    
+
                     try
                     {
                         string existing = File.ReadAllText(appIdPath).Trim();
@@ -208,13 +214,13 @@ namespace AmongUsModManager.Pages
                     }
                 }
             }
-            
 
-            
+
+
             LaunchBtn.IsEnabled = false;
             LaunchBtn.Content = "⏳  起動中...";
 
-            
+
             string modName = item.Content?.ToString() ?? "Unknown";
             LaunchHistoryService.Add(modName);
             var launchConfig = ConfigService.Load();
@@ -224,9 +230,64 @@ namespace AmongUsModManager.Pages
 
             try
             {
-                
-                if (launchConfig.Platform == "Epic")
+                if (folderPlatform == "Epic")
                 {
+                    // ── Epic 直接起動（Rust の launch 相当）──────────────────────────
+                    // 未ログインならその場でログインを促す
+                    if (!EpicLoginService.IsLoggedIn())
+                    {
+                        LogService.Info("HomePage", "Epic 未ログイン。ログインダイアログを表示します。");
+                        var loginPrompt = new ContentDialog
+                        {
+                            Title = "Epic Games ログインが必要です",
+                            Content = "直接起動には Epic Games へのログインが必要です。\n今すぐログインしますか？",
+                            PrimaryButtonText = "ログインする",
+                            CloseButtonText = "キャンセル",
+                            DefaultButton = ContentDialogButton.Primary,
+                            XamlRoot = this.XamlRoot
+                        };
+                        if (await loginPrompt.ShowAsync() != ContentDialogResult.Primary)
+                        {
+                            ResetLaunchButton();
+                            return;
+                        }
+
+                        var loginTcs = new System.Threading.Tasks.TaskCompletionSource<EpicLoginResult>();
+                        var loginWindow = new EpicLoginWindow(result =>
+                            DispatcherQueue.TryEnqueue(() => loginTcs.TrySetResult(result)));
+
+                        loginWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32(500, 700));
+                        var displayArea = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(
+                            loginWindow.AppWindow.Id,
+                            Microsoft.UI.Windowing.DisplayAreaFallback.Nearest);
+                        if (displayArea != null)
+                        {
+                            var center = new Windows.Graphics.PointInt32(
+                                displayArea.WorkArea.X + (displayArea.WorkArea.Width - 500) / 2,
+                                displayArea.WorkArea.Y + (displayArea.WorkArea.Height - 700) / 2);
+                            loginWindow.AppWindow.Move(center);
+                        }
+                        loginWindow.Activate();
+
+                        var loginResult = await loginTcs.Task;
+                        if (!loginResult.Success)
+                        {
+                            LogService.Warn("HomePage", $"Epic ログイン失敗/キャンセル: {loginResult.Error}");
+                            ResetLaunchButton();
+                            if (!loginResult.Error.Contains("キャンセル"))
+                                await new ContentDialog
+                                {
+                                    Title = "ログイン失敗",
+                                    Content = loginResult.Error,
+                                    CloseButtonText = "OK",
+                                    XamlRoot = this.XamlRoot
+                                }.ShowAsync();
+                            return;
+                        }
+                        LogService.Info("HomePage", $"Epic ログイン成功: {loginResult.DisplayName}");
+                    }
+
+                    // exchange_code を取得して直接 exe に渡す（Rust と同じフロー）
                     var epicResult = await EpicLoginService.LaunchDirectAsync(exe, path);
                     if (!epicResult.Success)
                     {
@@ -234,10 +295,10 @@ namespace AmongUsModManager.Pages
                         ResetLaunchButton();
                         await new ContentDialog
                         {
-                            Title           = "起動エラー",
-                            Content         = epicResult.Error,
+                            Title = "起動エラー",
+                            Content = epicResult.Error,
                             CloseButtonText = "OK",
-                            XamlRoot        = this.XamlRoot
+                            XamlRoot = this.XamlRoot
                         }.ShowAsync();
                         return;
                     }
@@ -246,23 +307,22 @@ namespace AmongUsModManager.Pages
                 }
                 else
                 {
-                    
                     _gameProcess = Process.Start(new ProcessStartInfo(exe)
-                        { WorkingDirectory = path, UseShellExecute = true });
+                    { WorkingDirectory = path, UseShellExecute = true });
                     LogService.Info("HomePage", $"Among Us プロセス起動 PID={_gameProcess?.Id}");
                 }
 
-                
+
                 await Task.Delay(2000);
                 if (_gameProcess != null && !_gameProcess.HasExited)
                 {
                     LaunchBtn.Content = "🎮  プレイ中";
-                    
+
                     _ = WatchGameProcessAsync(_gameProcess);
                 }
                 else
                 {
-                    
+
                     ResetLaunchButton();
                 }
             }
@@ -295,14 +355,15 @@ namespace AmongUsModManager.Pages
         {
             if (ModSelector.SelectedItem is ComboBoxItem item)
             {
-                string path = item.Tag?.ToString() ?? "";
+                var info = item.Tag as AmongUsModManager.Models.VanillaPathInfo;
+                string path = info?.Path ?? item.Tag?.ToString() ?? "";
                 if (Directory.Exists(path))
                     await Windows.System.Launcher.LaunchFolderPathAsync(path);
             }
         }
 
-        
-        
+
+
         private static List<ReleaseItem>? _releaseInfoCache = null;
         private static DateTime _releaseInfoCachedAt = DateTime.MinValue;
 
@@ -321,20 +382,20 @@ namespace AmongUsModManager.Pages
             UpdateLoadingRing.IsActive = true;
             LogService.Info("HomePage", "リリース情報取得開始");
 
-            
+
             if (_releaseInfoCache != null && DateTime.Now - _releaseInfoCachedAt < CacheTtl)
             {
                 LogService.Debug("HomePage", "インストール済みリリース情報: キャッシュを使用");
                 var sorted0 = _releaseInfoCache.OrderByDescending(i => i.CanUpdate).ThenByDescending(i => i.CanInstall).ToList();
                 ReleaseListView.ItemsSource = sorted0;
                 ReleaseEmptyText.Visibility = sorted0.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-                UpdateLoadingRing.IsActive  = false;
+                UpdateLoadingRing.IsActive = false;
                 UpdateReleaseInfoCacheUI();
                 return;
             }
 
             var config = ConfigService.Load();
-            var items  = new List<ReleaseItem>();
+            var items = new List<ReleaseItem>();
 
             if (config?.VanillaPaths != null)
             {
@@ -352,7 +413,7 @@ namespace AmongUsModManager.Pages
                         if (release == null) continue;
 
                         bool notInstalled = string.IsNullOrEmpty(mod.CurrentVersion);
-                        bool hasUpdate    = !notInstalled && mod.CurrentVersion != "Unknown"
+                        bool hasUpdate = !notInstalled && mod.CurrentVersion != "Unknown"
                                            && release.tag_name != mod.CurrentVersion;
                         LogService.Debug("HomePage", $"{mod.Name}: current={mod.CurrentVersion}, latest={release.tag_name}, hasUpdate={hasUpdate}");
 
@@ -360,16 +421,20 @@ namespace AmongUsModManager.Pages
 
                         var ri = new ReleaseItem
                         {
-                            ModName = mod.Name, LatestTag = release.tag_name,
+                            ModName = mod.Name,
+                            LatestTag = release.tag_name,
                             CurrentVersion = notInstalled ? "未インストール" : (isUnknownVersion ? "バージョン不明" : (mod.CurrentVersion ?? "不明")),
                             PublishedAt = release.published_at?.ToString("yyyy/MM/dd") ?? "",
-                            ReleaseBody = release.body ?? "", DownloadUrl = release.assets?.FirstOrDefault()?.browser_download_url ?? "",
-                            OriginalMod = mod, CanUpdate = hasUpdate && !notInstalled, CanInstall = notInstalled
+                            ReleaseBody = release.body ?? "",
+                            DownloadUrl = release.assets?.FirstOrDefault()?.browser_download_url ?? "",
+                            OriginalMod = mod,
+                            CanUpdate = hasUpdate && !notInstalled,
+                            CanInstall = notInstalled
                         };
-                        if      (notInstalled)     { ri.BadgeText = "未インストール"; ri.BadgeColor = new SolidColorBrush(Colors.SteelBlue);   ri.StatusColor = new SolidColorBrush(Colors.SteelBlue); }
-                        else if (isUnknownVersion) { ri.BadgeText = "バージョン不明"; ri.BadgeColor = new SolidColorBrush(Colors.SlateGray);    ri.StatusColor = new SolidColorBrush(Colors.SlateGray); }
-                        else if (hasUpdate)        { ri.BadgeText = "更新あり";       ri.BadgeColor = new SolidColorBrush(Colors.DarkOrange);   ri.StatusColor = new SolidColorBrush(Colors.Orange); }
-                        else                   { ri.BadgeText = "最新";           ri.BadgeColor = new SolidColorBrush(Colors.SeaGreen);   ri.StatusColor = new SolidColorBrush(Colors.SeaGreen); }
+                        if (notInstalled) { ri.BadgeText = "未インストール"; ri.BadgeColor = new SolidColorBrush(Colors.SteelBlue); ri.StatusColor = new SolidColorBrush(Colors.SteelBlue); }
+                        else if (isUnknownVersion) { ri.BadgeText = "バージョン不明"; ri.BadgeColor = new SolidColorBrush(Colors.SlateGray); ri.StatusColor = new SolidColorBrush(Colors.SlateGray); }
+                        else if (hasUpdate) { ri.BadgeText = "更新あり"; ri.BadgeColor = new SolidColorBrush(Colors.DarkOrange); ri.StatusColor = new SolidColorBrush(Colors.Orange); }
+                        else { ri.BadgeText = "最新"; ri.BadgeColor = new SolidColorBrush(Colors.SeaGreen); ri.StatusColor = new SolidColorBrush(Colors.SeaGreen); }
                         items.Add(ri);
                     }
                     catch (Exception ex)
@@ -390,13 +455,13 @@ namespace AmongUsModManager.Pages
 
             var sorted = items.OrderByDescending(i => i.CanUpdate).ThenByDescending(i => i.CanInstall).ToList();
 
-            
-            _releaseInfoCache   = sorted;
+
+            _releaseInfoCache = sorted;
             _releaseInfoCachedAt = DateTime.Now;
 
             ReleaseListView.ItemsSource = sorted;
             ReleaseEmptyText.Visibility = sorted.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-            UpdateLoadingRing.IsActive  = false;
+            UpdateLoadingRing.IsActive = false;
             UpdateReleaseInfoCacheUI();
             LogService.Info("HomePage", $"リリース情報取得完了: {sorted.Count} 件");
         }
@@ -405,8 +470,8 @@ namespace AmongUsModManager.Pages
         {
             if (_releaseInfoCachedAt == DateTime.MinValue)
             {
-                ReleaseLastUpdatedText.Text  = "最終確認: --";
-                ReleaseCacheStatusText.Text  = "";
+                ReleaseLastUpdatedText.Text = "最終確認: --";
+                ReleaseCacheStatusText.Text = "";
                 return;
             }
             ReleaseLastUpdatedText.Text = "最終確認: " + _releaseInfoCachedAt.ToString("HH:mm:ss");
@@ -429,13 +494,22 @@ namespace AmongUsModManager.Pages
 
         private ReleaseItem MakeReleaseItem(VanillaPathInfo mod, string badge,
             Windows.UI.Color badgeColor, Windows.UI.Color statusColor, bool canUpdate, bool canInstall)
-            => new ReleaseItem { ModName = mod.Name, LatestTag = badge, CurrentVersion = mod.CurrentVersion ?? "不明",
-                OriginalMod = mod, CanUpdate = canUpdate, CanInstall = canInstall, BadgeText = badge,
-                BadgeColor = new SolidColorBrush(badgeColor), StatusColor = new SolidColorBrush(statusColor) };
+            => new ReleaseItem
+            {
+                ModName = mod.Name,
+                LatestTag = badge,
+                CurrentVersion = mod.CurrentVersion ?? "不明",
+                OriginalMod = mod,
+                CanUpdate = canUpdate,
+                CanInstall = canInstall,
+                BadgeText = badge,
+                BadgeColor = new SolidColorBrush(badgeColor),
+                StatusColor = new SolidColorBrush(statusColor)
+            };
 
         private static bool IsRateLimitError(Exception ex)
         {
-            
+
             if (ex is System.Net.Http.HttpRequestException hre)
             {
                 string msg = hre.Message ?? "";
@@ -446,7 +520,7 @@ namespace AmongUsModManager.Pages
 
         private void ShowRateLimitBanner()
         {
-            
+
             if (RateLimitBar.IsOpen) return;
             RateLimitBar.IsOpen = true;
             LogService.Warn("HomePage", "GitHub API レートリミット到達 → バナー表示");
@@ -464,14 +538,14 @@ namespace AmongUsModManager.Pages
         {
             _detailTarget = item;
             DetailModName.Text = item.ModName;
-            DetailTag.Text     = item.LatestTag;
-            DetailDate.Text    = item.PublishedAt;
-            
+            DetailTag.Text = item.LatestTag;
+            DetailDate.Text = item.PublishedAt;
+
             bool isDark = ActualTheme == Microsoft.UI.Xaml.ElementTheme.Dark;
             string mdHtml = MarkdownHelper.ToHtml(item.ReleaseBody, isDark);
             await DetailBodyWebView.EnsureCoreWebView2Async();
             DetailBodyWebView.NavigateToString(mdHtml);
-            ReleaseDetailDialog.PrimaryButtonText   = item.CanUpdate  ? "更新する" : "";
+            ReleaseDetailDialog.PrimaryButtonText = item.CanUpdate ? "更新する" : "";
             ReleaseDetailDialog.SecondaryButtonText = item.CanInstall ? "インストール" : "ファイルをDL";
             ReleaseDetailDialog.XamlRoot = this.XamlRoot;
 
@@ -492,7 +566,7 @@ namespace AmongUsModManager.Pages
         private async Task PerformUpdateAsync(ReleaseItem item)
         {
             UpdateProgressDialog.Title = $"{item.ModName} をアップデート中";
-            UpdateStatusText.Text      = "準備中...";
+            UpdateStatusText.Text = "準備中...";
             UpdateProgressBar.IsIndeterminate = true;
             UpdateProgressDialog.XamlRoot = this.XamlRoot;
             _ = UpdateProgressDialog.ShowAsync();
@@ -522,13 +596,13 @@ namespace AmongUsModManager.Pages
         private void NavigateToInstall()
         { if (App.MainWindowInstance is MainWindow mw) mw.NavigateToPendingPage("ModInstall"); }
 
-        
+
         private List<AllReleaseItem> _allReleaseRaw = new();
-        
+
         private static List<AllReleaseItem>? _allReleaseCache = null;
         private static DateTime _allReleaseCachedAt = DateTime.MinValue;
 
-        
+
         private static TimeSpan? _cacheTtl;
         private static TimeSpan CacheTtl
         {
@@ -544,15 +618,15 @@ namespace AmongUsModManager.Pages
         }
         public static void InvalidateCacheTtl() => _cacheTtl = null;
 
-        
+
         private async void LoadAllReleases_Click(object sender, RoutedEventArgs e)
             => await LoadAllReleasesAsync();
 
-        
+
         private async void AllReleaseForceRefresh_Click(object sender, RoutedEventArgs e)
         {
             LogService.Info("HomePage", "全Modリリース一覧 手動強制更新");
-            
+
             _allReleaseCache = null;
             _allReleaseCachedAt = DateTime.MinValue;
             AllReleaseRefreshBtn.IsEnabled = false;
@@ -566,7 +640,7 @@ namespace AmongUsModManager.Pages
             AllReleaseEmptyText.Text = "読み込み中...";
             AllReleaseEmptyText.Visibility = Visibility.Visible;
 
-            
+
             if (_allReleaseCache != null && DateTime.Now - _allReleaseCachedAt < CacheTtl)
             {
                 LogService.Debug("HomePage", "全Modリリース一覧: キャッシュを使用");
@@ -586,7 +660,7 @@ namespace AmongUsModManager.Pages
 
             int successCount = 0;
             int errorCount = 0;
-            
+
             foreach (var mod in ModInstallPage.SupportedMods)
             {
                 LogService.Debug("HomePage", $"リリース取得中: {mod.Name} ({mod.Owner}/{mod.Repository})");
@@ -607,7 +681,8 @@ namespace AmongUsModManager.Pages
                     {
                         _allReleaseRaw.Add(new AllReleaseItem
                         {
-                            ModName = mod.Name, TagName = release.tag_name,
+                            ModName = mod.Name,
+                            TagName = release.tag_name,
                             PublishedAt = release.published_at?.ToString("yyyy/MM/dd") ?? "",
                             PublishedAtDate = release.published_at,
                             GitHubRepo = $"{mod.Owner}/{mod.Repository}",
@@ -634,7 +709,7 @@ namespace AmongUsModManager.Pages
                 }
             }
 
-            
+
             _allReleaseCache = new List<AllReleaseItem>(_allReleaseRaw);
             _allReleaseCachedAt = DateTime.Now;
 
@@ -644,7 +719,7 @@ namespace AmongUsModManager.Pages
             LogService.Info("HomePage", $"全Modリリース一覧取得完了: 成功={successCount} 件, エラー={errorCount} 件, 合計={_allReleaseRaw.Count} 件");
         }
 
-        
+
         private void RebuildModFilterFromCache()
         {
             AllReleaseModFilter.Items.Clear();
@@ -653,7 +728,7 @@ namespace AmongUsModManager.Pages
                 AllReleaseModFilter.Items.Add(new ComboBoxItem { Content = item.ModName, Tag = item.ModName });
         }
 
-        
+
         private void UpdateCacheStatusUI()
         {
             if (_allReleaseCachedAt == DateTime.MinValue)
@@ -686,7 +761,7 @@ namespace AmongUsModManager.Pages
             }
         }
 
-        
+
         private void AllReleaseFilter_Changed(object sender, RoutedEventArgs e)
         { if (_allReleaseRaw.Count > 0) ApplyAllReleaseFilter(); }
         private void AllReleaseFilter_Changed(object sender, SelectionChangedEventArgs e)
@@ -696,45 +771,45 @@ namespace AmongUsModManager.Pages
         {
             var filtered = _allReleaseRaw.AsEnumerable();
 
-            
+
             if (AllReleaseModFilter.SelectedItem is ComboBoxItem modItem &&
                 modItem.Tag?.ToString() is string modTag && modTag != "all" && modTag.Length > 0)
                 filtered = filtered.Where(r => r.ModName == modTag);
 
-            
+
             if (AllReleaseLatestOnly.IsChecked == true)
                 filtered = filtered.Where(r => r.IsLatest);
 
-            
+
             if (AllReleasePeriodFilter.SelectedItem is ComboBoxItem periodItem)
             {
                 var cutoff = periodItem.Tag?.ToString() switch
                 {
-                    "today"   => DateTime.Now.Date,
-                    "week"    => DateTime.Now.AddDays(-7),
-                    "month"   => DateTime.Now.AddDays(-30),
+                    "today" => DateTime.Now.Date,
+                    "week" => DateTime.Now.AddDays(-7),
+                    "month" => DateTime.Now.AddDays(-30),
                     "3months" => DateTime.Now.AddMonths(-3),
                     "6months" => DateTime.Now.AddMonths(-6),
-                    "1year"   => DateTime.Now.AddYears(-1),
-                    _         => DateTime.MinValue
+                    "1year" => DateTime.Now.AddYears(-1),
+                    _ => DateTime.MinValue
                 };
                 if (cutoff > DateTime.MinValue) filtered = filtered.Where(r => r.PublishedAtDate >= cutoff);
             }
 
-            
+
             filtered = AllReleaseSortFilter.SelectedItem is ComboBoxItem sortItem
                 ? sortItem.Tag?.ToString() switch
                 {
                     "oldest" => filtered.OrderBy(r => r.PublishedAtDate),
-                    "name"   => filtered.OrderBy(r => r.ModName).ThenByDescending(r => r.PublishedAtDate),
-                    _        => filtered.OrderByDescending(r => r.PublishedAtDate)
+                    "name" => filtered.OrderBy(r => r.ModName).ThenByDescending(r => r.PublishedAtDate),
+                    _ => filtered.OrderByDescending(r => r.PublishedAtDate)
                 }
                 : filtered.OrderByDescending(r => r.PublishedAtDate);
 
             var all = filtered.ToList();
             int total = all.Count;
 
-            
+
             int pageSize = AllReleasePageSizeFilter.SelectedItem is ComboBoxItem psItem
                 && psItem.Tag?.ToString() is string ps && ps != "all" && int.TryParse(ps, out int n) ? n : int.MaxValue;
             var result = all.Take(pageSize).ToList();
@@ -759,11 +834,11 @@ namespace AmongUsModManager.Pages
                 await ShowReleaseDetailDialogAsync(item);
         }
 
-        
-        
+
+
         private async Task ShowReleaseDetailDialogAsync(AllReleaseItem item)
         {
-            
+
             var webView = new Microsoft.UI.Xaml.Controls.WebView2
             {
                 Height = 320,
@@ -786,7 +861,7 @@ namespace AmongUsModManager.Pages
                 XamlRoot = this.XamlRoot
             };
 
-            
+
             await webView.EnsureCoreWebView2Async();
             bool isDark = ActualTheme == Microsoft.UI.Xaml.ElementTheme.Dark;
             webView.NavigateToString(MarkdownHelper.ToHtml(item.ReleaseBody, isDark));
@@ -796,7 +871,7 @@ namespace AmongUsModManager.Pages
                 Process.Start(new ProcessStartInfo(item.ReleaseUrl) { UseShellExecute = true });
         }
 
-        
+
         private async Task LoadNewsAsync()
         {
             NewsLoadingRing.IsActive = true;
@@ -812,13 +887,18 @@ namespace AmongUsModManager.Pages
                     string id = string.IsNullOrEmpty(n.Id) ? $"{n.Title}_{n.Date}" : n.Id;
                     return new NewsDisplayItem
                     {
-                        Id = id, Title = n.Title, Content = n.Content, Date = n.Date, Url = n.Url,
-                        IsRead = readIds.Contains(id), OriginalItem = n
+                        Id = id,
+                        Title = n.Title,
+                        Content = n.Content,
+                        Date = n.Date,
+                        Url = n.Url,
+                        IsRead = readIds.Contains(id),
+                        OriginalItem = n
                     };
                 }).ToList();
 
-                NewsListView.ItemsSource    = _newsItems;
-                NewsEmptyText.Visibility    = _newsItems.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+                NewsListView.ItemsSource = _newsItems;
+                NewsEmptyText.Visibility = _newsItems.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
                 LogService.Info("HomePage", $"お知らせ取得完了: {_newsItems.Count} 件, 未読: {_newsItems.Count(n => !n.IsRead)} 件");
             }
             catch (Exception ex)
@@ -832,31 +912,31 @@ namespace AmongUsModManager.Pages
         private void SetNewsEmpty(string message)
         {
             NewsListView.ItemsSource = null;
-            NewsEmptyText.Text       = message;
+            NewsEmptyText.Text = message;
             NewsEmptyText.Visibility = Visibility.Visible;
         }
 
-        
-        
-        
-        
-        
+
+
+
+
+
         private void NewsItem_Click(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is not NewsDisplayItem item) return;
 
-            
+
             NewsReadService.MarkRead(item.Id);
             item.IsRead = true;
             RefreshNewsList();
             LogService.Info("HomePage", $"お知らせクリック: {item.Title}");
 
-            
+
             if (item.OriginalItem != null && App.MainWindowInstance is MainWindow mw)
                 mw.NavigateToNewsDetail(item.OriginalItem);
         }
 
-        
+
         private void MarkReadBtn_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is NewsDisplayItem item)
@@ -883,7 +963,7 @@ namespace AmongUsModManager.Pages
             NewsListView.ItemsSource = _newsItems;
         }
 
-        
+
         private async Task CheckAppUpdatePopupAsync()
         {
             var config = ConfigService.Load();
@@ -897,7 +977,7 @@ namespace AmongUsModManager.Pages
 
             if (answer == ContentDialogResult.Primary)
             {
-                
+
                 if (!string.IsNullOrEmpty(result.DownloadUrl))
                     await DownloadAppUpdateAsync(result);
                 else
@@ -907,11 +987,11 @@ namespace AmongUsModManager.Pages
             { config.NotifyAppUpdate = false; ConfigService.Save(config); }
         }
 
-        
+
         private async Task DownloadAppUpdateAsync(AppUpdateService.UpdateResult result)
         {
             var progressBar = new ProgressBar { IsIndeterminate = false, Value = 0, Minimum = 0, Maximum = 100, Width = 320 };
-            var statusText  = new TextBlock { Text = "ダウンロード中... 0%" };
+            var statusText = new TextBlock { Text = "ダウンロード中... 0%" };
             var panel = new StackPanel { Spacing = 10 };
             panel.Children.Add(new TextBlock { Text = $"v{result.LatestTag} をダウンロード中" });
             panel.Children.Add(progressBar);
@@ -952,7 +1032,7 @@ namespace AmongUsModManager.Pages
             }
         }
 
-        
+
         private void LoadLastMethod() { LastMethodText.Text = "前回の方法を適用"; LastMethodBtn.IsEnabled = false; }
 
         private async void QuickInstallFromFile_Click(object sender, RoutedEventArgs e)
@@ -975,9 +1055,14 @@ namespace AmongUsModManager.Pages
             {
                 var data = ShareCodeService.Decode(ShareCodeBox.Text.Trim());
                 if (data != null)
-                    await new ContentDialog { Title = "共有コード情報",
+                    await new ContentDialog
+                    {
+                        Title = "共有コード情報",
                         Content = $"Mod: {data.ModName}\nバージョン: {data.Version}\nプラットフォーム: {data.Platform}",
-                        PrimaryButtonText = "インストールへ", CloseButtonText = "キャンセル", XamlRoot = this.XamlRoot }.ShowAsync();
+                        PrimaryButtonText = "インストールへ",
+                        CloseButtonText = "キャンセル",
+                        XamlRoot = this.XamlRoot
+                    }.ShowAsync();
                 if (App.MainWindowInstance is MainWindow mw) mw.NavigateToPendingPage("ModInstall");
             }
         }
@@ -985,37 +1070,37 @@ namespace AmongUsModManager.Pages
         private void QuickInstallLastMethod_Click(object sender, RoutedEventArgs e) { }
     }
 
-    
-    
-    
+
+
+
     public class AllReleaseItem
     {
-        public string ModName   { get; set; } = "";
-        public string TagName   { get; set; } = "";
+        public string ModName { get; set; } = "";
+        public string TagName { get; set; } = "";
         public string PublishedAt { get; set; } = "";
-        public string GitHubRepo  { get; set; } = "";
-        public string ModType     { get; set; } = "Mod";
+        public string GitHubRepo { get; set; } = "";
+        public string ModType { get; set; } = "Mod";
         public string ReleaseBody { get; set; } = "";
-        public string ReleaseUrl  { get; set; } = "";
+        public string ReleaseUrl { get; set; } = "";
         public DateTime? PublishedAtDate { get; set; }
-        public bool IsLatest { get; set; } = false;  
+        public bool IsLatest { get; set; } = false;
         public string LatestBadge => IsLatest ? "最新" : "";
         public SolidColorBrush StatusColor { get; set; } = new(Colors.Gray);
-        public SolidColorBrush TypeColor   { get; set; } = new(Colors.SteelBlue);
+        public SolidColorBrush TypeColor { get; set; } = new(Colors.SteelBlue);
     }
 
     public class ReleaseItem
     {
-        public string ModName        { get; set; } = "";
-        public string LatestTag      { get; set; } = "";
+        public string ModName { get; set; } = "";
+        public string LatestTag { get; set; } = "";
         public string CurrentVersion { get; set; } = "";
-        public string PublishedAt    { get; set; } = "";
-        public string ReleaseBody    { get; set; } = "";
-        public string DownloadUrl    { get; set; } = "";
-        public bool   CanUpdate  { get; set; }
-        public bool   CanInstall { get; set; }
-        public string BadgeText  { get; set; } = "";
-        public SolidColorBrush BadgeColor  { get; set; } = new(Colors.Gray);
+        public string PublishedAt { get; set; } = "";
+        public string ReleaseBody { get; set; } = "";
+        public string DownloadUrl { get; set; } = "";
+        public bool CanUpdate { get; set; }
+        public bool CanInstall { get; set; }
+        public string BadgeText { get; set; } = "";
+        public SolidColorBrush BadgeColor { get; set; } = new(Colors.Gray);
         public SolidColorBrush StatusColor { get; set; } = new(Colors.Gray);
         public VanillaPathInfo OriginalMod { get; set; } = new();
     }
