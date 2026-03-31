@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,17 +15,13 @@ namespace AmongUsModManager.Pages
 {
     public sealed partial class ConflictCheckPage : Page
     {
-        // 競合チェックから除外するDLL（Reactor本体・BepInExコア等）
         private static readonly HashSet<string> ExcludedDlls = new(StringComparer.OrdinalIgnoreCase)
         {
-            // BepInEx コア
             "0Harmony.dll", "BepInEx.dll", "BepInEx.Preloader.dll",
             "BepInEx.Unity.dll", "BepInEx.Core.dll",
             "Mono.Cecil.dll", "Mono.Cecil.Mdb.dll", "Mono.Cecil.Pdb.dll",
             "MonoMod.RuntimeDetour.dll", "MonoMod.Utils.dll",
-            // Reactor
             "Reactor.dll", "Reactor.OxygenFilter.dll",
-            // MiraAPI
             "MiraAPI.dll",
         };
 
@@ -39,7 +35,6 @@ namespace AmongUsModManager.Pages
             CheckingRing.IsActive = true;
             SummaryText.Text = "チェック中...";
 
-            // 前回の結果を消す（EmptyStateは残す）
             var toRemove = ResultPanel.Children
                 .Where(c => c != EmptyState)
                 .ToList();
@@ -63,14 +58,11 @@ namespace AmongUsModManager.Pages
             }
         }
 
-        // ─── チェックロジック ─────────────────────────────────────────
         private List<ConflictResult> RunCheck()
         {
             var config = ConfigService.Load();
             var mods = config.VanillaPaths ?? new List<VanillaPathInfo>();
 
-            // 各ModのBepInEx/pluginsにあるDLLを収集
-            // key: DLL名（小文字）, value: (ModName, DllPath)のリスト
             var dllMap = new Dictionary<string, List<(string ModName, string DllPath)>>(
                 StringComparer.OrdinalIgnoreCase);
 
@@ -82,7 +74,6 @@ namespace AmongUsModManager.Pages
                 string pluginsDir = Path.Combine(mod.Path, "BepInEx", "plugins");
                 if (!Directory.Exists(pluginsDir)) continue;
 
-                // pluginsフォルダ以下のDLLを再帰的に取得
                 var dlls = Directory.GetFiles(pluginsDir, "*.dll", SearchOption.AllDirectories);
                 foreach (var dll in dlls)
                 {
@@ -95,7 +86,6 @@ namespace AmongUsModManager.Pages
                 }
             }
 
-            // 2つ以上のModに同じDLL名が存在 → 競合
             return dllMap
                 .Where(kv => kv.Value.Count >= 2)
                 .Select(kv => new ConflictResult

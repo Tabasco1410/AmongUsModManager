@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
@@ -29,7 +29,6 @@ namespace AmongUsModManager.Pages
 
             if (!string.IsNullOrEmpty(item.ContentFile))
             {
-                
                 TextScrollViewer.Visibility  = Visibility.Collapsed;
                 WebViewContainer.Visibility  = Visibility.Visible;
                 WebTitleText.Text = item.Title;
@@ -38,7 +37,6 @@ namespace AmongUsModManager.Pages
             }
             else
             {
-                
                 TextScrollViewer.Visibility  = Visibility.Visible;
                 WebViewContainer.Visibility  = Visibility.Collapsed;
                 TitleText.Text   = item.Title;
@@ -71,12 +69,10 @@ namespace AmongUsModManager.Pages
 
                 if (contentFile.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
                 {
-                    
                     html = MarkdownHelper.ToHtml(text, isDarkTheme);
                 }
                 else
                 {
-                    
                     html = InjectBaseStyle(text, isDarkTheme);
                 }
 
@@ -87,7 +83,6 @@ namespace AmongUsModManager.Pages
             catch (Exception ex)
             {
                 LogService.Error("NewsDetailPage", $"リッチコンテンツ読み込み失敗: {contentFile}", ex);
-                
                 await ContentWebView.EnsureCoreWebView2Async();
                 ContentWebView.NavigateToString(
                     "<html><body style='color:#e0e0e0;background:#1f1f1f;font-family:Segoe UI;padding:20px'>" +
@@ -101,10 +96,6 @@ namespace AmongUsModManager.Pages
             }
         }
 
-        
-        
-        
-        
         private static string InjectBaseStyle(string html, bool isDarkTheme)
         {
             string bgColor   = isDarkTheme ? "#1f1f1f" : "#ffffff";
@@ -122,7 +113,6 @@ namespace AmongUsModManager.Pages
                 "video{max-width:100%;border-radius:6px;margin:8px 0;}" +
                 "</style>";
 
-            
             if (html.Contains("<head>", StringComparison.OrdinalIgnoreCase))
                 return html.Replace("<head>", "<head>" + style, StringComparison.OrdinalIgnoreCase);
             if (html.Contains("<html>", StringComparison.OrdinalIgnoreCase))

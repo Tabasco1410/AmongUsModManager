@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,7 +11,6 @@ using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager.Pages
 {
-    
     public class BanListEntry
     {
         public string Code { get; set; } = "";
@@ -31,12 +30,10 @@ namespace AmongUsModManager.Pages
         {
             var config = ConfigService.Load();
 
-            
             FriendListView.ItemsSource = config.Friends;
             FriendEmptyText.Visibility = config.Friends.Count == 0
                 ? Visibility.Visible : Visibility.Collapsed;
 
-            
             BanModSelector.Items.Clear();
             foreach (var mod in config.VanillaPaths)
                 BanModSelector.Items.Add(new ComboBoxItem { Content = mod.Name, Tag = mod.Path });
@@ -53,10 +50,8 @@ namespace AmongUsModManager.Pages
 
         private void LoadBanList(string modPath)
         {
-            
             _currentBanListPath = null;
 
-            
             string[] priorityCandidates = new[]
             {
                 Path.Combine(modPath, "BanList.txt"),
@@ -65,7 +60,6 @@ namespace AmongUsModManager.Pages
             };
             _currentBanListPath = priorityCandidates.FirstOrDefault(File.Exists);
 
-            
             if (_currentBanListPath == null && Directory.Exists(modPath))
             {
                 var found = Directory.GetFiles(modPath, "BanList.txt", SearchOption.AllDirectories)
@@ -104,7 +98,6 @@ namespace AmongUsModManager.Pages
         {
             if (_currentBanListPath == null)
             {
-                
                 if (BanModSelector.SelectedItem is not ComboBoxItem selItem)
                 {
                     var noModDlg = new ContentDialog
@@ -179,7 +172,6 @@ namespace AmongUsModManager.Pages
         }
 
         
-
         private async void AddFriend_Click(object sender, RoutedEventArgs e)
         {
             var nameBox = new TextBox { Header = "名前", PlaceholderText = "プレイヤー名" };

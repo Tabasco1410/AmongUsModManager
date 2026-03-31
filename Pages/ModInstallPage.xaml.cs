@@ -1,4 +1,4 @@
-using AmongUsModManager.Models;
+﻿using AmongUsModManager.Models;
 using AmongUsModManager.Models.Services;
 using AmongUsModManager.Services;
 using Microsoft.UI.Xaml;

@@ -5,7 +5,6 @@ using System.Text.Json;
 
 namespace AmongUsModManager.Models.Services
 {
-   
     public static class NewsReadService
     {
         private static readonly string FolderName = "AmongUsModManager";

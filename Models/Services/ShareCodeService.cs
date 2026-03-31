@@ -44,7 +44,6 @@ namespace AmongUsModManager.Models.Services
                 GeneratedAt = DateTime.UtcNow
             };
 
-         
             string json  = JsonSerializer.Serialize(data, _options);
             string b64   = Convert.ToBase64String(Encoding.UTF8.GetBytes(json))
                            .Replace('+', '-').Replace('/', '_').Replace("=", "");
@@ -67,7 +66,6 @@ namespace AmongUsModManager.Models.Services
             return code;
         }
 
-      
         public static ShareCodeData? Decode(string codeOrPath)
         {
             // .aumanager ファイルパスの場合
@@ -117,7 +115,7 @@ namespace AmongUsModManager.Models.Services
         public string GitHubRepo  { get; set; } = "";
         public string Version     { get; set; } = "";
         public string Platform    { get; set; } = "";
-        public string DownloadUrl { get; set; } = "";  
+        public string DownloadUrl { get; set; } = "";
         public DateTime GeneratedAt { get; set; }
     }
 
