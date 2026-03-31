@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
@@ -85,6 +85,29 @@ namespace AmongUsModManager.Pages
 
                 LoadMainPlatformUI(config);
             }
+        }
+
+        private void VanillaPathListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int count = VanillaPathListView.SelectedItems.Count;
+            SelectedFolderCountText.Text = count.ToString();
+        }
+
+        private void BulkPlatformSelector_Changed(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is not ComboBox cmb) return;
+            string selectedTag = (cmb.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "";
+
+            if (string.IsNullOrEmpty(selectedTag)) return;
+
+            foreach (var item in VanillaPathListView.SelectedItems.OfType<VanillaPathInfo>())
+            {
+                item.Platform = selectedTag;
+            }
+
+            cmb.SelectedIndex = 0;
+            VanillaPathListView.SelectedItems.Clear();
+            SelectedFolderCountText.Text = "0";
         }
 
         private static readonly (string Tag, string Label)[] PlatformOptions =

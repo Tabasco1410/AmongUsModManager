@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="AmongUsModManager.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7,8 +7,11 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:AmongUsModManager.Models"
     xmlns:local="using:AmongUsModManager.Pages"
-    x:DataType="local:SettingsPage"
     mc:Ignorable="d">
+
+    <Page.Resources>
+        <models:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -43,16 +46,76 @@
                         <TextBlock Text="AmongUsが入っているフォルダを登録してください。複数のプラットフォームを登録できます。"
                                    FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}" TextWrapping="Wrap"/>
 
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8" Margin="0,8,0,0">
+                            <TextBlock Grid.Column="0" 
+                                      VerticalAlignment="Center"
+                                      FontSize="12"
+                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                                <Run x:Name="SelectedFolderCountText" Text="0"/>
+                                <Run Text="個選択中"/>
+                            </TextBlock>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="一括変更:"
+                                          VerticalAlignment="Center"
+                                          FontSize="12"
+                                          Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <ComboBox x:Name="BulkPlatformSelector" MinWidth="140" 
+                                         SelectionChanged="BulkPlatformSelector_Changed">
+                                    <ComboBoxItem Content="プラットフォーム選択" Tag="" IsSelected="True"/>
+                                    <ComboBoxItem Content="Steam" Tag="Steam"/>
+                                    <ComboBoxItem Content="Epic Games" Tag="Epic"/>
+                                    <ComboBoxItem Content="Microsoft Store" Tag="MSStore"/>
+                                    <ComboBoxItem Content="itch.io" Tag="Itch"/>
+                                    <ComboBoxItem Content="手動指定" Tag="Manual"/>
+                                </ComboBox>
+                            </StackPanel>
+                        </Grid>
+
                         <ListView x:Name="VanillaPathListView" ItemsSource="{x:Bind VanillaPaths}"
-                                  SelectionMode="None" BorderThickness="1"
-                                  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="6">
+                                  SelectionMode="Multiple" BorderThickness="1"
+                                  BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" CornerRadius="6"
+                                  SelectionChanged="VanillaPathListView_SelectionChanged"
+                                  Margin="0,8,0,0">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="models:VanillaPathInfo">
-                                    <Grid ColumnDefinitions="Auto, *, Auto" Padding="12" ColumnSpacing="12">
-                                        <TextBox Text="{x:Bind Name, Mode=TwoWay}" Width="150" VerticalAlignment="Center"/>
-                                        <TextBlock Grid.Column="1" Text="{x:Bind Path}" Foreground="Gray"
-                                                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                        <Button Grid.Column="2" Content="削除" Click="RemovePath_Click" VerticalAlignment="Center"/>
+                                    <Grid ColumnDefinitions="Auto, Auto, Auto, *, Auto, Auto" Padding="12" ColumnSpacing="12">
+                                        <ComboBox Grid.Column="0"
+                                                 MinWidth="130"
+                                                 SelectedItem="{x:Bind Platform, Mode=TwoWay}"
+                                                 VerticalAlignment="Center">
+                                            <x:String></x:String>
+                                            <x:String>Steam</x:String>
+                                            <x:String>Epic</x:String>
+                                            <x:String>MSStore</x:String>
+                                            <x:String>Itch</x:String>
+                                            <x:String>Manual</x:String>
+                                        </ComboBox>
+                                        <TextBox Grid.Column="1"
+                                                 Text="{x:Bind Name, Mode=TwoWay}" 
+                                                 Width="130" 
+                                                 VerticalAlignment="Center"
+                                                 PlaceholderText="名前"/>
+                                        <TextBlock Grid.Column="2"
+                                                  Text="{x:Bind CurrentVersion}"
+                                                  FontSize="11"
+                                                  Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                  VerticalAlignment="Center"
+                                                  Padding="4,0"/>
+                                        <TextBlock Grid.Column="3" 
+                                                   Text="{x:Bind Path}" 
+                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                   VerticalAlignment="Center" 
+                                                   TextTrimming="CharacterEllipsis"
+                                                   FontSize="12"/>
+                                        <Button Grid.Column="4" Content="削除" Click="RemovePath_Click" VerticalAlignment="Center"
+                                               Padding="8,4" Style="{StaticResource DefaultButtonStyle}">
+                                        </Button>
                                     </Grid>
                                 </DataTemplate>
                             </ListView.ItemTemplate>

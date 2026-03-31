@@ -53,12 +53,11 @@ namespace AmongUsModManager.Services
             return null;
         }
 
-        //Epic
         public static string? GetEpicPath()
         {
             try
             {
-                var epicRoots = new List<string>//探してみる.........ここにはあるっしょ！
+                var epicRoots = new List<string>
                 {
                     @"C:\Program Files\Epic Games\AmongUs",
                     @"C:\Program Files (x86)\Epic Games\AmongUs",
@@ -80,12 +79,10 @@ namespace AmongUsModManager.Services
             return null;
         }
 
-        //MS Store
         public static string? GetMicrosoftStorePath()
         {
             try
             {
-               //たぶんここ
                 string windowsApps = @"C:\Program Files\WindowsApps";
                 if (!Directory.Exists(windowsApps)) return null;
 
@@ -98,12 +95,10 @@ namespace AmongUsModManager.Services
             return null;
         }
 
-        
         public static string? GetItchPath()
         {
             try
             {
-                //よくわかんない　使ったことないし
                 string localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                 var candidates = new List<string>
                 {
