@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -111,28 +111,35 @@ namespace AmongUsModManager.Pages
                 LoadingBar.Visibility = Visibility.Collapsed;
 
                 // GitHub連携済みで CurrentVersion が空または "Unknown" のMod → バージョン未設定警告
-                var unknownMods = mods.Where(m =>
-                    (string.IsNullOrEmpty(m.CurrentVersion) || string.Equals(m.CurrentVersion, "Unknown", StringComparison.OrdinalIgnoreCase))
-                    && !string.IsNullOrEmpty(m.GitHubOwner)).ToList();
+                UpdateWarningBar(mods);
+            }
+            else
+            {
+                // shouldCheck が false の場合でも、警告状態は更新する
+                UpdateWarningBar(mods);
+            }
+        }
 
-                if (unknownMods.Count > 0)
-                {
-                    VersionIssueBar.Title = "バージョンが登録されていません";
-                    VersionIssueBar.Message = $"「{unknownMods[0].Name}」などのModにバージョンが登録されていません。";
-                    VersionIssueActionBtn.Content = "タグを設定する";
-                    VersionIssueActionBtn.Click -= ResolveVersionIssues_Click;
-                    VersionIssueActionBtn.Click += (s, e) => _ = ShowTagPickerAsync(unknownMods[0], downloadFile: false);
-                    VersionIssueBar.IsOpen = true;
-                }
-                else
-                {
-                    VersionIssueBar.IsOpen = _issueMods.Count > 0;
-                    VersionIssueActionBtn.Content = "確認して解決する";
-                }
+        private void UpdateWarningBar(List<VanillaPathInfo> mods)
+        {
+            // GitHub連携済みで CurrentVersion が空または "Unknown" のMod → バージョン未設定警告
+            var unknownMods = mods.Where(m =>
+                (string.IsNullOrEmpty(m.CurrentVersion) || string.Equals(m.CurrentVersion, "Unknown", StringComparison.OrdinalIgnoreCase))
+                && !string.IsNullOrEmpty(m.GitHubOwner)).ToList();
+
+            if (unknownMods.Count > 0)
+            {
+                VersionIssueBar.Title = "バージョンが登録されていません";
+                VersionIssueBar.Message = $"「{unknownMods[0].Name}」などのModにバージョンが登録されていません。";
+                VersionIssueActionBtn.Content = "タグを設定する";
+                VersionIssueActionBtn.Click -= ResolveVersionIssues_Click;
+                VersionIssueActionBtn.Click += (s, e) => _ = ShowTagPickerAsync(unknownMods[0], downloadFile: false);
+                VersionIssueBar.IsOpen = true;
             }
             else
             {
                 VersionIssueBar.IsOpen = _issueMods.Count > 0;
+                VersionIssueActionBtn.Content = "確認して解決する";
             }
         }
 
@@ -429,13 +436,50 @@ namespace AmongUsModManager.Pages
         private void RenameMod_Click(object sender, RoutedEventArgs e) { }
 
         // SupportedMods から名前が最もよく一致するものを返す
+        // 優先順位: 完全一致 > 正規化後の完全一致 > 部分一致（ただし部分一致は大きな一致のみ）
         private static ModPreset? FindPresetByName(string modName)
         {
             if (string.IsNullOrEmpty(modName)) return null;
-            return ModInstallPage.SupportedMods.FirstOrDefault(p =>
-                modName.Equals(p.Name, StringComparison.OrdinalIgnoreCase)
-                || modName.Contains(p.Name, StringComparison.OrdinalIgnoreCase)
-                || p.Name.Contains(modName, StringComparison.OrdinalIgnoreCase));
+
+            // 1. 完全一致を探す（大文字小文字区別なし）
+            var exactMatch = ModInstallPage.SupportedMods.FirstOrDefault(p =>
+                modName.Equals(p.Name, StringComparison.OrdinalIgnoreCase));
+            if (exactMatch != null) return exactMatch;
+
+            // 2. 正規化後の完全一致を探す（スペースとハイフンを統一して比較）
+            var normalizedInput = NormalizeName(modName);
+            var normalizedMatch = ModInstallPage.SupportedMods.FirstOrDefault(p =>
+                normalizedInput.Equals(NormalizeName(p.Name), StringComparison.OrdinalIgnoreCase));
+            if (normalizedMatch != null) return normalizedMatch;
+
+            // 3. 部分一致を探す（modName が p.Name を完全に含む、または p.Name が modName を完全に含む）
+            // ただし、短い方が長い方の80%以上の長さを持つ場合のみ（偶然のマッチを避ける）
+            var partialMatches = ModInstallPage.SupportedMods
+                .Where(p =>
+                {
+                    int modLen = modName.Length;
+                    int pLen = p.Name.Length;
+                    int minLen = Math.Min(modLen, pLen);
+                    int maxLen = Math.Max(modLen, pLen);
+
+                    // マッチの最小長が最大長の70%以上でないと partial match にしない
+                    if (minLen < maxLen * 0.7) return false;
+
+                    return modName.Contains(p.Name, StringComparison.OrdinalIgnoreCase)
+                        || p.Name.Contains(modName, StringComparison.OrdinalIgnoreCase);
+                })
+                .ToList();
+
+            // 一番名前が短いものを返す（より具体的な一致）
+            return partialMatches.OrderBy(p => p.Name.Length).FirstOrDefault();
+        }
+
+        // スペース、ハイフン、アンダースコアを統一
+        private static string NormalizeName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return "";
+            // スペース、ハイフン、アンダースコアをすべて削除してから比較
+            return System.Text.RegularExpressions.Regex.Replace(name, @"[\s\-_]", "");
         }
 
         private async void UnlinkGitHub_Click(object sender, RoutedEventArgs e)
