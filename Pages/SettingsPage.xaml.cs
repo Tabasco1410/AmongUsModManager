@@ -37,7 +37,17 @@ namespace AmongUsModManager.Pages
                 if (config.VanillaPaths != null)
                 {
                     foreach (var info in config.VanillaPaths)
-                        VanillaPaths.Add(new VanillaPathInfo { Name = info.Name, Path = info.Path });
+                        VanillaPaths.Add(new VanillaPathInfo 
+                        { 
+                            Name = info.Name, 
+                            Path = info.Path,
+                            Platform = info.Platform,
+                            CurrentVersion = info.CurrentVersion,
+                            GitHubOwner = info.GitHubOwner,
+                            GitHubRepo = info.GitHubRepo,
+                            IsAutoUpdateEnabled = info.IsAutoUpdateEnabled,
+                            GitHubLinkDisabled = info.GitHubLinkDisabled
+                        });
                 }
                 ModDataPathTextBox.Text = config.ModDataPath ?? string.Empty;
                 StartWithWindowsToggle.IsOn = config.StartWithWindows;
@@ -91,6 +101,10 @@ namespace AmongUsModManager.Pages
         {
             int count = VanillaPathListView.SelectedItems.Count;
             SelectedFolderCountText.Text = count.ToString();
+            if (count > 0)
+                StatusMessage.Text = $"📋 {count}個のフォルダを選択中...";
+            else
+                StatusMessage.Text = "";
         }
 
         private void BulkPlatformSelector_Changed(object sender, SelectionChangedEventArgs e)
@@ -100,14 +114,69 @@ namespace AmongUsModManager.Pages
 
             if (string.IsNullOrEmpty(selectedTag)) return;
 
+            int selectedCount = VanillaPathListView.SelectedItems.Count;
+            if (selectedCount == 0)
+            {
+                StatusMessage.Text = "❌ フォルダが選択されていません";
+                StatusMessage.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 192, 0, 0));
+                cmb.SelectedIndex = 0;
+                return;
+            }
+
             foreach (var item in VanillaPathListView.SelectedItems.OfType<VanillaPathInfo>())
             {
                 item.Platform = selectedTag;
             }
 
+            // 設定を即座に保存
+            ExecuteSave();
+
+            // プラットフォーム名を表示
+            string platformLabel = selectedTag switch
+            {
+                "Steam" => "Steam",
+                "Epic" => "Epic Games",
+                "MSStore" => "Microsoft Store",
+                "Itch" => "itch.io",
+                "Manual" => "手動指定",
+                _ => selectedTag
+            };
+
+            StatusMessage.Text = $"✅ {selectedCount}個のフォルダを「{platformLabel}」に設定しました";
+            StatusMessage.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 128, 0));
+
             cmb.SelectedIndex = 0;
             VanillaPathListView.SelectedItems.Clear();
             SelectedFolderCountText.Text = "0";
+        }
+
+        // ComboBox での個別プラットフォーム変更時に即座に保存
+        private void PlatformComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is not ComboBox cmb) return;
+
+            // DataContextから対応する VanillaPathInfo を取得
+            if (cmb.DataContext is VanillaPathInfo mod && cmb.SelectedItem is string platform)
+            {
+                mod.Platform = platform;
+
+                // 即座に設定を保存
+                ExecuteSave();
+
+                // ステータスを表示
+                string platformLabel = platform switch
+                {
+                    "Steam" => "Steam",
+                    "Epic" => "Epic Games",
+                    "MSStore" => "Microsoft Store",
+                    "Itch" => "itch.io",
+                    "Manual" => "手動指定",
+                    _ => "なし"
+                };
+
+                StatusMessage.Text = $"✅ 「{mod.Name}」のプラットフォームを「{platformLabel}」に設定しました";
+                StatusMessage.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 128, 0));
+            }
         }
 
         private static readonly (string Tag, string Label)[] PlatformOptions =
@@ -249,7 +318,7 @@ namespace AmongUsModManager.Pages
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             ExecuteSave();
-            StatusMessage.Text = "設定を保存しました。";
+            StatusMessage.Text = "✅ 設定を保存しました！";
             StatusMessage.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 128, 0));
         }
 

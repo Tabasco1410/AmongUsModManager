@@ -11,12 +11,22 @@
 
     <Page.Resources>
         <models:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+
+        
+        <Style x:Key="CustomListViewItemStyle" TargetType="ListViewItem">
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="MinHeight" Value="48"/>
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style>
     </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <InfoBar x:Name="UnsavedChangesBar"
@@ -34,7 +44,7 @@
             <StackPanel Spacing="0" MaxWidth="820" HorizontalAlignment="Stretch">
                 <TextBlock Text="設定" FontSize="28" FontWeight="SemiBold" Margin="0,24,0,20"/>
 
-                <!-- ━━━ ゲームフォルダ ━━━ -->
+               
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16" Margin="0,0,0,12">
@@ -77,51 +87,51 @@
                                   SelectionChanged="VanillaPathListView_SelectionChanged"
                                   Margin="0,8,0,0">
                             <ListView.ItemContainerStyle>
-                                <Style TargetType="ListViewItem">
-                                    <Setter Property="Padding" Value="0"/>
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                </Style>
+                                <Style TargetType="ListViewItem" BasedOn="{StaticResource CustomListViewItemStyle}"/>
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="models:VanillaPathInfo">
-                                    <Grid ColumnDefinitions="Auto, Auto, Auto, *, Auto, Auto" Padding="12" ColumnSpacing="12">
-                                        <ComboBox Grid.Column="0"
-                                                 MinWidth="130"
-                                                 SelectedItem="{x:Bind Platform, Mode=TwoWay}"
-                                                 VerticalAlignment="Center">
-                                            <x:String></x:String>
-                                            <x:String>Steam</x:String>
-                                            <x:String>Epic</x:String>
-                                            <x:String>MSStore</x:String>
-                                            <x:String>Itch</x:String>
-                                            <x:String>Manual</x:String>
-                                        </ComboBox>
-                                        <TextBox Grid.Column="1"
-                                                 Text="{x:Bind Name, Mode=TwoWay}" 
-                                                 Width="130" 
-                                                 VerticalAlignment="Center"
-                                                 PlaceholderText="名前"/>
-                                        <TextBlock Grid.Column="2"
-                                                  Text="{x:Bind CurrentVersion}"
-                                                  FontSize="11"
-                                                  Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                  VerticalAlignment="Center"
-                                                  Padding="4,0"/>
-                                        <TextBlock Grid.Column="3" 
-                                                   Text="{x:Bind Path}" 
-                                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                   VerticalAlignment="Center" 
-                                                   TextTrimming="CharacterEllipsis"
-                                                   FontSize="12"/>
-                                        <Button Grid.Column="4" Content="削除" Click="RemovePath_Click" VerticalAlignment="Center"
-                                               Padding="8,4" Style="{StaticResource DefaultButtonStyle}">
-                                        </Button>
-                                    </Grid>
+                                    <Border x:Name="SelectionBorder" Background="Transparent" CornerRadius="4" Padding="4">
+                                        <Grid ColumnDefinitions="Auto, Auto, Auto, *, Auto, Auto" Padding="8" ColumnSpacing="12" VerticalAlignment="Center">
+                                            <ComboBox Grid.Column="0"
+                                                     MinWidth="130"
+                                                     SelectedItem="{x:Bind Platform, Mode=TwoWay}"
+                                                     SelectionChanged="PlatformComboBox_SelectionChanged"
+                                                     VerticalAlignment="Center">
+                                                <x:String></x:String>
+                                                <x:String>Steam</x:String>
+                                                <x:String>Epic</x:String>
+                                                <x:String>MSStore</x:String>
+                                                <x:String>Itch</x:String>
+                                                <x:String>Manual</x:String>
+                                            </ComboBox>
+                                            <TextBox Grid.Column="1"
+                                                     Text="{x:Bind Name, Mode=TwoWay}" 
+                                                     Width="130" 
+                                                     VerticalAlignment="Center"
+                                                     PlaceholderText="名前"/>
+                                            <TextBlock Grid.Column="2"
+                                                      Text="{x:Bind CurrentVersion}"
+                                                      FontSize="11"
+                                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                      VerticalAlignment="Center"
+                                                      Padding="4,0"/>
+                                            <TextBlock Grid.Column="3" 
+                                                       Text="{x:Bind Path}" 
+                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                       VerticalAlignment="Center" 
+                                                       TextTrimming="CharacterEllipsis"
+                                                       FontSize="12"/>
+                                            <Button Grid.Column="4" Content="削除" Click="RemovePath_Click" VerticalAlignment="Center"
+                                                   Padding="8,4" Style="{StaticResource DefaultButtonStyle}">
+                                            </Button>
+                                        </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
 
-                        <!-- 自動検出 -->
+                        
                         <Expander Header="Among Usを自動検出する" Padding="0,8">
                             <StackPanel Spacing="10" Padding="0,8,0,4">
                                 <TextBlock Text="指定がない場合はすべてのドライブをスキャンします"
@@ -153,7 +163,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ━━━ メインプラットフォーム ━━━ -->
+                
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16" Margin="0,0,0,12">
@@ -182,7 +192,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ━━━ Modインストール先 ━━━ -->
+                
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16" Margin="0,0,0,12">
@@ -200,7 +210,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ━━━ 起動・常駐設定 ━━━ -->
+                
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16" Margin="0,0,0,12">
@@ -226,7 +236,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ━━━ Epic Games ━━━ -->
+                
                 <Border x:Name="EpicSettingsSection"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -267,7 +277,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ━━━ ログ設定 ━━━ -->
+                
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16" Margin="0,0,0,12">
@@ -292,7 +302,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ━━━ 通知設定 ━━━ -->
+                
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16" Margin="0,0,0,12">
@@ -315,7 +325,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ━━━ 外観 ━━━ -->
+                
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16" Margin="0,0,0,12">
@@ -342,13 +352,26 @@
                     </StackPanel>
                 </Border>
 
-                
-                <StackPanel Spacing="8" Margin="0,8,0,40">
-                    <Button x:Name="SaveButton" Content="設定を保存" Click="SaveButton_Click"
-                            Style="{StaticResource AccentButtonStyle}" Width="160"/>
-                    <TextBlock x:Name="StatusMessage" FontSize="12"/>
-                </StackPanel>
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    
+                    <Border Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="0,1,0,0" Padding="24,12">
+                        <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                            <TextBlock x:Name="StatusMessage" 
+                                      Grid.Column="0"
+                                      VerticalAlignment="Center"
+                                      FontSize="13"
+                                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                            <Button Grid.Column="1" 
+                                   Content="💾 保存" 
+                                   Click="SaveButton_Click" 
+                                   Style="{StaticResource AccentButtonStyle}"
+                                   Padding="16,8"/>
+                        </Grid>
+                    </Border>
+                </Grid>
 </Page>
