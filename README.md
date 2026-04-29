@@ -6,6 +6,12 @@ Among UsのModを選ぶだけで自動で導入を行ってくれるアプリで
 証明書は[こちら](https://github.com/Tabasco1410/AmongUsModManager/releases/download/1.4.3/AmongUsModManager_1.4.3.0_x86_x64_arm64.cer)
 
 ## [Discord](https://discord.gg/nFhkYmf9At)<br>
+<table>
+  <tr>
+    <td><img src="https://github.com/user-attachments/assets/69bf5672-fc63-4c5c-b2b7-d8aae99f2292" width="480"></td>
+    <td><img src="https://github.com/user-attachments/assets/9fcd9478-48de-40a8-a7f8-272dfc51643b" width="480"></td>
+  </tr>
+</table>
 
 ## 利用規約
 LICENSEをご覧ください。<br>
