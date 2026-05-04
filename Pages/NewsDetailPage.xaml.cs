@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -27,21 +28,21 @@ namespace AmongUsModManager.Pages
 
             LogService.Info("NewsDetailPage", $"お知らせ詳細表示: {item.Title}");
 
+            TitleText.Text = item.Title;
+            DateText.Text = FormatDate(item.Date);
+
             if (!string.IsNullOrEmpty(item.ContentFile))
             {
-                TextScrollViewer.Visibility  = Visibility.Collapsed;
-                WebViewContainer.Visibility  = Visibility.Visible;
-                WebTitleText.Text = item.Title;
-                WebDateText.Text  = FormatDate(item.Date);
-                _ = LoadRichContentAsync(item.ContentFile);
+                // ContentFile がある場合はHTTP取得してプレーンテキスト表示
+                ContentText.Text = string.Empty;
+                ContentText.Visibility = Visibility.Visible;
+                ImageList.ItemsSource = null;
+                _ = LoadPlainTextAsync(item.ContentFile);
             }
             else
             {
-                TextScrollViewer.Visibility  = Visibility.Visible;
-                WebViewContainer.Visibility  = Visibility.Collapsed;
-                TitleText.Text   = item.Title;
-                DateText.Text    = FormatDate(item.Date);
-                ContentText.Text = item.Content;
+                // 通常テキスト表示
+                ContentText.Text = item.Content ?? string.Empty;
                 ContentText.Visibility = Visibility.Visible;
 
                 if (item.Images != null && item.Images.Count > 0)
@@ -56,40 +57,25 @@ namespace AmongUsModManager.Pages
             }
         }
 
-        private async Task LoadRichContentAsync(string contentFile)
+        private async Task LoadPlainTextAsync(string contentFile)
         {
             LoadingRing.IsActive = true;
-            
-            await ContentWebView.EnsureCoreWebView2Async();
 
             try
             {
                 string url = NewsBaseUrl + contentFile;
                 string text = await _http.GetStringAsync(url);
 
-                bool isDarkTheme = Application.Current.RequestedTheme == ApplicationTheme.Dark;
-                string html;
+                // Markdown・HTMLタグを除去してプレーンテキスト化
+                string plain = StripMarkdownAndHtml(text);
 
-                if (contentFile.EndsWith(".md", StringComparison.OrdinalIgnoreCase))
-                {
-                    html = MarkdownHelper.ToHtml(text, isDarkTheme);
-                }
-                else
-                {
-                    html = InjectBaseStyle(text, isDarkTheme);
-                }
-
-                ContentWebView.NavigateToString(html);
-                LogService.Info("NewsDetailPage", $"リッチコンテンツ読み込み完了: {contentFile}");
+                ContentText.Text = plain;
+                LogService.Info("NewsDetailPage", $"コンテンツ読み込み完了: {contentFile}");
             }
             catch (Exception ex)
             {
-                LogService.Error("NewsDetailPage", $"リッチコンテンツ読み込み失敗: {contentFile}", ex);
-                ContentWebView.NavigateToString(
-                    "<html><body style='color:#e0e0e0;background:#1f1f1f;font-family:Segoe UI;padding:20px'>" +
-                    "<p>⚠ コンテンツの読み込みに失敗しました。</p>" +
-                    $"<p style='color:gray;font-size:12px'>{ex.Message}</p>" +
-                    "</body></html>");
+                LogService.Error("NewsDetailPage", $"コンテンツ読み込み失敗: {contentFile}", ex);
+                ContentText.Text = $"⚠ コンテンツの読み込みに失敗しました。\n{ex.Message}";
             }
             finally
             {
@@ -97,28 +83,50 @@ namespace AmongUsModManager.Pages
             }
         }
 
-        private static string InjectBaseStyle(string html, bool isDarkTheme)
+        /// <summary>
+        /// Markdown記法とHTMLタグを除去してプレーンテキストを返す。
+        /// </summary>
+        private static string StripMarkdownAndHtml(string input)
         {
-            string bgColor   = isDarkTheme ? "#1f1f1f" : "#ffffff";
-            string textColor = isDarkTheme ? "#e0e0e0" : "#1a1a1a";
-            string linkColor = isDarkTheme ? "#60cdff" : "#0067c0";
-            string theme     = isDarkTheme ? "dark"    : "light";
+            if (string.IsNullOrEmpty(input)) return string.Empty;
 
-            string style =
-                $"<meta name=\"color-scheme\" content=\"{theme}\"/>" +
-                "<style>" +
-                $"body{{font-family:'Yu Gothic UI','Segoe UI',sans-serif;font-size:14px;line-height:1.7;" +
-                $"background:{bgColor};color:{textColor};padding:16px;word-break:break-word;}}" +
-                $"a{{color:{linkColor};}}" +
-                "img{max-width:100%;border-radius:6px;margin:8px 0;}" +
-                "video{max-width:100%;border-radius:6px;margin:8px 0;}" +
-                "</style>";
+            string s = input;
 
-            if (html.Contains("<head>", StringComparison.OrdinalIgnoreCase))
-                return html.Replace("<head>", "<head>" + style, StringComparison.OrdinalIgnoreCase);
-            if (html.Contains("<html>", StringComparison.OrdinalIgnoreCase))
-                return html.Replace("<html>", "<html><head>" + style + "</head>", StringComparison.OrdinalIgnoreCase);
-            return "<head>" + style + "</head>" + html;
+            // HTMLタグを除去
+            s = Regex.Replace(s, "<[^>]+>", string.Empty);
+            // HTML エンティティ（簡易）
+            s = s.Replace("&amp;", "&")
+                 .Replace("&lt;", "<")
+                 .Replace("&gt;", ">")
+                 .Replace("&quot;", "\"")
+                 .Replace("&#39;", "'")
+                 .Replace("&nbsp;", " ");
+
+            // 見出し記号 (# ## ###...)
+            s = Regex.Replace(s, @"^#{1,6}\s+", string.Empty, RegexOptions.Multiline);
+            // 太字・斜体 (**text**, *text*, __text__, _text_)
+            s = Regex.Replace(s, @"\*{1,3}(.+?)\*{1,3}", "$1");
+            s = Regex.Replace(s, @"_{1,3}(.+?)_{1,3}", "$1");
+            // インラインコード (`code`)
+            s = Regex.Replace(s, @"`(.+?)`", "$1");
+            // コードブロック (```...```)
+            s = Regex.Replace(s, @"```[\s\S]*?```", string.Empty);
+            // 画像 ![alt](url) → alt テキストのみ
+            s = Regex.Replace(s, @"!\[([^\]]*)\]\([^\)]*\)", "$1");
+            // リンク [text](url) → text のみ
+            s = Regex.Replace(s, @"\[([^\]]*)\]\([^\)]*\)", "$1");
+            // 水平線 (--- / ***)
+            s = Regex.Replace(s, @"^[-\*]{3,}\s*$", string.Empty, RegexOptions.Multiline);
+            // 引用記号 (> text)
+            s = Regex.Replace(s, @"^>\s?", string.Empty, RegexOptions.Multiline);
+            // リスト記号 (- item / * item / 1. item)
+            s = Regex.Replace(s, @"^[\*\-\+]\s+", string.Empty, RegexOptions.Multiline);
+            s = Regex.Replace(s, @"^\d+\.\s+", string.Empty, RegexOptions.Multiline);
+
+            // 連続する空行を最大2行に圧縮
+            s = Regex.Replace(s, @"\n{3,}", "\n\n");
+
+            return s.Trim();
         }
 
         private static string FormatDate(string raw)
