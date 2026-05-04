@@ -22,6 +22,9 @@ namespace AmongUsModManager.Pages
         private static List<VanillaPathInfo>? _lastLoadedMods;
         private static DateTime _lastLoadedAt = DateTime.MinValue;
 
+        // ③ グリッド/リスト切り替え状態
+        private bool _isListMode = false;
+
         public LibraryPage()
         {
             this.InitializeComponent();
@@ -42,8 +45,8 @@ namespace AmongUsModManager.Pages
             var config = ConfigService.Load();
             var mods = config.VanillaPaths ?? new List<VanillaPathInfo>();
 
-            // CurrentVersion が null/空のものだけ "Unknown" にする
-            // ※ 保存済みのバージョン文字列を "Unknown" で上書きしない
+            // CurrentVersion が null/空のものだけ "" にする
+            // ※ 保存済みのバージョン文字列を上書きしない
             foreach (var m in mods)
                 if (m.CurrentVersion == null) m.CurrentVersion = "";
 
@@ -70,6 +73,9 @@ namespace AmongUsModManager.Pages
 
             LibraryGridView.ItemsSource = null;
             LibraryGridView.ItemsSource = mods;
+
+            // ③ 表示モードを復元
+            RestoreViewMode(config);
 
             _ = LoadImagesAfterLayoutAsync(mods);
 
@@ -110,19 +116,16 @@ namespace AmongUsModManager.Pages
                 _lastLoadedAt = DateTime.Now;
                 LoadingBar.Visibility = Visibility.Collapsed;
 
-                // GitHub連携済みで CurrentVersion が空または "Unknown" のMod → バージョン未設定警告
                 UpdateWarningBar(mods);
             }
             else
             {
-                // shouldCheck が false の場合でも、警告状態は更新する
                 UpdateWarningBar(mods);
             }
         }
 
         private void UpdateWarningBar(List<VanillaPathInfo> mods)
         {
-            // GitHub連携済みで CurrentVersion が空または "Unknown" のMod → バージョン未設定警告
             var unknownMods = mods.Where(m =>
                 (string.IsNullOrEmpty(m.CurrentVersion) || string.Equals(m.CurrentVersion, "Unknown", StringComparison.OrdinalIgnoreCase))
                 && !string.IsNullOrEmpty(m.GitHubOwner)).ToList();
@@ -143,9 +146,20 @@ namespace AmongUsModManager.Pages
             }
         }
 
+        // ② LayoutUpdated を使って確実にレイアウト完了後に画像をロード
         private async Task LoadImagesAfterLayoutAsync(List<VanillaPathInfo> mods)
         {
-            await Task.Delay(400);
+            var tcs = new TaskCompletionSource<bool>();
+            EventHandler<object>? handler = null;
+            handler = (s, _) =>
+            {
+                LibraryGridView.LayoutUpdated -= handler;
+                tcs.TrySetResult(true);
+            };
+            LibraryGridView.LayoutUpdated += handler;
+
+            // タイムアウト保険：LayoutUpdated が来なかった場合も先に進む
+            await Task.WhenAny(tcs.Task, Task.Delay(500));
 
             foreach (var mod in mods)
             {
@@ -160,9 +174,7 @@ namespace AmongUsModManager.Pages
                     if (img == null) continue;
 
                     string url = "https://opengraph.githubassets.com/1/" + mod.GitHubOwner + "/" + mod.GitHubRepo;
-                    var bmp = new BitmapImage();
-                    bmp.UriSource = new Uri(url);
-                    img.Source = bmp;
+                    img.Source = new BitmapImage(new Uri(url));
                 }
                 catch { }
             }
@@ -433,27 +445,60 @@ namespace AmongUsModManager.Pages
             await LoadLibraryAsync();
         }
 
-        private void RenameMod_Click(object sender, RoutedEventArgs e) { }
+        // ① 名前変更（実装済み）
+        private async void RenameMod_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is not MenuFlyoutItem { Tag: VanillaPathInfo mod }) return;
 
-        // SupportedMods から名前が最もよく一致するものを返す
-        // 優先順位: 完全一致 > 正規化後の完全一致 > 部分一致（ただし部分一致は大きな一致のみ）
+            var inputBox = new TextBox
+            {
+                Text = mod.Name,
+                Header = "新しい名前を入力してください",
+                SelectionStart = 0,
+                SelectionLength = mod.Name.Length
+            };
+
+            var dlg = new ContentDialog
+            {
+                Title = "名前変更",
+                Content = inputBox,
+                PrimaryButtonText = "保存",
+                CloseButtonText = "キャンセル",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot
+            };
+
+            if (await dlg.ShowAsync() != ContentDialogResult.Primary) return;
+
+            string newName = inputBox.Text.Trim();
+            if (string.IsNullOrEmpty(newName) || newName == mod.Name) return;
+
+            var config = ConfigService.Load();
+            var target = config.VanillaPaths?.FirstOrDefault(v => v.Path == mod.Path);
+            if (target != null)
+            {
+                target.Name = newName;
+                ConfigService.Save(config);
+                LogService.Info("LibraryPage", $"名前変更: {mod.Name} → {newName}");
+            }
+
+            _lastLoadedAt = DateTime.MinValue;
+            await LoadLibraryAsync();
+        }
+
         private static ModPreset? FindPresetByName(string modName)
         {
             if (string.IsNullOrEmpty(modName)) return null;
 
-            // 1. 完全一致を探す（大文字小文字区別なし）
             var exactMatch = ModInstallPage.SupportedMods.FirstOrDefault(p =>
                 modName.Equals(p.Name, StringComparison.OrdinalIgnoreCase));
             if (exactMatch != null) return exactMatch;
 
-            // 2. 正規化後の完全一致を探す（スペースとハイフンを統一して比較）
             var normalizedInput = NormalizeName(modName);
             var normalizedMatch = ModInstallPage.SupportedMods.FirstOrDefault(p =>
                 normalizedInput.Equals(NormalizeName(p.Name), StringComparison.OrdinalIgnoreCase));
             if (normalizedMatch != null) return normalizedMatch;
 
-            // 3. 部分一致を探す（modName が p.Name を完全に含む、または p.Name が modName を完全に含む）
-            // ただし、短い方が長い方の80%以上の長さを持つ場合のみ（偶然のマッチを避ける）
             var partialMatches = ModInstallPage.SupportedMods
                 .Where(p =>
                 {
@@ -461,24 +506,18 @@ namespace AmongUsModManager.Pages
                     int pLen = p.Name.Length;
                     int minLen = Math.Min(modLen, pLen);
                     int maxLen = Math.Max(modLen, pLen);
-
-                    // マッチの最小長が最大長の70%以上でないと partial match にしない
                     if (minLen < maxLen * 0.7) return false;
-
                     return modName.Contains(p.Name, StringComparison.OrdinalIgnoreCase)
                         || p.Name.Contains(modName, StringComparison.OrdinalIgnoreCase);
                 })
                 .ToList();
 
-            // 一番名前が短いものを返す（より具体的な一致）
             return partialMatches.OrderBy(p => p.Name.Length).FirstOrDefault();
         }
 
-        // スペース、ハイフン、アンダースコアを統一
         private static string NormalizeName(string name)
         {
             if (string.IsNullOrEmpty(name)) return "";
-            // スペース、ハイフン、アンダースコアをすべて削除してから比較
             return System.Text.RegularExpressions.Regex.Replace(name, @"[\s\-_]", "");
         }
 
@@ -507,7 +546,7 @@ namespace AmongUsModManager.Pages
                 target.GitHubOwner = null;
                 target.GitHubRepo = null;
                 target.IsAutoUpdateEnabled = false;
-                target.GitHubLinkDisabled = true;  // 自動再連携を防ぐ
+                target.GitHubLinkDisabled = true;
                 ConfigService.Save(config);
                 LogService.Info("LibraryPage", $"GitHub連携解除: {mod.Name}");
             }
@@ -520,11 +559,9 @@ namespace AmongUsModManager.Pages
         {
             if (sender is not MenuFlyoutItem { Tag: VanillaPathInfo mod }) return;
 
-            // ── Step 1: SupportedMods 全リスト表示（名前一致があれば自動選択） ──
             var allPresets = ModInstallPage.SupportedMods;
             var autoMatch = FindPresetByName(mod.Name);
 
-            // ListView に表示するデータクラス
             var listItems = allPresets.Select((p, i) => new
             {
                 Index = i,
@@ -565,12 +602,10 @@ namespace AmongUsModManager.Pages
                 list.Items.Add(sp);
             }
 
-            // 名前一致があればそれを初期選択、なければ先頭
             list.SelectedIndex = autoMatch != null
                 ? listItems.FindIndex(i => i.IsMatch)
                 : 0;
 
-            // 手動入力用テキストボックス（URL直打ち or キーワード検索）
             var manualBox = new TextBox
             {
                 Header = "または URL・キーワードで直接指定（リストにない場合）",
@@ -606,7 +641,6 @@ namespace AmongUsModManager.Pages
 
             if (result == ContentDialogResult.Primary)
             {
-                // テキストボックスに入力があればそちらを優先
                 string manual = manualBox.Text.Trim();
                 if (!string.IsNullOrEmpty(manual))
                 {
@@ -619,12 +653,10 @@ namespace AmongUsModManager.Pages
                             return;
                         }
                     }
-                    // キーワードとして GitHub 検索にフォールスルー
                     await ShowGitHubSearchCandidatesAsync(mod, manual);
                     return;
                 }
 
-                // リストから選択
                 int idx = list.SelectedIndex;
                 if (idx >= 0 && idx < allPresets.Count)
                 {
@@ -636,12 +668,10 @@ namespace AmongUsModManager.Pages
 
             if (result == ContentDialogResult.Secondary)
             {
-                // "GitHubで検索..." → キーワード検索ダイアログ
                 string keyword = string.IsNullOrEmpty(manualBox.Text) ? mod.Name : manualBox.Text.Trim();
                 await ShowGitHubSearchCandidatesAsync(mod, keyword);
             }
         }
-
 
         private async Task ShowGitHubSearchCandidatesAsync(VanillaPathInfo mod, string keyword)
         {
@@ -695,7 +725,7 @@ namespace AmongUsModManager.Pages
             {
                 t.GitHubOwner = owner;
                 t.GitHubRepo = repo;
-                t.GitHubLinkDisabled = false;  // 手動連携時は解除フラグをリセット
+                t.GitHubLinkDisabled = false;
                 ConfigService.Save(config);
             }
             _lastLoadedAt = DateTime.MinValue;
@@ -732,14 +762,29 @@ namespace AmongUsModManager.Pages
             catch (Exception ex) { await ShowError("エラー", "共有コードの生成に失敗しました: " + ex.Message); }
         }
 
+        // ③ グリッド/リスト切り替え（状態保存付き）
         private void GridModeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _isListMode = false;
+            ApplyGridMode();
+            SaveViewMode();
+        }
+
+        private void ListModeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _isListMode = true;
+            ApplyListMode();
+            SaveViewMode();
+        }
+
+        private void ApplyGridMode()
         {
             var style = new Style(typeof(GridViewItem));
             style.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
             LibraryGridView.ItemContainerStyle = style;
         }
 
-        private void ListModeBtn_Click(object sender, RoutedEventArgs e)
+        private void ApplyListMode()
         {
             var style = new Style(typeof(GridViewItem));
             style.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Stretch));
@@ -747,11 +792,40 @@ namespace AmongUsModManager.Pages
             LibraryGridView.ItemContainerStyle = style;
         }
 
-        private void LibraryGridView_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)
+        private void RestoreViewMode(AppConfig config)
+        {
+            _isListMode = config.LibraryViewMode == "List";
+            if (_isListMode) ApplyListMode();
+            else ApplyGridMode();
+        }
+
+        private void SaveViewMode()
         {
             var config = ConfigService.Load();
-            config.VanillaPaths = LibraryGridView.Items.Cast<VanillaPathInfo>().ToList();
+            config.LibraryViewMode = _isListMode ? "List" : "Grid";
             ConfigService.Save(config);
+        }
+
+        // ④ 並び替え後のキャッシュも即時更新
+        private void LibraryGridView_DragItemsCompleted(ListViewBase sender, DragItemsCompletedEventArgs args)
+        {
+            var reordered = LibraryGridView.Items.Cast<VanillaPathInfo>().ToList();
+
+            var config = ConfigService.Load();
+            config.VanillaPaths = reordered;
+            ConfigService.Save(config);
+
+            // キャッシュも新しい順序で即時更新（shouldCheck の誤発動を防ぐ）
+            _lastLoadedMods = reordered.Select(m => new VanillaPathInfo
+            {
+                Name = m.Name,
+                Path = m.Path,
+                GitHubOwner = m.GitHubOwner,
+                GitHubRepo = m.GitHubRepo,
+                CurrentVersion = m.CurrentVersion
+            }).ToList();
+
+            LogService.Info("LibraryPage", $"並び替え保存: {reordered.Count} 件");
         }
 
         private void LaunchMod_Click(object sender, RoutedEventArgs e)

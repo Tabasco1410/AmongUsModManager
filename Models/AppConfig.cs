@@ -74,6 +74,7 @@ namespace AmongUsModManager.Models
 
         public string MainPlatform { get; set; } = "";
 
+        public string? LibraryViewMode { get; set; }
         public double WindowWidth { get; set; } = 1100;
         public double WindowHeight { get; set; } = 700;
 
