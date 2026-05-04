@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="AmongUsModManager.Pages.ChatBotPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -7,128 +7,29 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-    <Grid Padding="28,20,28,28">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <Grid>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Spacing="20" MaxWidth="480" Padding="24">
 
-        <!-- ヘッダー -->
-        <StackPanel Grid.Row="0" Spacing="2" Margin="0,0,0,14">
-            <TextBlock Text="サポート" FontSize="26" FontWeight="SemiBold"/>
-            <TextBlock Text="下のボタンからご質問の内容を選んでください。"
-                       FontSize="12" Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
-        </StackPanel>
+            <FontIcon Glyph="&#xE939;" FontSize="56"
+                      Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                      HorizontalAlignment="Center"/>
 
-        <!-- チャット表示エリア -->
-        <Border Grid.Row="1"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1" CornerRadius="8">
-            <ScrollViewer x:Name="MessageScrollViewer" Padding="16">
-                <StackPanel x:Name="MessagePanel" Spacing="12"/>
-            </ScrollViewer>
-        </Border>
+            <TextBlock Text="サポート" FontSize="22" FontWeight="SemiBold"
+                       HorizontalAlignment="Center"/>
 
-        <!-- クイックボタンエリア -->
-        <Border Grid.Row="2" Margin="0,10,0,0" Padding="14,12"
-                Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1" CornerRadius="8">
-            <StackPanel Spacing="10">
-                <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                    <TextBlock Text="よくある質問" FontSize="12" FontWeight="SemiBold"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               VerticalAlignment="Center"/>
-                    <Button Content="🗑 クリア" Click="ClearBtn_Click" Padding="10,4"
-                            HorizontalAlignment="Right"/>
+            <Border Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
+                    CornerRadius="8" Padding="20,16">
+                <StackPanel Spacing="8" HorizontalAlignment="Center">
+                    <TextBlock Text="🚧  開発中" FontSize="16" FontWeight="SemiBold"
+                               HorizontalAlignment="Center"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="13" TextAlignment="Center"
+                               Foreground="{ThemeResource TextFillColorSecondaryBrush}">
+                        現在開発中です。
+                    </TextBlock>
                 </StackPanel>
+            </Border>
 
-                <!-- ボタン1行目 -->
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                    <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Button Tag="what_is_this" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE946;" FontSize="13"/>
-                                <TextBlock Text="このアプリって何？" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="install" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE7BF;" FontSize="13"/>
-                                <TextBlock Text="Modのインストール方法" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="library" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE8B1;" FontSize="13"/>
-                                <TextBlock Text="ライブラリの使い方" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="launch" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE768;" FontSize="13"/>
-                                <TextBlock Text="ゲームの起動方法" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="error" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE7BA;" FontSize="13"/>
-                                <TextBlock Text="エラーの対処法" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="epic" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE83B;" FontSize="13"/>
-                                <TextBlock Text="Epic版について" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="github" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE8C8;" FontSize="13"/>
-                                <TextBlock Text="GitHub連携" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="update" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE777;" FontSize="13"/>
-                                <TextBlock Text="アップデート方法" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="version" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE81C;" FontSize="13"/>
-                                <TextBlock Text="バージョン管理" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="vanilla" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE7FC;" FontSize="13"/>
-                                <TextBlock Text="Modなしで遊ぶには" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="notification" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE7E7;" FontSize="13"/>
-                                <TextBlock Text="通知・お知らせ" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="settings" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE713;" FontSize="13"/>
-                                <TextBlock Text="設定の使い方" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                        <Button Tag="discord" Click="QuickBtn_Click" Padding="12,6">
-                            <StackPanel Orientation="Horizontal" Spacing="6">
-                                <FontIcon Glyph="&#xE8BD;" FontSize="13"/>
-                                <TextBlock Text="Discord" FontSize="12"/>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </ScrollViewer>
-            </StackPanel>
-        </Border>
+        </StackPanel>
     </Grid>
 </Page>

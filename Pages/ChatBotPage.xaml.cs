@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -14,12 +14,12 @@ namespace AmongUsModManager.Pages
         public ChatBotPage()
         {
             this.InitializeComponent();
-            AddBubble("assistant",
+            /*AddBubble("assistant",
                 "こんにちは！AmongUsModManager サポートです 👋\n\n" +
-                "下のボタンからご質問の内容を選んでください。");
+                "下のボタンからご質問の内容を選んでください。");*/
         }
 
-        private async void QuickBtn_Click(object sender, RoutedEventArgs e)
+        /*private async void QuickBtn_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Button btn) return;
             string tag = btn.Tag?.ToString() ?? "";
@@ -246,6 +246,8 @@ namespace AmongUsModManager.Pages
         {
             DispatcherQueue.TryEnqueue(() =>
                 MessageScrollViewer.ScrollToVerticalOffset(MessageScrollViewer.ScrollableHeight));
-        }
+        }*/
     }
 }
+
+
