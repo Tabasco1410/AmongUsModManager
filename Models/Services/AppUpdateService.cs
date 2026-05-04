@@ -4,15 +4,14 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
 
 namespace AmongUsModManager.Models.Services
 {
     public static class AppUpdateService
-    {        
+    {
         private const string Owner = "Tabasco1410";
-        private const string Repo  = "AmongUsModManager";
-
-        
+        private const string Repo = "AmongUsModManager";
 
         public static bool IsDebugBuild
         {
@@ -23,7 +22,6 @@ namespace AmongUsModManager.Models.Services
 #endif
         }
 
-       
         public static bool IsAutoUpdateDisabled => App.IsPreRelease;
 
         private static readonly HttpClient _http = new();
@@ -37,7 +35,6 @@ namespace AmongUsModManager.Models.Services
 
         public static async Task<UpdateResult?> CheckAsync()
         {
-            // プレリリース のときは自動アップデートを無効化しておきまああああす
             if (IsAutoUpdateDisabled) return null;
 
             try
@@ -54,9 +51,8 @@ namespace AmongUsModManager.Models.Services
                 {
                     foreach (var asset in release.assets)
                     {
-                        //リリースのassetsの中の.exeを探すのでインストーラーしかおかないようにする
                         if (asset.name != null &&
-                            (asset.name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))                         )
+                            asset.name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
                         {
                             downloadUrl = asset.browser_download_url;
                             break;
@@ -69,24 +65,21 @@ namespace AmongUsModManager.Models.Services
             catch { return null; }
         }
 
-       
         public static async Task<bool> DownloadAndApplyAsync(UpdateResult result, IProgress<int>? progress = null)
         {
             if (string.IsNullOrEmpty(result.DownloadUrl))
                 return false;
 
-           
-            string fileName  = Path.GetFileName(new Uri(result.DownloadUrl).LocalPath);
-            string tempPath  = Path.Combine(Path.GetTempPath(), fileName);
+            string fileName = Path.GetFileName(new Uri(result.DownloadUrl).LocalPath);
+            string tempPath = Path.Combine(Path.GetTempPath(), fileName);
 
             try
             {
-               
                 using var response = await _http.GetAsync(result.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();
                 long? total = response.Content.Headers.ContentLength;
 
-                await using var srcStream  = await response.Content.ReadAsStreamAsync();
+                await using var srcStream = await response.Content.ReadAsStreamAsync();
                 await using var fileStream = File.Create(tempPath);
 
                 byte[] buffer = new byte[81920];
@@ -102,14 +95,22 @@ namespace AmongUsModManager.Models.Services
             }
             catch { return false; }
 
-           
             if (tempPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
-            {
-                Process.Start(new ProcessStartInfo(tempPath) { UseShellExecute = true });
+            {               
+                string currentDir = AppContext.BaseDirectory.TrimEnd('\\', '/');
+                string installArgs = $"/SILENT /SUPPRESSMSGBOXES \"/DIR={currentDir}\"";
+
+                Process.Start(new ProcessStartInfo(tempPath)
+                {
+                    Arguments = installArgs,
+                    UseShellExecute = true,
+                });
+                
+                Application.Current.Exit();
                 return true;
             }
 
-            
+            // .exe 以外（zip等）はダウンロードフォルダに置いて開くだけ
             string downloadsFolder = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
             string destZip = Path.Combine(downloadsFolder, Path.GetFileName(tempPath));
