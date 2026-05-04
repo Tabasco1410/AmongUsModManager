@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Window
     x:Class="AmongUsModManager.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -31,9 +31,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Image Source="/Resource/Icon.png" Width="22" Height="22" Margin="0,0,10,0"
-                           VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">                    
                     <TextBlock x:Name="AppTitleText" Text="AmongUsModManager"
                                FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
