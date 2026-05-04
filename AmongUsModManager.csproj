@@ -5,6 +5,9 @@
 		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
 		<RootNamespace>AmongUsModManager</RootNamespace>
 		<Platforms>x86;x64;ARM64</Platforms>
+		<PlatformTarget Condition="'$(Platform)'=='x86'">x86</PlatformTarget>
+		<PlatformTarget Condition="'$(Platform)'=='x64'">x64</PlatformTarget>
+		<PlatformTarget Condition="'$(Platform)'=='ARM64'">ARM64</PlatformTarget>
 		<RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
 		<PublishProfile>win-$(Platform).pubxml</PublishProfile>
 		<UseWinUI>true</UseWinUI>
@@ -38,6 +41,7 @@
 	<ItemGroup>
 		<None Remove="Pages\NewsDetailPage.xaml" />
 		<None Remove="Resource\icon.ico" />
+		<None Remove="Resource\Icon.png" />
 	</ItemGroup>
 	<ItemGroup>
 		<Page Remove="Pages\HomePage.xaml" />
@@ -93,6 +97,23 @@
 		<AppxPackageDir>AppPackages\</AppxPackageDir>
 		<AppxPackageSubDir></AppxPackageSubDir>
 	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Platform)'=='x86'">
+		<ProgramFiles32>$(ProgramFiles)</ProgramFiles32>
+		<IntermediateOutputPath>obj\x86\$(Configuration)\</IntermediateOutputPath>
+		<OutputPath>bin\x86\$(Configuration)\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Platform)'=='x64'">
+		<ProgramFiles32>$(ProgramFiles(x86))</ProgramFiles32>
+		<IntermediateOutputPath>obj\x64\$(Configuration)\</IntermediateOutputPath>
+		<OutputPath>bin\x64\$(Configuration)\</OutputPath>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Platform)'=='ARM64'">
+		<IntermediateOutputPath>obj\ARM64\$(Configuration)\</IntermediateOutputPath>
+		<OutputPath>bin\ARM64\$(Configuration)\</OutputPath>
+	</PropertyGroup>
 	<ItemGroup>
 		<Page Include="Pages\HomePage.xaml">
 			<Generator>MSBuild:Compile</Generator>
@@ -115,15 +136,9 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
-	<PropertyGroup Condition="'$(Platform)'=='x64'">
-		<OutputPath>C:\Users\yutok\Documents\AmongUsModManager\Release\x64\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Platform)'=='x86'">
-		<OutputPath>C:\Users\yutok\Documents\AmongUsModManager\Release\x86\</OutputPath>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Platform)'=='ARM64'">
-		<OutputPath>C:\Users\yutok\Documents\AmongUsModManager\Release\arm64\</OutputPath>
-	</PropertyGroup>
+	<ItemGroup>
+	  <EmbeddedResource Include="Resource\Icon.png">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </EmbeddedResource>
+	</ItemGroup>	
 </Project>
