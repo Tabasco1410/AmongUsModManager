@@ -63,49 +63,45 @@ namespace AmongUsModManager.Pages
             var config = ConfigService.Load();
             var mods = config.VanillaPaths ?? new List<VanillaPathInfo>();
 
-            var dllMap = new Dictionary<string, List<(string ModName, string DllPath)>>(
-                StringComparer.OrdinalIgnoreCase);
+            var results = new List<ConflictResult>();
 
             foreach (var mod in mods)
             {
                 if (string.IsNullOrEmpty(mod.Path) || !Directory.Exists(mod.Path))
                     continue;
 
+                // このModのpluginsフォルダ内だけで重複を探す
                 string pluginsDir = Path.Combine(mod.Path, "BepInEx", "plugins");
                 if (!Directory.Exists(pluginsDir)) continue;
 
                 var dlls = Directory.GetFiles(pluginsDir, "*.dll", SearchOption.AllDirectories);
-                foreach (var dll in dlls)
-                {
-                    string name = Path.GetFileName(dll);
-                    if (ExcludedDlls.Contains(name)) continue;
 
-                    if (!dllMap.ContainsKey(name))
-                        dllMap[name] = new List<(string, string)>();
-                    dllMap[name].Add((mod.Name, dll));
+                // ファイル名でグループ化して2件以上 = 同フォルダ内重複
+                var duplicates = dlls
+                    .Where(dll => !ExcludedDlls.Contains(Path.GetFileName(dll)))
+                    .GroupBy(dll => Path.GetFileName(dll), StringComparer.OrdinalIgnoreCase)
+                    .Where(g => g.Count() >= 2);
+
+                foreach (var group in duplicates)
+                {
+                    results.Add(new ConflictResult
+                    {
+                        ModName = mod.Name,
+                        DllName = group.Key,
+                        Paths = group.ToList(),
+                    });
                 }
             }
 
-            return dllMap
-                .Where(kv => kv.Value.Count >= 2)
-                .Select(kv => new ConflictResult
-                {
-                    DllName = kv.Key,
-                    Entries = kv.Value
-                })
-                .OrderBy(r => r.DllName)
-                .ToList();
+            return results.OrderBy(r => r.ModName).ThenBy(r => r.DllName).ToList();
         }
 
-        // ─── 結果表示 ─────────────────────────────────────────────────
         private void ShowResults(List<ConflictResult> results)
         {
             if (results.Count == 0)
             {
                 SummaryText.Text = "✅ 競合は見つかりませんでした";
                 EmptyState.Visibility = Visibility.Visible;
-                var emptyTb = (StackPanel)EmptyState;
-                // EmptyStateのテキストを更新
                 if (EmptyState.Children[1] is TextBlock tb)
                     tb.Text = "✅ 競合は見つかりませんでした";
                 return;
@@ -115,7 +111,6 @@ namespace AmongUsModManager.Pages
 
             foreach (var conflict in results)
             {
-                // カードを作成
                 var card = new Border
                 {
                     Background = (Brush)Application.Current.Resources["CardBackgroundFillColorDefaultBrush"],
@@ -127,12 +122,8 @@ namespace AmongUsModManager.Pages
 
                 var inner = new StackPanel { Spacing = 8 };
 
-                // DLL名ヘッダー
-                var header = new StackPanel
-                {
-                    Orientation = Orientation.Horizontal,
-                    Spacing = 8
-                };
+                // ヘッダー：Mod名 / DLL名
+                var header = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
                 header.Children.Add(new FontIcon
                 {
                     Glyph = "\uE7BA",
@@ -142,31 +133,25 @@ namespace AmongUsModManager.Pages
                 });
                 header.Children.Add(new TextBlock
                 {
-                    Text = conflict.DllName,
+                    Text = $"[{conflict.ModName}]  {conflict.DllName}",
                     FontSize = 14,
                     FontWeight = Microsoft.UI.Text.FontWeights.SemiBold,
-                    VerticalAlignment = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap,
                 });
                 inner.Children.Add(header);
 
-                // 重複しているModのリスト
-                foreach (var (modName, dllPath) in conflict.Entries)
+                // 重複しているパスの一覧
+                foreach (var path in conflict.Paths)
                 {
-                    var row = new StackPanel { Spacing = 2, Margin = new Thickness(24, 0, 0, 0) };
-                    row.Children.Add(new TextBlock
+                    inner.Children.Add(new TextBlock
                     {
-                        Text = $"📦 {modName}",
-                        FontSize = 13,
-                        FontWeight = Microsoft.UI.Text.FontWeights.SemiBold
-                    });
-                    row.Children.Add(new TextBlock
-                    {
-                        Text = dllPath,
+                        Text = path,
                         FontSize = 11,
+                        Margin = new Thickness(24, 0, 0, 0),
                         Foreground = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"],
-                        TextTrimming = TextTrimming.CharacterEllipsis
+                        TextTrimming = TextTrimming.CharacterEllipsis,
                     });
-                    inner.Children.Add(row);
                 }
 
                 card.Child = inner;
@@ -176,8 +161,9 @@ namespace AmongUsModManager.Pages
 
         private class ConflictResult
         {
+            public string ModName { get; set; } = "";
             public string DllName { get; set; } = "";
-            public List<(string ModName, string DllPath)> Entries { get; set; } = new();
+            public List<string> Paths { get; set; } = new();
         }
     }
 }
