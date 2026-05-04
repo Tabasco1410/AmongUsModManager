@@ -20,10 +20,10 @@
 		<PublishSingleFile>false</PublishSingleFile>
 		<IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
 		<!-- バージョン情報 -->
-		<ApplicationDisplayVersion>1.4.4</ApplicationDisplayVersion>
-		<ApplicationVersion>1.4.4</ApplicationVersion>
-		<AssemblyVersion>1.4.4.0</AssemblyVersion>
-		<FileVersion>1.4.4.0</FileVersion>
+		<ApplicationDisplayVersion>1.4.5</ApplicationDisplayVersion>
+		<ApplicationVersion>1.4.5</ApplicationVersion>
+		<AssemblyVersion>1.4.5.0</AssemblyVersion>
+		<FileVersion>1.4.5.0</FileVersion>
 	</PropertyGroup>
 	<ItemGroup Condition="'$(MsixPackaging)'=='true'">
 		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.4654" />
