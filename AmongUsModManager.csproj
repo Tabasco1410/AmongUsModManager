@@ -15,6 +15,7 @@
 		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
 		<EnableXamlMarkupCompilerInterop>false</EnableXamlMarkupCompilerInterop>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<WindowsPackageType>None</WindowsPackageType>
 		<!-- シングルファイルならtrue -->
 		<PublishSingleFile>false</PublishSingleFile>
 		<IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>

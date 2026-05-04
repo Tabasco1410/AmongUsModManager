@@ -59,9 +59,12 @@ namespace AmongUsModManager.Pages
         private async Task LoadRichContentAsync(string contentFile)
         {
             LoadingRing.IsActive = true;
+            
+            await ContentWebView.EnsureCoreWebView2Async();
+
             try
             {
-                string url  = NewsBaseUrl + contentFile;
+                string url = NewsBaseUrl + contentFile;
                 string text = await _http.GetStringAsync(url);
 
                 bool isDarkTheme = Application.Current.RequestedTheme == ApplicationTheme.Dark;
@@ -76,14 +79,12 @@ namespace AmongUsModManager.Pages
                     html = InjectBaseStyle(text, isDarkTheme);
                 }
 
-                await ContentWebView.EnsureCoreWebView2Async();
                 ContentWebView.NavigateToString(html);
                 LogService.Info("NewsDetailPage", $"リッチコンテンツ読み込み完了: {contentFile}");
             }
             catch (Exception ex)
             {
                 LogService.Error("NewsDetailPage", $"リッチコンテンツ読み込み失敗: {contentFile}", ex);
-                await ContentWebView.EnsureCoreWebView2Async();
                 ContentWebView.NavigateToString(
                     "<html><body style='color:#e0e0e0;background:#1f1f1f;font-family:Segoe UI;padding:20px'>" +
                     "<p>⚠ コンテンツの読み込みに失敗しました。</p>" +
