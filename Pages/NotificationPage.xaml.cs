@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -8,60 +8,66 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Windows.UI;
 using AmongUsModManager.Models;
 using AmongUsModManager.Services;
 using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager.Pages
 {
-    
-
     public class NotificationNewsItem
     {
-        public string   Id             { get; set; } = "";
-        public string   Title          { get; set; } = "";
-        public string   PreviewContent { get; set; } = "";
-        public string   Date           { get; set; } = "";
-        public bool     IsUnread       { get; set; }
-        public bool     HasImages      { get; set; }
-        public NewsItem OriginalItem   { get; set; } = new();
+        public string Id { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string PreviewContent { get; set; } = "";
+        public string Date { get; set; } = "";
+        public bool IsUnread { get; set; }
+        public bool HasImages { get; set; }
+        public NewsItem OriginalItem { get; set; } = new();
 
         public SolidColorBrush UnreadDotColor
             => IsUnread
                ? new SolidColorBrush(Colors.DodgerBlue)
                : new SolidColorBrush(Colors.Transparent);
 
-        
-        public double TitleOpacity   => IsUnread ? 1.0 : 0.75;
+        public double TitleOpacity => IsUnread ? 1.0 : 0.75;
         public double ContentOpacity => IsUnread ? 0.85 : 0.7;
     }
 
-    
+  
+    internal class AppNotifRaw
+    {
+        public string Title { get; set; } = "";
+        public string Message { get; set; } = "";
+        public string TimeText { get; set; } = "";
+        public bool IsRead { get; set; }
+        public string KindIcon { get; set; } = "ℹ️";
+        public Color KindColor { get; set; } = Colors.SlateGray;
+    }
 
     public class AppNotifDisplayItem
     {
-        public string Title   { get; set; } = "";
+        public string Title { get; set; } = "";
         public string Message { get; set; } = "";
         public string TimeText { get; set; } = "";
-        public bool   IsRead  { get; set; }
+        public bool IsRead { get; set; }
 
         public string KindIcon { get; set; } = "ℹ️";
-        public SolidColorBrush KindColor    { get; set; } = new(Colors.SteelBlue);
+        public SolidColorBrush KindColor { get; set; } = new(Colors.SteelBlue);
+
         public SolidColorBrush UnreadDotColor
             => IsRead
                ? new SolidColorBrush(Colors.Transparent)
                : new SolidColorBrush(Colors.DodgerBlue);
     }
 
-    
-
     public sealed partial class NotificationPage : Page
     {
         private readonly HttpClient _http = new();
         private const string NewsUrl = "https://amongusmodmanager.web.app/News.json";
 
-        private List<NotificationNewsItem> _newsItems    = new();
-        private List<AppNotifDisplayItem>  _appNotifItems = new();
+        private List<NotificationNewsItem> _newsItems = new();
+        private List<AppNotifDisplayItem> _appNotifItems = new();
 
         public NotificationPage()
         {
@@ -72,14 +78,14 @@ namespace AmongUsModManager.Pages
             _ = LoadAllAsync();
         }
 
-        
-
         private async Task LoadAllAsync()
         {
             LoadingRing.IsActive = true;
-            await Task.WhenAll(LoadNewsAsync(), Task.Run(LoadAppNotifications));
+            await Task.WhenAll(LoadNewsAsync(), LoadAppNotificationsAsync());
             LoadingRing.IsActive = false;
         }
+
+        
 
         private async Task LoadNewsAsync()
         {
@@ -104,21 +110,23 @@ namespace AmongUsModManager.Pages
                 {
                     string id = string.IsNullOrEmpty(n.Id) ? $"{n.Title}_{n.Date}" : n.Id;
                     bool isUnread = !readIds.Contains(id);
-                    
+
                     string dateStr = n.Date;
                     if (DateTime.TryParse(n.Date, out var dt))
                         dateStr = dt.ToString("yyyy年M月d日");
 
-                    LogService.Trace("NotificationPage", $"  item: id={id}, title={n.Title}, isUnread={isUnread}, hasImages={n.Images?.Count > 0}");
+                    LogService.Trace("NotificationPage",
+                        $"  item: id={id}, title={n.Title}, isUnread={isUnread}, hasImages={n.Images?.Count > 0}");
+
                     return new NotificationNewsItem
                     {
-                        Id             = id,
-                        Title          = n.Title,
+                        Id = id,
+                        Title = n.Title,
                         PreviewContent = n.Content?.Replace("\n", " ") ?? "",
-                        Date           = dateStr,
-                        IsUnread       = isUnread,
-                        HasImages      = n.Images?.Count > 0,
-                        OriginalItem   = n
+                        Date = dateStr,
+                        IsUnread = isUnread,
+                        HasImages = n.Images?.Count > 0,
+                        OriginalItem = n
                     };
                 }).ToList();
 
@@ -142,24 +150,39 @@ namespace AmongUsModManager.Pages
             }
         }
 
-        private void LoadAppNotifications()
-        {
-            var items = NotificationService.GetAll();
-            _appNotifItems = items
-                .OrderByDescending(i => i.CreatedAt)
-                .Select(i => new AppNotifDisplayItem
-                {
-                    Title    = i.Title,
-                    Message  = i.Message,
-                    TimeText = FormatRelativeTime(i.CreatedAt),
-                    IsRead   = i.IsRead,
-                    KindIcon  = KindToIcon(i.Kind),
-                    KindColor = KindToColor(i.Kind)
-                }).ToList();
 
-            int unread = _appNotifItems.Count(i => !i.IsRead);
+        private async Task LoadAppNotificationsAsync()
+        {
+          
+            var rawItems = await Task.Run(() =>
+            {
+                return NotificationService.GetAll()
+                    .OrderByDescending(i => i.CreatedAt)
+                    .Select(i => new AppNotifRaw
+                    {
+                        Title = i.Title,
+                        Message = i.Message,
+                        TimeText = FormatRelativeTime(i.CreatedAt),
+                        IsRead = i.IsRead,
+                        KindIcon = KindToIcon(i.Kind),
+                        KindColor = KindToColor(i.Kind),   
+                    })
+                    .ToList();
+            });
+
             DispatcherQueue.TryEnqueue(() =>
             {
+                _appNotifItems = rawItems.Select(r => new AppNotifDisplayItem
+                {
+                    Title = r.Title,
+                    Message = r.Message,
+                    TimeText = r.TimeText,
+                    IsRead = r.IsRead,
+                    KindIcon = r.KindIcon,
+                    KindColor = new SolidColorBrush(r.KindColor),  
+                }).ToList();
+
+                int unread = _appNotifItems.Count(i => !i.IsRead);
                 AppNotifListView.ItemsSource = _appNotifItems;
                 AppNotifEmptyText.Visibility = _appNotifItems.Count == 0
                     ? Visibility.Visible : Visibility.Collapsed;
@@ -168,7 +191,6 @@ namespace AmongUsModManager.Pages
             });
         }
 
-        
 
         private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
@@ -185,7 +207,6 @@ namespace AmongUsModManager.Pages
             LogService.Info("NotificationPage", "すべて既読にしました");
         }
 
-        
         private void NewsItem_Click(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is not NotificationNewsItem item) return;
@@ -193,7 +214,6 @@ namespace AmongUsModManager.Pages
             NavigateToDetail(item.OriginalItem);
         }
 
-        
         private void ViewDetail_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is NotificationNewsItem item)
@@ -203,7 +223,6 @@ namespace AmongUsModManager.Pages
             }
         }
 
-        
         private void MarkReadBtn_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.Tag is NotificationNewsItem item)
@@ -213,7 +232,7 @@ namespace AmongUsModManager.Pages
             }
         }
 
-        
+      
 
         private void MarkAsRead(NotificationNewsItem item)
         {
@@ -234,7 +253,6 @@ namespace AmongUsModManager.Pages
 
         private void RefreshNewsList()
         {
-            
             NewsListView.ItemsSource = null;
             NewsListView.ItemsSource = _newsItems;
         }
@@ -242,14 +260,14 @@ namespace AmongUsModManager.Pages
         private void SetNewsEmpty(string msg)
         {
             NewsListView.ItemsSource = null;
-            NewsEmptyText.Text       = msg;
+            NewsEmptyText.Text = msg;
             NewsEmptyText.Visibility = Visibility.Visible;
-            SubtitleText.Text        = msg;
+            SubtitleText.Text = msg;
         }
 
         private void UpdateSubtitle()
         {
-            int total  = _newsItems.Count;
+            int total = _newsItems.Count;
             int unread = _newsItems.Count(i => i.IsUnread);
             SubtitleText.Text = unread > 0
                 ? $"{total} 件のお知らせ・未読 {unread} 件"
@@ -259,27 +277,28 @@ namespace AmongUsModManager.Pages
         private static string FormatRelativeTime(DateTime dt)
         {
             var diff = DateTime.Now - dt;
-            if (diff.TotalMinutes < 1)  return "たった今";
-            if (diff.TotalHours < 1)    return $"{(int)diff.TotalMinutes} 分前";
-            if (diff.TotalDays < 1)     return $"{(int)diff.TotalHours} 時間前";
-            if (diff.TotalDays < 7)     return $"{(int)diff.TotalDays} 日前";
+            if (diff.TotalMinutes < 1) return "たった今";
+            if (diff.TotalHours < 1) return $"{(int)diff.TotalMinutes} 分前";
+            if (diff.TotalDays < 1) return $"{(int)diff.TotalHours} 時間前";
+            if (diff.TotalDays < 7) return $"{(int)diff.TotalDays} 日前";
             return dt.ToString("yyyy/MM/dd");
         }
 
         private static string KindToIcon(NotificationKind kind) => kind switch
         {
-            NotificationKind.Update  => "🔄",
+            NotificationKind.Update => "🔄",
             NotificationKind.Warning => "⚠️",
-            NotificationKind.News    => "📢",
-            _                        => "ℹ️"
+            NotificationKind.News => "📢",
+            _ => "ℹ️"
         };
 
-        private static SolidColorBrush KindToColor(NotificationKind kind) => kind switch
+        
+        private static Color KindToColor(NotificationKind kind) => kind switch
         {
-            NotificationKind.Update  => new SolidColorBrush(Colors.SeaGreen),
-            NotificationKind.Warning => new SolidColorBrush(Colors.DarkOrange),
-            NotificationKind.News    => new SolidColorBrush(Colors.SteelBlue),
-            _                        => new SolidColorBrush(Colors.SlateGray)
+            NotificationKind.Update => Colors.SeaGreen,
+            NotificationKind.Warning => Colors.DarkOrange,
+            NotificationKind.News => Colors.SteelBlue,
+            _ => Colors.SlateGray
         };
     }
 }
