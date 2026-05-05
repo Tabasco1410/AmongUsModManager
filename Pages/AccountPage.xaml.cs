@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -397,52 +397,123 @@ namespace AmongUsModManager.Pages
             EpicLoginBtn.Content              = "🎮 Epic でログイン";
         }
 
-        // ─── Epic ログイン（WebView2 ウィンドウ）────────────────────────────
-        private void EpicLogin_Click(object sender, RoutedEventArgs e)
+       
+        private CancellationTokenSource? _epicCts;
+
+        private async void EpicLogin_Click(object sender, RoutedEventArgs e)
         {
-            // ボタンをロック状態にしてウィンドウが開いていることを示す。
-            EpicLoginBtn.IsEnabled            = false;
-            EpicLoginBtn.Visibility           = Visibility.Collapsed;
-            EpicLoginProgressPanel.Visibility = Visibility.Visible;
-
-            // WebView2 ログインウィンドウを開く。
-            // 認証完了（成功/失敗/キャンセル）時に1回だけコールバックが呼ばれる。
-            var loginWindow = new EpicLoginWindow(result =>
+           
+            var guideDlg = new ContentDialog
             {
-                DispatcherQueue.TryEnqueue(() =>
+                Title = "Epic ログイン — 手順",
+                Content = new StackPanel
                 {
-                    if (result.Success)
+                    Spacing = 12,
+                    Children =
                     {
-                        LogService.Info("AccountPage",
-                            $"Epic ログイン成功: {result.DisplayName} ({result.AccountId})");
-                        NotificationService.MarkReadByTag("epic_login");
-                        SetEpicConnected(result.DisplayName, result.AccountId);
+                        new TextBlock
+                        {
+                            Text = "① 「ブラウザを開く」を押してEpicにログインしてください。",
+                            TextWrapping = TextWrapping.Wrap,
+                        },
+                        new TextBlock
+                        {
+                            Text = "② ログイン完了後、ブラウザに以下のような JSON が表示されます：",
+                            TextWrapping = TextWrapping.Wrap,
+                        },
+                        new Border
+                        {
+                            Background   = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 30, 30, 30)),
+                            CornerRadius = new CornerRadius(6),
+                            Padding      = new Thickness(12, 8, 12, 8),
+                            Child = new TextBlock
+                            {
+                                FontFamily   = new FontFamily("Consolas, Courier New"),
+                                FontSize     = 12,
+                                Foreground   = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 200, 200, 200)),
+                                Text         = "{\n  \"redirectUrl\": \"...\",\n  \"authorizationCode\": \"ここをコピー\",\n  \"sid\": null\n}",
+                                TextWrapping = TextWrapping.Wrap,
+                            }
+                        },
+                        new TextBlock
+                        {
+                            Text = "③ \"authorizationCode\" の右の値（英数字の文字列）だけを\nコピーして次の画面に貼り付けてください。",
+                            TextWrapping = TextWrapping.Wrap,
+                        },
                     }
-                    else
-                    {
-                        SetEpicDisconnected();
-                        // キャンセルはユーザー操作なのでダイアログを出さない。
-                        if (!result.Error.Contains("キャンセル"))
-                            _ = ShowDialog("ログイン失敗", result.Error);
-                    }
-                });
-            });
+                },
+                PrimaryButtonText = "ブラウザを開く",
+                CloseButtonText = "キャンセル",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot,
+            };
 
-            // ウィンドウサイズを設定し、画面中央に表示する。
-            loginWindow.AppWindow.Resize(new Windows.Graphics.SizeInt32(500, 700));
+            if (await guideDlg.ShowAsync() != ContentDialogResult.Primary) return;
 
-            var displayArea = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(
-                loginWindow.AppWindow.Id,
-                Microsoft.UI.Windowing.DisplayAreaFallback.Nearest);
-            if (displayArea != null)
+            EpicLoginService.OpenBrowserForLogin();
+
+            
+            var inputBox = new TextBox
             {
-                var center = new Windows.Graphics.PointInt32(
-                    displayArea.WorkArea.X + (displayArea.WorkArea.Width  - 500) / 2,
-                    displayArea.WorkArea.Y + (displayArea.WorkArea.Height - 700) / 2);
-                loginWindow.AppWindow.Move(center);
+                PlaceholderText = "例: a1b2c3d4e5f6a1b2c3d4e5f6...",
+                MinWidth = 360,
+            };
+
+            var codeDlg = new ContentDialog
+            {
+                Title = "authorizationCode を貼り付け",
+                Content = new StackPanel
+                {
+                    Spacing = 8,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = "ブラウザの JSON に表示された\n\"authorizationCode\" の値（\" は除く）を貼り付けてください。\n見づらい場合はプリントにチェックを入れてみてください。",
+                            TextWrapping = TextWrapping.Wrap,
+                        },
+                        inputBox,
+                    }
+                },
+                PrimaryButtonText = "ログイン",
+                CloseButtonText = "キャンセル",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot,
+            };
+
+            if (await codeDlg.ShowAsync() != ContentDialogResult.Primary) return;
+
+            string code = inputBox.Text.Trim().Trim('"');
+            if (string.IsNullOrEmpty(code))
+            {
+                await ShowDialog("入力エラー", "認可コードを入力してください。");
+                return;
             }
 
-            loginWindow.Activate();
+            EpicLoginBtn.IsEnabled = false;
+            EpicLoginBtn.Visibility = Visibility.Collapsed;
+            EpicLoginProgressPanel.Visibility = Visibility.Visible;
+
+            var loginResult = await EpicLoginService.LoginWithAuthCodeAsync(code);
+
+            if (loginResult.Success)
+            {
+                LogService.Info("AccountPage",
+                    $"Epic ログイン成功: {loginResult.DisplayName} ({loginResult.AccountId})");
+                NotificationService.MarkReadByTag("epic_login");
+                SetEpicConnected(loginResult.DisplayName, loginResult.AccountId);
+            }
+            else
+            {
+                SetEpicDisconnected();
+                await ShowDialog("ログイン失敗", loginResult.Error);
+            }
+        }
+
+        private void EpicLoginCancel_Click(object sender, RoutedEventArgs e)
+        {
+            _epicCts?.Cancel();
+            SetEpicDisconnected();
         }
 
         private async void EpicLogout_Click(object sender, RoutedEventArgs e)

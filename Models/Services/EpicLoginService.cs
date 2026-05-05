@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
 using AmongUsModManager.Models;
 using AmongUsModManager.Services;
@@ -15,7 +14,6 @@ using Windows.Security.Credentials;
 
 namespace AmongUsModManager.Models.Services
 {
-    // Rust の EpicSession 相当。
     public class EpicSession
     {
         [JsonPropertyName("access_token")] public string AccessToken { get; set; } = "";
@@ -24,8 +22,6 @@ namespace AmongUsModManager.Models.Services
         [JsonPropertyName("display_name")] public string? DisplayName { get; set; }
     }
 
-    // Rust の KeyringStorage<EpicSession> 相当。
-    // Windows 資格情報マネージャー（PasswordVault）でセッションを暗号化保存する。
     internal static class EpicKeyring
     {
         private const string Resource = "AmongUsModManager-EpicSession";
@@ -37,10 +33,7 @@ namespace AmongUsModManager.Models.Services
             {
                 string json = JsonSerializer.Serialize(session);
                 var vault = new PasswordVault();
-
-                // 既存エントリを先に削除してから再登録する（PasswordVault は同一キーの上書き不可）。
                 try { vault.Remove(vault.Retrieve(Resource, Username)); } catch { }
-
                 vault.Add(new PasswordCredential(Resource, Username, json));
                 LogService.Debug("EpicKeyring", "キーリング保存成功。");
             }
@@ -57,15 +50,9 @@ namespace AmongUsModManager.Models.Services
                 var vault = new PasswordVault();
                 var cred = vault.Retrieve(Resource, Username);
                 cred.RetrievePassword();
-                var session = JsonSerializer.Deserialize<EpicSession>(cred.Password);
-                LogService.Debug("EpicKeyring", "キーリング読み込み成功。");
-                return session;
+                return JsonSerializer.Deserialize<EpicSession>(cred.Password);
             }
-            catch
-            {
-                // エントリが存在しない場合も例外になるため、null を返すだけにする。
-                return null;
-            }
+            catch { return null; }
         }
 
         public static void Clear()
@@ -74,7 +61,6 @@ namespace AmongUsModManager.Models.Services
             {
                 var vault = new PasswordVault();
                 vault.Remove(vault.Retrieve(Resource, Username));
-                LogService.Debug("EpicKeyring", "キーリング削除成功。");
             }
             catch { }
         }
@@ -97,8 +83,6 @@ namespace AmongUsModManager.Models.Services
             "UELauncher/11.0.1-14907503+++Portal+Release-Live Windows/10.0.19041.1.256.64bit";
 
         private static readonly HttpClient _http;
-
-        // Rust の SESSION_CACHE 相当。プロセス内でファイル・キーリングI/Oを最小化する。
         private static EpicSession? _sessionCache;
         private static readonly object _cacheLock = new();
 
@@ -112,14 +96,14 @@ namespace AmongUsModManager.Models.Services
             Convert.ToBase64String(
                 Encoding.ASCII.GetBytes($"{LauncherClientId}:{LauncherClientSecret}"));
 
-        // Rust の fallback_session_path 相当。
         private static string SessionFilePath =>
             Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                "AmongUsModManager",
-                "epic_session.json");
+                "AmongUsModManager", "epic_session.json");
 
-        // ─── 認証URL生成（Rust の get_auth_url 相当）─────────────────────────
+        // ─── 認証URL生成 ──────────────────────────────────────────────────
+        // ブラウザで開くと Epic ログイン → 完了後に /id/api/redirect へリダイレクト。
+        // そのページを開いたまま JSON 内の authorizationCode をコピーしてもらう。
         public static string GetAuthUrl()
         {
             string redirectUrl = Uri.EscapeDataString(
@@ -128,96 +112,22 @@ namespace AmongUsModManager.Models.Services
             return $"https://www.epicgames.com/id/login?redirectUrl={redirectUrl}";
         }
 
-        // ─── セッション保存（Rust の save_session 相当）──────────────────────
-        // キーリング保存に失敗してもファイル保存が成功すれば続行する（Rust と同じ戦略）。
-        public static void SaveSession(EpicSession session)
+        // AccountPage から呼び出すラッパー（引数は互換性のために残す）
+        public static string BuildAuthUrl(string _redirectUri = "") => GetAuthUrl();
+
+        /// <summary>
+        /// ブラウザでEpicログインページを開く。
+        /// ユーザーがログインすると epicgames.com/id/api/redirect に JSON が表示されるので
+        /// "authorizationCode" の値をコピーして LoginWithAuthCodeAsync に渡す。
+        /// </summary>
+        public static void OpenBrowserForLogin()
         {
-            lock (_cacheLock) { _sessionCache = session; }
-
-            // 1. キーリング（Windows 資格情報マネージャー）
-            EpicKeyring.Save(session);
-
-            // 2. JSONファイル（フォールバック）
-            try
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(SessionFilePath)!);
-                File.WriteAllText(SessionFilePath,
-                    JsonSerializer.Serialize(session, new JsonSerializerOptions { WriteIndented = true }),
-                    Encoding.UTF8);
-                LogService.Debug("EpicLoginService", "セッションファイル保存成功。");
-            }
-            catch (Exception ex)
-            {
-                LogService.Warn("EpicLoginService", $"セッションファイル保存失敗: {ex.Message}");
-            }
-
-            // AppConfig には表示用情報だけ残す（トークンは保存しない）。
-            var config = ConfigService.Load();
-            config.EpicAccountId = session.AccountId;
-            config.EpicDisplayName = session.DisplayName?.Trim() ?? "";
-            ConfigService.Save(config);
-
-            LogService.Info("EpicLoginService",
-                $"セッション保存完了: {session.DisplayName} ({session.AccountId})");
+            string url = GetAuthUrl();
+            LogService.Info("EpicLoginService", $"Epicログインページをブラウザで開きます: {url}");
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
 
-        // ─── セッション読み込み（Rust の load_session 相当）──────────────────
-        // メモリキャッシュ → キーリング → JSONファイル の順で試みる。
-        public static EpicSession? LoadSession()
-        {
-            // 1. メモリキャッシュ
-            lock (_cacheLock)
-            {
-                if (_sessionCache != null) return _sessionCache;
-            }
-
-            // 2. キーリング
-            var keyringSession = EpicKeyring.Load();
-            if (keyringSession != null)
-            {
-                // キーリングから取れたらファイルにも同期する（Rust と同じ）
-                TrySaveFileOnly(keyringSession);
-                lock (_cacheLock) { _sessionCache = keyringSession; }
-                LogService.Debug("EpicLoginService", $"キーリングからセッション復元: {keyringSession.AccountId}");
-                return keyringSession;
-            }
-
-            // 3. JSONファイル（フォールバック）
-            try
-            {
-                if (!File.Exists(SessionFilePath)) return null;
-                var fileSession = JsonSerializer.Deserialize<EpicSession>(
-                    File.ReadAllText(SessionFilePath, Encoding.UTF8));
-                if (fileSession != null)
-                {
-                    // ファイルから取れたらキーリングにも再同期する（Rust と同じ）
-                    EpicKeyring.Save(fileSession);
-                    lock (_cacheLock) { _sessionCache = fileSession; }
-                    LogService.Debug("EpicLoginService", $"ファイルからセッション復元: {fileSession.AccountId}");
-                }
-                return fileSession;
-            }
-            catch (Exception ex)
-            {
-                LogService.Warn("EpicLoginService", $"セッションファイル読み込み失敗: {ex.Message}");
-                return null;
-            }
-        }
-
-        // ─── セッション削除（Rust の clear_session 相当）─────────────────────
-        public static void ClearSession()
-        {
-            lock (_cacheLock) { _sessionCache = null; }
-            EpicKeyring.Clear();
-            try { if (File.Exists(SessionFilePath)) File.Delete(SessionFilePath); }
-            catch (Exception ex) { LogService.Warn("EpicLoginService", $"セッションファイル削除失敗: {ex.Message}"); }
-        }
-
-        // ─── ログイン状態確認（Rust の load_session().is_some() 相当）────────
-        public static bool IsLoggedIn() => LoadSession() != null;
-        public static bool IsLoggedIn(AppConfig _) => IsLoggedIn();
-
-        // ─── 認可コードでログイン（Rust の login_with_auth_code 相当）────────
+        // ─── 認可コードでログイン ─────────────────────────────────────────
         public static async Task<EpicLoginResult> LoginWithAuthCodeAsync(string code)
         {
             string normalized = code.Trim().Replace("\"", "");
@@ -233,23 +143,92 @@ namespace AmongUsModManager.Models.Services
                     ["token_type"] = "eg1",
                 });
 
-                if (session == null) return EpicLoginResult.Fail("レスポンスのパースに失敗しました。");
+                if (session == null)
+                    return EpicLoginResult.Fail("レスポンスのパースに失敗しました。");
 
                 LogService.Info("EpicLoginService",
-                    $"WebView ログイン成功: {session.DisplayName} ({session.AccountId})");
-
+                    $"ログイン成功: {session.DisplayName} ({session.AccountId})");
                 SaveSession(session);
                 return EpicLoginResult.Ok(session.DisplayName ?? "", session.AccountId);
             }
             catch (Exception ex)
             {
-                LogService.Error("EpicLoginService", "WebView ログインエラー", ex);
+                LogService.Error("EpicLoginService", "認証コード交換エラー", ex);
                 return EpicLoginResult.Fail($"ログインに失敗しました: {ex.Message}");
             }
         }
 
-        // ─── セッション復元（Rust の epic_session_restore 相当）──────────────
-        // 起動時に呼び出す。refresh_token が有効なら自動ログインする。
+        // ─── セッション保存 ───────────────────────────────────────────────
+        public static void SaveSession(EpicSession session)
+        {
+            lock (_cacheLock) { _sessionCache = session; }
+            EpicKeyring.Save(session);
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(SessionFilePath)!);
+                File.WriteAllText(SessionFilePath,
+                    JsonSerializer.Serialize(session, new JsonSerializerOptions { WriteIndented = true }),
+                    Encoding.UTF8);
+            }
+            catch (Exception ex)
+            {
+                LogService.Warn("EpicLoginService", $"セッションファイル保存失敗: {ex.Message}");
+            }
+
+            var config = ConfigService.Load();
+            config.EpicAccountId = session.AccountId;
+            config.EpicDisplayName = session.DisplayName?.Trim() ?? "";
+            ConfigService.Save(config);
+
+            LogService.Info("EpicLoginService",
+                $"セッション保存完了: {session.DisplayName} ({session.AccountId})");
+        }
+
+        // ─── セッション読み込み ───────────────────────────────────────────
+        public static EpicSession? LoadSession()
+        {
+            lock (_cacheLock) { if (_sessionCache != null) return _sessionCache; }
+
+            var keyringSession = EpicKeyring.Load();
+            if (keyringSession != null)
+            {
+                TrySaveFileOnly(keyringSession);
+                lock (_cacheLock) { _sessionCache = keyringSession; }
+                return keyringSession;
+            }
+
+            try
+            {
+                if (!File.Exists(SessionFilePath)) return null;
+                var fileSession = JsonSerializer.Deserialize<EpicSession>(
+                    File.ReadAllText(SessionFilePath, Encoding.UTF8));
+                if (fileSession != null)
+                {
+                    EpicKeyring.Save(fileSession);
+                    lock (_cacheLock) { _sessionCache = fileSession; }
+                }
+                return fileSession;
+            }
+            catch (Exception ex)
+            {
+                LogService.Warn("EpicLoginService", $"セッションファイル読み込み失敗: {ex.Message}");
+                return null;
+            }
+        }
+
+        // ─── セッション削除 ───────────────────────────────────────────────
+        public static void ClearSession()
+        {
+            lock (_cacheLock) { _sessionCache = null; }
+            EpicKeyring.Clear();
+            try { if (File.Exists(SessionFilePath)) File.Delete(SessionFilePath); }
+            catch (Exception ex) { LogService.Warn("EpicLoginService", $"セッションファイル削除失敗: {ex.Message}"); }
+        }
+
+        public static bool IsLoggedIn() => LoadSession() != null;
+        public static bool IsLoggedIn(AppConfig _) => IsLoggedIn();
+
+        // ─── 起動時セッション復元 ─────────────────────────────────────────
         public static async Task<bool> TryRestoreSessionAsync()
         {
             var session = LoadSession();
@@ -269,7 +248,6 @@ namespace AmongUsModManager.Models.Services
                     ["token_type"] = "eg1",
                 });
                 if (refreshed == null) throw new Exception("レスポンスがnull");
-
                 LogService.Info("EpicLoginService", $"セッション復元成功: {refreshed.DisplayName}");
                 SaveSession(refreshed);
                 return true;
@@ -281,7 +259,7 @@ namespace AmongUsModManager.Models.Services
             }
         }
 
-        // ─── アクセストークン確保（Rust の refresh_session 相当）────────────
+        // ─── アクセストークン確保 ─────────────────────────────────────────
         public static async Task<string?> EnsureAccessTokenAsync()
         {
             var session = LoadSession();
@@ -300,7 +278,6 @@ namespace AmongUsModManager.Models.Services
                     ["token_type"] = "eg1",
                 });
                 if (refreshed == null) throw new Exception("レスポンスがnull");
-
                 SaveSession(refreshed);
                 return refreshed.AccessToken;
             }
@@ -311,7 +288,7 @@ namespace AmongUsModManager.Models.Services
             }
         }
 
-        // ─── ゲーム起動（Rust の get_game_token → launch 相当）──────────────
+        // ─── ゲーム起動 ───────────────────────────────────────────────────
         public static async Task<LaunchResult> LaunchDirectAsync(string exePath, string workDir)
         {
             if (!IsLoggedIn())
@@ -355,7 +332,7 @@ namespace AmongUsModManager.Models.Services
             }
         }
 
-        // ─── ログアウト（Rust の epic_logout 相当）───────────────────────────
+        // ─── ログアウト ───────────────────────────────────────────────────
         public static void Logout()
         {
             ClearSession();
@@ -376,7 +353,7 @@ namespace AmongUsModManager.Models.Services
             catch (Exception ex) { LogService.Error("EpicLoginService", "Launcher起動失敗", ex); }
         }
 
-        // ─── ゲームトークン取得（Rust の get_game_token 相当）────────────────
+        // ─── ゲームトークン取得 ───────────────────────────────────────────
         public static async Task<string?> GetGameTokenAsync(string accessToken)
         {
             try
@@ -402,11 +379,9 @@ namespace AmongUsModManager.Models.Services
             }
         }
 
-        // 後方互換エイリアス
         public static Task<string?> GetExchangeCodeAsync(string accessToken) => GetGameTokenAsync(accessToken);
 
         // ─── 内部ユーティリティ ───────────────────────────────────────────
-        // Rust の oauth_request 相当。
         private static async Task<EpicSession?> OAuthRequestAsync(Dictionary<string, string> fields)
         {
             var body = new FormUrlEncodedContent(fields);
@@ -433,7 +408,6 @@ namespace AmongUsModManager.Models.Services
             };
         }
 
-        // キーリングへは保存せず、ファイルにだけ書く内部ヘルパー。
         private static void TrySaveFileOnly(EpicSession session)
         {
             try
