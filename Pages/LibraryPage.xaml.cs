@@ -373,7 +373,7 @@ namespace AmongUsModManager.Pages
 
             string plugins = Path.Combine(mod.Path, "BepInEx", "plugins");
             bool isNebula = Directory.Exists(plugins) && Directory.GetFiles(plugins, "NebulaLoader.dll").Any();
-            string dest = isNebula ? Path.Combine(mod.Path, "nebula") : plugins;
+            string dest = isNebula ? Path.Combine(mod.Path, "BepInEx", "nebula") : plugins;
             if (!Directory.Exists(dest)) Directory.CreateDirectory(dest);
 
             var data = await _http.GetByteArrayAsync(dll.browser_download_url);
