@@ -9,7 +9,7 @@ namespace AmongUsModManager
     {
         public Window m_window { get; private set; } = null!;
         public static Window? MainWindowInstance { get; private set; }
-        public static string AppVersion { get; } = "1.4.5.1";
+        public static string AppVersion { get; } = "1.4.5.2";
         /// <summary>
         /// プレリリースかどうか。
         /// true にすると、デバッグビルドのときに自動アップデートチェックが無効になる。

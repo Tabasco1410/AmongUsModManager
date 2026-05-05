@@ -2,7 +2,7 @@
 $baseRoot = "C:\Users\yutok\Documents\AmongUsModManager\Release"
 $projectFile = ".\AmongUsModManager.csproj"
 $appName = "AmongUsModManager"
-$appVersion = "1.4.5.1" # ここを書き換えるだけでファイル名に反映されます
+$appVersion = "1.4.5.2" # ここを書き換えるだけでファイル名に反映されます
 
 # 既存の出力先をクリア
 if (Test-Path $baseRoot) { Remove-Item -Recurse -Force $baseRoot }
@@ -27,7 +27,7 @@ foreach ($rid in $rids) {
         -p:IncludeAllContentForSelfExtract=true `
         -o $singleFileDir
 
-    # ファイル名をリネーム (例: AmongUsModManager.exe -> AmongUsModManager-1.4.5.1-x64.exe)
+    # ファイル名をリネーム (例: AmongUsModManager.exe -> AmongUsModManager-1.4.5.2-x64.exe)
     $oldExe = Join-Path $singleFileDir "$appName.exe"
     $newExeName = "$appName-$appVersion-$archShort.exe"
     $newExePath = Join-Path $singleFileDir $newExeName
