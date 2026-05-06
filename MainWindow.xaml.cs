@@ -36,7 +36,7 @@ namespace AmongUsModManager
         public MainWindow()
         {
             InitializeComponent();
-            LogService.Info("MainWindow", "ウィンドウ初期化開始");
+            LogService.Debug("MainWindow", "ウィンドウの初期化を開始");
             SetWindowIcon();
             SetVersionInTitle();
             ApplyTheme();
@@ -78,7 +78,7 @@ namespace AmongUsModManager
 #if DEBUG
             InitDebugConsoleShortcut();
 #endif
-            LogService.Info("MainWindow", "ウィンドウ初期化完了");
+            LogService.Info("MainWindow", "ウィンドウを初期化しました");
         }
 
         // 起動時にニュースをバックグラウンド取得してバッジ数を更新する
@@ -102,7 +102,7 @@ namespace AmongUsModManager
 
                 int unread = NewsReadService.UnreadCount(allIds);
                 NewsReadService.UpdateCachedUnreadCount(unread);
-                LogService.Info("MainWindow", $"未読のお知らせ：: {unread}件");
+                LogService.Info("MainWindow", $"未読のお知らせ: {unread}件");
             }
             catch (Exception ex)
             {
@@ -132,7 +132,7 @@ namespace AmongUsModManager
                 if (icoPath != null)
                 {
                     this.AppWindow.SetIcon(icoPath);
-                    LogService.Debug("MainWindow", $"アイコン設定: {icoPath}");
+                    LogService.Debug("MainWindow", $"アイコンを設定しました: {icoPath}");
                 }
                 else
                 {
@@ -141,7 +141,7 @@ namespace AmongUsModManager
             }
             catch (Exception ex)
             {
-                LogService.Warn("MainWindow", $"アイコン設定失敗: {ex.Message}");
+                LogService.Warn("MainWindow", $"アイコンの設定に失敗: {ex.Message}");
             }
         }
 
@@ -184,7 +184,7 @@ namespace AmongUsModManager
                 int physH = (int)(h * scale);
 
                 this.AppWindow.Resize(new SizeInt32(physW, physH));
-                LogService.Debug("MainWindow", $"ウィンドウサイズ復元: {w}x{h} (scale={scale:F2})");
+                LogService.Debug("MainWindow", $"ウィンドウのサイズを復元します: {w}x{h} (scale={scale:F2})");
                 try
                 {
                     // WindowX/Y は nullable double に変更済み（NaNではなくnullで「未設定」を表す）
@@ -248,14 +248,14 @@ namespace AmongUsModManager
                         }
                         catch { }
                         ConfigService.SaveWindowBounds(x, y, w, h, isMax);
-                        LogService.Debug("MainWindow", $"ウィンドウ位置/サイズ保存: {x:F0},{y:F0} {w:F0}x{h:F0} (max={isMax})");
+                        LogService.Debug("MainWindow", $"ウィンドウ位置/サイズを保存しました: {x:F0},{y:F0} {w:F0}x{h:F0} (max={isMax})");
                         return;
                     }
                 }
                 catch (Exception ex) { LogService.Warn("MainWindow", $"ウィンドウ位置取得失敗: {ex.Message}"); }
 
                 ConfigService.SaveWindowSize(w, h);
-                LogService.Debug("MainWindow", $"ウィンドウサイズ保存: {w:F0}x{h:F0}");
+                LogService.Debug("MainWindow", $"ウィンドウのサイズを保存しました: {w:F0}x{h:F0}");
             }
             catch (Exception ex)
             {
@@ -327,7 +327,7 @@ namespace AmongUsModManager
             };
             ConfigService.Save(config);
             ApplyTheme();
-            LogService.Info("MainWindow", $"テーマ変更: {config.Theme}");
+            LogService.Info("MainWindow", $"テーマを {config.Theme}に変更しました");
         }
 
         private async void CheckAppUpdateForPaneAsync()
@@ -338,7 +338,7 @@ namespace AmongUsModManager
                 _appUpdateUrl = result.ReleaseUrl;
                 AppUpdatePaneBtn.Visibility = Visibility.Visible;
                 ToolTipService.SetToolTip(AppUpdatePaneBtn, $"バージョン {result.LatestTag} が利用可能です");
-                LogService.Info("MainWindow", $"アプリ更新あり: {result.LatestTag}");
+                LogService.Info("MainWindow", $"アプリの更新があります: {result.LatestTag}");
             }
         }
 
@@ -355,11 +355,11 @@ namespace AmongUsModManager
                     "ログイン後は Epic Games Launcher なしで直接起動できます。",
                     NotificationKind.Warning,
                     tag: "epic_login");
-                LogService.Warn("MainWindow", "Epic未ログイン通知を発行");
+                LogService.Warn("MainWindow", "Epicアカウントにログインしていません。未ログイン状態を通知");
             }
             else
             {
-                LogService.Info("MainWindow", $"Epic ログイン済み: {config.EpicDisplayName}");
+                LogService.Info("MainWindow", $"Epicアカウントにログイン済み: {config.EpicDisplayName}");
             }
         }
 
@@ -428,7 +428,7 @@ namespace AmongUsModManager
 
             if (ContentFrame.Content is SetupPage)
             {
-                LogService.Debug("MainWindow", $"セットアップ/チュートリアル中のため遷移ブロック: {tag}");
+                LogService.Warn("MainWindow", $"セットアップ/チュートリアル中のためページを移動できません: {tag}");
                 DispatcherQueue.TryEnqueue(() => NavView.SelectedItem = null);
                 return;
             }
@@ -447,7 +447,7 @@ namespace AmongUsModManager
 
         public void NavigateToPendingPage(string tag)
         {
-            LogService.Debug("MainWindow", $"ページ切り替え: {tag}");
+            LogService.Info("MainWindow", $"ページを切り替えます: {tag}");
             switch (tag)
             {
                 case "Home": ContentFrame.Navigate(typeof(HomePage)); break;
@@ -480,7 +480,7 @@ namespace AmongUsModManager
 
         public void NavigateToNewsDetail(NewsItem item)
         {
-            LogService.Debug("MainWindow", $"お知らせ詳細へ: {item.Title}");
+            LogService.Info("MainWindow", $"お知らせの詳細を表示します: {item.Title}");
             ContentFrame.Navigate(typeof(NewsDetailPage), item);
         }
 
@@ -514,7 +514,7 @@ namespace AmongUsModManager
                     }
                     catch { }
                 };
-                LogService.Debug("MainWindow", "Debug Console キーハンドラ登録 (Ctrl+Shift+L)");
+                LogService.Debug("MainWindow", "Debug Consoleのキーハンドラを登録しました (Ctrl+Shift+L)");
             }
         }
 

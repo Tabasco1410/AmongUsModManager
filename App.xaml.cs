@@ -28,7 +28,7 @@ namespace AmongUsModManager
 
             // ログ初期化（AppendMode=true→上書き、false→起動ごとに新ファイル）
             LogService.Initialize(config.LogAppendMode);
-            LogService.Info("App", $"AmongUsModManager v{AppVersion} 起動");
+            LogService.Info("App", $"AmongUsModManager v{AppVersion} を起動しました");
 
             // Toast通知マネージャー初期化
             NotificationService.Initialize();
@@ -40,7 +40,7 @@ namespace AmongUsModManager
             MainWindowInstance = m_window;
             m_window.Activate();
 
-            LogService.Info("App", "MainWindow アクティブ化完了");
+            LogService.Info("App", "MainWindowをアクティブ化しました");
         }
     }
 }

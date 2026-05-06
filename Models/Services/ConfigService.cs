@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -45,11 +45,11 @@ namespace AmongUsModManager.Models.Services
                     _cache = config;
                     _cacheTime = DateTime.Now;
                 }
-                LogService.Debug("ConfigService", "設定を保存しました");
+                LogService.Info("ConfigService", "設定を保存しました");
             }
             catch (Exception ex)
             {
-                LogService.Error("ConfigService", "設定の保存に失敗しました", ex);
+                LogService.Error("ConfigService", "設定の保存に失敗", ex);
             }
         }
 
@@ -96,7 +96,7 @@ namespace AmongUsModManager.Models.Services
 
             if (!File.Exists(FullPath))
             {
-                LogService.Debug("ConfigService", "設定ファイルが存在しないため新規作成します");
+                LogService.Warn("ConfigService", "設定ファイルが存在しないため新規作成");
                 var fresh = new AppConfig();
                 lock (_lock) { _cache = fresh; _cacheTime = DateTime.Now; }
                 return fresh;
@@ -105,13 +105,13 @@ namespace AmongUsModManager.Models.Services
             {
                 string json = File.ReadAllText(FullPath);
                 var config = JsonSerializer.Deserialize<AppConfig>(json, _options) ?? new AppConfig();
-                LogService.Debug("ConfigService", "設定を読み込みました");
+                LogService.Info("ConfigService", "設定を読み込みました");
                 lock (_lock) { _cache = config; _cacheTime = DateTime.Now; }
                 return config;
             }
             catch (Exception ex)
             {
-                LogService.Error("ConfigService", "設定ファイルの読み込みに失敗しました", ex);
+                LogService.Error("ConfigService", "設定ファイルの読み込みに失敗", ex);
                 return new AppConfig();
             }
         }

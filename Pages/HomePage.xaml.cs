@@ -50,7 +50,7 @@ namespace AmongUsModManager.Pages
         public HomePage()
         {
             this.InitializeComponent();
-            LogService.Info("HomePage", "ページ初期化");
+            LogService.Debug("HomePage", "ホームページを初期化しています");
 
 
             _cacheStatusTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
@@ -84,16 +84,16 @@ namespace AmongUsModManager.Pages
 
         private async Task InitializeAsync()
         {
-            LogService.Debug("HomePage", "InitializeAsync 開始");
+            LogService.Debug("HomePage", "初期化処理を開始しています");
             LoadModSelector();
             LoadLastMethod();
             await CheckAppUpdatePopupAsync();
             await LoadReleaseInfoAsync();
             await LoadNewsAsync();
 
-            LogService.Debug("HomePage", "全Modリリース一覧 自動ロード開始");
+            LogService.Debug("HomePage", "すべてのModリリース一覧を自動的にロード中");
             await LoadAllReleasesAsync();
-            LogService.Debug("HomePage", "InitializeAsync 完了");
+            LogService.Debug("HomePage", "初期化処理が完了しました");
         }
 
 
@@ -236,7 +236,7 @@ namespace AmongUsModManager.Pages
                     // 未ログインならその場でログインを促す
                     if (!EpicLoginService.IsLoggedIn())
                     {
-                        LogService.Info("HomePage", "Epic 未ログイン。ログインダイアログを表示します。");
+                        LogService.Info("HomePage", "Epic未ログイン。ログインダイアログを表示します");
                         var loginPrompt = new ContentDialog
                         {
                             Title = "Epic Games ログインが必要です",
@@ -380,7 +380,7 @@ namespace AmongUsModManager.Pages
         private async Task LoadReleaseInfoAsync()
         {
             UpdateLoadingRing.IsActive = true;
-            LogService.Info("HomePage", "リリース情報取得開始");
+            LogService.Info("HomePage", "リリース情報を取得開始します");
 
 
             if (_releaseInfoCache != null && DateTime.Now - _releaseInfoCachedAt < CacheTtl)
@@ -463,7 +463,7 @@ namespace AmongUsModManager.Pages
             ReleaseEmptyText.Visibility = sorted.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
             UpdateLoadingRing.IsActive = false;
             UpdateReleaseInfoCacheUI();
-            LogService.Info("HomePage", $"リリース情報取得完了: {sorted.Count} 件");
+            LogService.Info("HomePage", $"リリース情報の取得が完了しました。{sorted.Count}件");
         }
 
         private void UpdateReleaseInfoCacheUI()
@@ -523,7 +523,7 @@ namespace AmongUsModManager.Pages
 
             if (RateLimitBar.IsOpen) return;
             RateLimitBar.IsOpen = true;
-            LogService.Warn("HomePage", "GitHub API レートリミット到達 → バナー表示");
+            LogService.Warn("HomePage", "GitHub APIレートリミット到達");
         }
 
         private void RecheckUpdates_Click(object sender, RoutedEventArgs e) => _ = LoadReleaseInfoAsync();
@@ -570,7 +570,7 @@ namespace AmongUsModManager.Pages
             UpdateProgressBar.IsIndeterminate = true;
             UpdateProgressDialog.XamlRoot = this.XamlRoot;
             _ = UpdateProgressDialog.ShowAsync();
-            LogService.Info("HomePage", $"アップデート開始: {item.ModName} → {item.LatestTag}");
+            LogService.Info("HomePage", $"{item.ModName} から {item.LatestTag} へのアップデートを開始します");
             try
             {
                 var libPage = new LibraryPage();

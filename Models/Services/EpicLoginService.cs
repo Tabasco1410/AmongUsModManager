@@ -35,11 +35,11 @@ namespace AmongUsModManager.Models.Services
                 var vault = new PasswordVault();
                 try { vault.Remove(vault.Retrieve(Resource, Username)); } catch { }
                 vault.Add(new PasswordCredential(Resource, Username, json));
-                LogService.Debug("EpicKeyring", "キーリング保存成功。");
+                LogService.Info("EpicKeyring", "キーリングを保存しました");
             }
             catch (Exception ex)
             {
-                LogService.Warn("EpicKeyring", $"キーリング保存失敗: {ex.Message}");
+                LogService.Error("EpicKeyring", $"キーリングの保存に失敗: {ex.Message}");
             }
         }
 
@@ -123,7 +123,7 @@ namespace AmongUsModManager.Models.Services
         public static void OpenBrowserForLogin()
         {
             string url = GetAuthUrl();
-            LogService.Info("EpicLoginService", $"Epicログインページをブラウザで開きます: {url}");
+            LogService.Info("EpicLoginService", $"Epicログインページをブラウザで開く: {url}");
             Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
         }
 
@@ -211,7 +211,7 @@ namespace AmongUsModManager.Models.Services
             }
             catch (Exception ex)
             {
-                LogService.Warn("EpicLoginService", $"セッションファイル読み込み失敗: {ex.Message}");
+                LogService.Warn("EpicLoginService", $"セッションファイルの読み込みに失敗: {ex.Message}");
                 return null;
             }
         }
@@ -234,11 +234,11 @@ namespace AmongUsModManager.Models.Services
             var session = LoadSession();
             if (session == null)
             {
-                LogService.Debug("EpicLoginService", "保存済みセッションなし。");
+                LogService.Debug("EpicLoginService", "保存済みセッションなし");
                 return false;
             }
 
-            LogService.Info("EpicLoginService", "保存済みセッション発見。refresh_token で復元を試みます。");
+            LogService.Info("EpicLoginService", "保存済みセッションで復旧を試みます");
             try
             {
                 var refreshed = await OAuthRequestAsync(new Dictionary<string, string>
@@ -265,7 +265,7 @@ namespace AmongUsModManager.Models.Services
             var session = LoadSession();
             if (session == null)
             {
-                LogService.Warn("EpicLoginService", "セッションなし。ログインが必要です。");
+                LogService.Warn("EpicLoginService", "セッションがありません。ログインが必要です");
                 return null;
             }
 
@@ -283,7 +283,7 @@ namespace AmongUsModManager.Models.Services
             }
             catch (Exception ex)
             {
-                LogService.Warn("EpicLoginService", $"トークン更新失敗。再ログインが必要です: {ex.Message}");
+                LogService.Error("EpicLoginService", $"トークン更新に失敗。再ログインが必要です: {ex.Message}");
                 return null;
             }
         }
@@ -340,7 +340,7 @@ namespace AmongUsModManager.Models.Services
             config.EpicAccountId = "";
             config.EpicDisplayName = "";
             ConfigService.Save(config);
-            LogService.Info("EpicLoginService", "Epic ログアウト完了。");
+            LogService.Info("EpicLoginService", "Epicアカウントをログアウトしました");
         }
 
         // ─── Launcher 操作 ────────────────────────────────────────────────
@@ -369,7 +369,7 @@ namespace AmongUsModManager.Models.Services
                 }
                 using var doc = JsonDocument.Parse(json);
                 string? code = doc.RootElement.GetProperty("code").GetString();
-                LogService.Info("EpicLoginService", "exchange_code 取得成功。");
+                LogService.Info("EpicLoginService", "exchange_codeが取得できました");
                 return code;
             }
             catch (Exception ex)

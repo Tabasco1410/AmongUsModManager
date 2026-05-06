@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -76,7 +76,7 @@ namespace AmongUsModManager
             if (!Uri.TryCreate(LoginWebView.Source?.ToString(), UriKind.Absolute, out var uri)) return;
             if (uri.AbsolutePath == EpicRedirectPath)
             {
-                LogService.Info("EpicLoginWindow", "リダイレクトページ到達。authorizationCode を抽出します。");
+                LogService.Info("EpicLoginWindow", "リダイレクトページ到達。authorizationCodeを抽出");
                 try
                 {
                     await LoginWebView.CoreWebView2.ExecuteScriptAsync(ExtractCodeJs);
@@ -103,7 +103,7 @@ namespace AmongUsModManager
                 return;
             }
 
-            LogService.Info("EpicLoginWindow", "authorizationCode 取得成功。トークン交換を開始します。");
+            LogService.Info("EpicLoginWindow", "authorizationCodeを取得。トークン交換を開始します");
             var result = await EpicLoginService.LoginWithAuthCodeAsync(code);
             CompleteOnce(result);
             DispatcherQueue.TryEnqueue(Close);
