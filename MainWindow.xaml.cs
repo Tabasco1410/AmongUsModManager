@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -102,11 +102,11 @@ namespace AmongUsModManager
 
                 int unread = NewsReadService.UnreadCount(allIds);
                 NewsReadService.UpdateCachedUnreadCount(unread);
-                LogService.Debug("MainWindow", $"起動時ニュース未読数取得: {unread}件");
+                LogService.Info("MainWindow", $"未読のお知らせ：: {unread}件");
             }
             catch (Exception ex)
             {
-                LogService.Warn("MainWindow", $"起動時ニュース取得失敗（バッジは0のまま）: {ex.Message}");
+                LogService.Warn("MainWindow", $"お知らせ取得失敗: {ex.Message}");
             }
         }
 
@@ -447,7 +447,7 @@ namespace AmongUsModManager
 
         public void NavigateToPendingPage(string tag)
         {
-            LogService.Debug("MainWindow", $"ページ遷移: {tag}");
+            LogService.Debug("MainWindow", $"ページ切り替え: {tag}");
             switch (tag)
             {
                 case "Home": ContentFrame.Navigate(typeof(HomePage)); break;
@@ -466,6 +466,7 @@ namespace AmongUsModManager
                     { UseShellExecute = true });
                     DispatcherQueue.TryEnqueue(() => NavView.SelectedItem = null);
                     return;
+                case "Version": ContentFrame.Navigate(typeof(VersionPage)); break;
                 case "DataManagement": ContentFrame.Navigate(typeof(DataManagementPage)); break;
                 case "Stats": ContentFrame.Navigate(typeof(StatsPage)); break;
                 case "Account": ContentFrame.Navigate(typeof(AccountPage)); break;

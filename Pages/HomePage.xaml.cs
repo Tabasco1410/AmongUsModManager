@@ -988,7 +988,7 @@ namespace AmongUsModManager.Pages
         }
 
 
-        private async Task DownloadAppUpdateAsync(AppUpdateService.UpdateResult result)
+        private async Task DownloadAppUpdateAsync(UpdateResult result)
         {
             var progressBar = new ProgressBar { IsIndeterminate = false, Value = 0, Minimum = 0, Maximum = 100, Width = 320 };
             var statusText = new TextBlock { Text = "ダウンロード中... 0%" };
