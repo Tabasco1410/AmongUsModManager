@@ -12,9 +12,9 @@
 	<Identity
 	  Name="Tabasco1410.AmongUsModManager"
 	  Publisher="CN=Tabasco"
-	  Version="1.4.5.2" />
+	  Version="1.4.5.3" />
 
-	<mp:PhoneIdentity PhoneProductId="1e7a4ff8-c441.4.5.22-9827-7406d18d3394" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+	<mp:PhoneIdentity PhoneProductId="1e7a4ff8-c441.4.5.32-9827-7406d18d3394" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
 	<Properties>
 		<DisplayName>AmongUsModManager</DisplayName>
