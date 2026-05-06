@@ -96,16 +96,16 @@ namespace AmongUsModManager.Models.Services
             catch { return false; }
 
             if (tempPath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
-            {               
-                string currentDir = AppContext.BaseDirectory.TrimEnd('\\', '/');
-                string installArgs = $"/SILENT /SUPPRESSMSGBOXES \"/DIR={currentDir}\"";
+            {
+                string currentDir = AppContext.BaseDirectory.TrimEnd('\\', '/');               
+                string installArgs = $"/SILENT /SUPPRESSMSGBOXES /UPDATE \"/DIR={currentDir}\"";
 
                 Process.Start(new ProcessStartInfo(tempPath)
                 {
                     Arguments = installArgs,
                     UseShellExecute = true,
                 });
-                
+
                 Application.Current.Exit();
                 return true;
             }
