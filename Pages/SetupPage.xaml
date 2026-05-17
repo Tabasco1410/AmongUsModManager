@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="AmongUsModManager.Pages.SetupPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -16,7 +17,6 @@
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                         Spacing="20" Width="520" Margin="0,40,0,24">
 
-                <!-- ヘッダー -->
                 <StackPanel Spacing="8" HorizontalAlignment="Center">
                     <Image Source="/Resource/Icon.png" Width="56" Height="56"
                            HorizontalAlignment="Center"/>
@@ -28,7 +28,6 @@
                                TextAlignment="Center" TextWrapping="Wrap"/>
                 </StackPanel>
 
-                <!-- ① プラットフォーム選択 -->
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16">
@@ -54,7 +53,6 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ② フォルダ指定 -->
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16">
@@ -87,7 +85,6 @@
                     </StackPanel>
                 </Border>
 
-                <!-- ③ Epic Games ログイン（Epic 選択時のみ表示） -->
                 <Border x:Name="EpicLoginPanel"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -111,23 +108,15 @@
                                        VerticalAlignment="Center"
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>
-                        <!-- セットアップ内でそのままログインできるボタン -->
                         <Button x:Name="EpicLoginInSetupBtn"
                                 Content="🔑 Epic Games にログイン"
                                 Click="EpicLoginInSetup_Click"
                                 Style="{StaticResource AccentButtonStyle}"
                                 HorizontalAlignment="Stretch"
                                 Padding="12,8"/>
-                        <Button x:Name="EpicLaunchLauncherBtn"
-                                Content="🚀 Epic Games Launcher を起動してログイン"
-                                Click="EpicLaunchLauncher_Click"
-                                Visibility="Collapsed"
-                                HorizontalAlignment="Stretch"
-                                Padding="12,6"/>
                     </StackPanel>
                 </Border>
 
-                <!-- ④ GitHub 連携（任意） -->
                 <Border x:Name="GitHubLoginPanel"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -149,15 +138,62 @@
                                        VerticalAlignment="Center"
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>
-                        <Button x:Name="GitHubLoginBtn"
-                                Content="🐙 GitHub にログイン"
-                                Click="GitHubLoginInSetup_Click"
-                                HorizontalAlignment="Stretch"
-                                Padding="12,8"/>
+
+                        <Border x:Name="GitHubDeviceCodePanel" Visibility="Collapsed"
+                                Background="{ThemeResource SystemFillColorNeutralBackgroundBrush}"
+                                CornerRadius="6" Padding="14,12">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="① 以下のコードをコピーしてください"
+                                           FontSize="12"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <Grid ColumnSpacing="10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock x:Name="GitHubDeviceUserCodeText"
+                                               FontSize="28" FontWeight="Bold"
+                                               FontFamily="Consolas" CharacterSpacing="200"
+                                               VerticalAlignment="Center"/>
+                                    <Button x:Name="GitHubCopyCodeBtn"
+                                            Grid.Column="1"
+                                            Content="📋 コピー" Padding="12,6"
+                                            VerticalAlignment="Center"
+                                            Click="GitHubCopyCode_Click"/>
+                                </Grid>
+                                <TextBlock Text="② ブラウザで github.com/login/device を開き、コードを入力してください"
+                                           FontSize="12" TextWrapping="Wrap"
+                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                                <Button Content="🌐 ブラウザで GitHub を開く"
+                                        Click="OpenGitHubBrowser_Click" Padding="12,6"/>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <ProgressRing x:Name="GitHubDeviceFlowProgress"
+                                                  IsActive="True" Width="16" Height="16"
+                                                  VerticalAlignment="Center"/>
+                                    <TextBlock x:Name="GitHubDeviceFlowStatusText"
+                                               Text="認証を待っています..."
+                                               FontSize="12"
+                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                               VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button x:Name="GitHubLoginBtn"
+                                    Content="🐙 GitHub にログイン"
+                                    Click="GitHubLoginInSetup_Click"
+                                    HorizontalAlignment="Left"
+                                    Padding="12,8"/>
+                            <Button x:Name="GitHubCancelBtn"
+                                    Content="キャンセル"
+                                    Visibility="Collapsed"
+                                    Click="GitHubCancelFlow_Click"
+                                    Padding="12,8"/>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
 
-                <!-- ⑤ インストール済みMod検出 -->
                 <Border x:Name="ExistingModPanel"
                         Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -186,7 +222,6 @@
                     </StackPanel>
                 </Border>
 
-                <!-- 見つからなかった場合 -->
                 <Border x:Name="NotFoundPanel"
                         Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
@@ -212,7 +247,6 @@
                     </StackPanel>
                 </Border>
 
-                <!-- セットアップ完了ボタン -->
                 <Button x:Name="FinishButton"
                         Content="セットアップ完了"
                         HorizontalAlignment="Stretch"
@@ -224,7 +258,6 @@
             </StackPanel>
         </ScrollViewer>
 
-        <!-- フッター -->
         <Border Grid.Row="1"
                 Background="{ThemeResource NavigationViewDefaultPaneBackground}"
                 BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"

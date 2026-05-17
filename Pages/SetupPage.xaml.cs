@@ -1,15 +1,18 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AmongUsModManager.Models;
 using AmongUsModManager.Models.Services;
 using AmongUsModManager.Services;
+using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
@@ -20,15 +23,19 @@ namespace AmongUsModManager.Pages
         private string _selectedPlatformTag = "";
         private List<string> _detectedExistingMods = new();
 
+        private string _githubDeviceVerificationUri = "https://github.com/login/device";
+        private string _githubDeviceUserCode = "";
+        private CancellationTokenSource? _githubDeviceFlowCts;
+
         private const string DiscordSupportUrl = "https://discord.gg/nFhkYmf9At";
 
         private static readonly Dictionary<string, string> PlatformHints = new()
         {
-            ["Steam"]   = "Steam の「ライブラリ」→「Among Us」を右クリック →「管理」→「ローカルファイルを閲覧」でフォルダを確認できます。",
-            ["Epic"]    = "Epic Games Launcher の「ライブラリ」→「Among Us」の「…」→「管理」→「インストール先」でフォルダを確認できます。",
+            ["Steam"] = "Steam の「ライブラリ」→「Among Us」を右クリック →「管理」→「ローカルファイルを閲覧」でフォルダを確認できます。",
+            ["Epic"] = "Epic Games Launcher の「ライブラリ」→「Among Us」の「…」→「管理」→「インストール先」でフォルダを確認できます。",
             ["MSStore"] = "Microsoft Store 版は C:\\Program Files\\WindowsApps フォルダにインストールされますが、アクセス制限があるため自動検出を使用してください。",
-            ["Itch"]    = "itch.io アプリの「Among Us」→「…」→「フォルダを開く」でフォルダを確認できます。",
-            ["Manual"]  = "「参照...」ボタンから「Among Us.exe」が入っているフォルダを直接選んでください。",
+            ["Itch"] = "itch.io アプリの「Among Us」→「…」→「フォルダを開く」でフォルダを確認できます。",
+            ["Manual"] = "「参照...」ボタンから「Among Us.exe」が入っているフォルダを直接選んでください。",
         };
 
         public SetupPage()
@@ -46,7 +53,7 @@ namespace AmongUsModManager.Pages
 
             if (PlatformHints.TryGetValue(_selectedPlatformTag, out var hint))
             {
-                PlatformHint.Text       = hint;
+                PlatformHint.Text = hint;
                 PlatformHint.Visibility = Visibility.Visible;
             }
             else
@@ -57,26 +64,17 @@ namespace AmongUsModManager.Pages
             AutoDetectButton.IsEnabled = _selectedPlatformTag != "Manual";
             PathTextBox.Text = "";
             SetValidation(false, "");
-            NotFoundPanel.Visibility  = Visibility.Collapsed;
-            FinishButton.IsEnabled    = false;
+            NotFoundPanel.Visibility = Visibility.Collapsed;
+            FinishButton.IsEnabled = false;
 
-            // Epic 選択時 → ログインパネル表示
-            if (_selectedPlatformTag == "Epic")
-            {
-                EpicLoginPanel.Visibility = Visibility.Visible;
-                CheckEpicLoginStatus();
-            }
-            else
-            {
-                EpicLoginPanel.Visibility = Visibility.Collapsed;
-            }
+            EpicLoginPanel.Visibility = _selectedPlatformTag == "Epic"
+                ? Visibility.Visible : Visibility.Collapsed;
+            if (_selectedPlatformTag == "Epic") CheckEpicLoginStatus();
 
-            // GitHub パネルは常に表示（任意連携）
             GitHubLoginPanel.Visibility = Visibility.Visible;
             RefreshGitHubStatus();
         }
 
-        // ─── Epic ログイン ────────────────────────────────────────────
         private void CheckEpicLoginStatus()
         {
             bool loggedIn = EpicLoginService.IsLoggedIn();
@@ -85,55 +83,129 @@ namespace AmongUsModManager.Pages
             if (loggedIn)
             {
                 var config = ConfigService.Load();
-                EpicStatusText.Text      = $"✅ ログイン済み — {config.EpicDisplayName}";
-                EpicStatusIcon.Glyph     = "\uE73E";
-                EpicStatusIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.SeaGreen);
+                EpicStatusText.Text = $"✅ ログイン済み — {config.EpicDisplayName}";
+                EpicStatusIcon.Glyph = "\uE73E";
+                EpicStatusIcon.Foreground = new SolidColorBrush(Colors.SeaGreen);
                 EpicLoginInSetupBtn.Content = "🔄 別のアカウントでログイン";
             }
             else
             {
-                EpicStatusText.Text      = "未ログイン — ログインしておくとランチャー不要で起動できます";
-                EpicStatusIcon.Glyph     = "\uE711";
-                EpicStatusIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.Tomato);
+                EpicStatusText.Text = "未ログイン — ログインしておくとランチャー不要で起動できます";
+                EpicStatusIcon.Glyph = "\uE711";
+                EpicStatusIcon.Foreground = new SolidColorBrush(Colors.Tomato);
                 EpicLoginInSetupBtn.Content = "🔑 Epic Games にログイン";
             }
         }
 
-        // セットアップ内でそのまま Epic ログインウィンドウを開く
-        private void EpicLoginInSetup_Click(object sender, RoutedEventArgs e)
+        private async void EpicLoginInSetup_Click(object sender, RoutedEventArgs e)
         {
-            LogService.Info("SetupPage", "Epic ログインウィンドウを開く");
-            var loginWindow = new EpicLoginWindow(result =>
+            LogService.Info("SetupPage", "Epic ログイン開始");
+
+            var guideDlg = new ContentDialog
             {
-                DispatcherQueue.TryEnqueue(() =>
+                Title = "Epic ログイン — 手順",
+                Content = new StackPanel
                 {
-                    if (result.Success)
+                    Spacing = 12,
+                    Children =
                     {
-                        CheckEpicLoginStatus();
-                        LogService.Info("SetupPage", $"Epicログイン成功: {result.DisplayName}");
+                        new TextBlock
+                        {
+                            Text = "① 「ブラウザを開く」を押してEpicにログインしてください。",
+                            TextWrapping = TextWrapping.Wrap,
+                        },
+                        new TextBlock
+                        {
+                            Text = "② ログイン完了後、ブラウザに以下のような JSON が表示されます：",
+                            TextWrapping = TextWrapping.Wrap,
+                        },
+                        new Border
+                        {
+                            Background   = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 30, 30, 30)),
+                            CornerRadius = new CornerRadius(6),
+                            Padding      = new Thickness(12, 8, 12, 8),
+                            Child = new TextBlock
+                            {
+                                FontFamily   = new FontFamily("Consolas, Courier New"),
+                                FontSize     = 12,
+                                Foreground   = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 200, 200, 200)),
+                                Text         = "{\n  \"redirectUrl\": \"...\",\n  \"authorizationCode\": \"ここをコピー\",\n  \"sid\": null\n}",
+                                TextWrapping = TextWrapping.Wrap,
+                            }
+                        },
+                        new TextBlock
+                        {
+                            Text = "③ \"authorizationCode\" の値（英数字の文字列）だけをコピーして次の画面に貼り付けてください。",
+                            TextWrapping = TextWrapping.Wrap,
+                        },
                     }
-                    else
-                    {
-                        EpicStatusText.Text = $"❌ ログイン失敗: {result.Error}";
-                        LogService.Warn("SetupPage", $"Epicログイン失敗: {result.Error}");
-                    }
-                });
-            });
-            loginWindow.Activate();
-        }
+                },
+                PrimaryButtonText = "ブラウザを開く",
+                CloseButtonText = "キャンセル",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot,
+            };
 
-        private void EpicLaunchLauncher_Click(object sender, RoutedEventArgs e)
-        {
-            LogService.Info("SetupPage", "Epic Launcher 起動ボタン");
-            EpicLoginService.LaunchEpicLauncher();
-            DispatcherQueue.TryEnqueue(async () =>
+            if (await guideDlg.ShowAsync() != ContentDialogResult.Primary) return;
+
+            EpicLoginService.OpenBrowserForLogin();
+
+            var inputBox = new TextBox
             {
-                await Task.Delay(3000);
-                if (_selectedPlatformTag == "Epic") CheckEpicLoginStatus();
-            });
+                PlaceholderText = "例: a1b2c3d4e5f6a1b2c3d4e5f6...",
+                MinWidth = 360,
+            };
+
+            var codeDlg = new ContentDialog
+            {
+                Title = "authorizationCode を貼り付け",
+                Content = new StackPanel
+                {
+                    Spacing = 8,
+                    Children =
+                    {
+                        new TextBlock
+                        {
+                            Text = "ブラウザの JSON に表示された\n\"authorizationCode\" の値（\" は除く）を貼り付けてください。",
+                            TextWrapping = TextWrapping.Wrap,
+                        },
+                        inputBox,
+                    }
+                },
+                PrimaryButtonText = "ログイン",
+                CloseButtonText = "キャンセル",
+                DefaultButton = ContentDialogButton.Primary,
+                XamlRoot = this.XamlRoot,
+            };
+
+            if (await codeDlg.ShowAsync() != ContentDialogResult.Primary) return;
+
+            string code = inputBox.Text.Trim().Trim('"');
+            if (string.IsNullOrEmpty(code))
+            {
+                await ShowDialog("入力エラー", "認可コードを入力してください。");
+                return;
+            }
+
+            EpicLoginInSetupBtn.IsEnabled = false;
+            EpicStatusText.Text = "ログイン処理中...";
+
+            var loginResult = await EpicLoginService.LoginWithAuthCodeAsync(code);
+
+            EpicLoginInSetupBtn.IsEnabled = true;
+
+            if (loginResult.Success)
+            {
+                LogService.Info("SetupPage", $"Epic ログイン成功: {loginResult.DisplayName}");
+                CheckEpicLoginStatus();
+            }
+            else
+            {
+                EpicStatusText.Text = $"❌ ログイン失敗: {loginResult.Error}";
+                LogService.Warn("SetupPage", $"Epic ログイン失敗: {loginResult.Error}");
+            }
         }
 
-        // ─── GitHub 連携 ──────────────────────────────────────────────
         private void RefreshGitHubStatus()
         {
             var config = ConfigService.Load();
@@ -141,14 +213,14 @@ namespace AmongUsModManager.Pages
             if (loggedIn)
             {
                 GitHubStatusText.Text = $"✅ ログイン済み — {config.GitHubUserName}";
-                GitHubStatusIcon.Glyph     = "\uE73E";
-                GitHubStatusIcon.Foreground = new SolidColorBrush(Microsoft.UI.Colors.SeaGreen);
+                GitHubStatusIcon.Glyph = "\uE73E";
+                GitHubStatusIcon.Foreground = new SolidColorBrush(Colors.SeaGreen);
                 GitHubLoginBtn.Content = "🔄 別のアカウントでログイン";
             }
             else
             {
                 GitHubStatusText.Text = "未連携（省略可）";
-                GitHubStatusIcon.Glyph     = "\uE8C8";
+                GitHubStatusIcon.Glyph = "\uE8C8";
                 GitHubStatusIcon.Foreground = null;
                 GitHubLoginBtn.Content = "🐙 GitHub にログイン";
             }
@@ -158,58 +230,79 @@ namespace AmongUsModManager.Pages
         {
             LogService.Info("SetupPage", "GitHub デバイスフロー認証開始");
             GitHubLoginBtn.IsEnabled = false;
+            GitHubCancelBtn.Visibility = Visibility.Visible;
 
-            try
+            var codeRes = await GitHubDeviceFlowService.RequestDeviceCodeAsync();
+            if (codeRes == null)
             {
-                // Step1: デバイスコード取得
-                GitHubStatusText.Text = "デバイスコードを取得中…";
-                var codeRes = await GitHubDeviceFlowService.RequestDeviceCodeAsync();
-                if (codeRes == null)
-                {
-                    GitHubStatusText.Text = "❌ デバイスコードの取得に失敗しました。ネットワーク接続を確認してください。";
-                    LogService.Warn("SetupPage", "GitHub デバイスコード取得失敗");
-                    return;
-                }
+                GitHubStatusText.Text = "❌ デバイスコードの取得に失敗しました。ネットワーク接続を確認してください。";
+                GitHubLoginBtn.IsEnabled = true;
+                GitHubCancelBtn.Visibility = Visibility.Collapsed;
+                LogService.Warn("SetupPage", "GitHub デバイスコード取得失敗");
+                return;
+            }
 
-                // Step2: ブラウザを開いてユーザーにコード入力させる
-                GitHubStatusText.Text = $"ブラウザで次のコードを入力してください: {codeRes.user_code}\n認証完了を待っています…";
-                Process.Start(new ProcessStartInfo(codeRes.verification_uri) { UseShellExecute = true });
+            _githubDeviceVerificationUri = codeRes.verification_uri;
+            _githubDeviceUserCode = codeRes.user_code;
+            GitHubDeviceUserCodeText.Text = codeRes.user_code;
+            GitHubCopyCodeBtn.Content = "📋 コピー";
+            GitHubDeviceCodePanel.Visibility = Visibility.Visible;
+            GitHubDeviceFlowStatusText.Text = "認証を待っています...";
+            GitHubDeviceFlowProgress.IsActive = true;
 
-                // Step3: トークンポーリング
-                using var cts = new System.Threading.CancellationTokenSource(TimeSpan.FromMinutes(5));
-                var result = await GitHubDeviceFlowService.PollForTokenAsync(
-                    codeRes.device_code, codeRes.interval, cts.Token);
+            Process.Start(new ProcessStartInfo(codeRes.verification_uri) { UseShellExecute = true });
 
-                if (result.Success)
-                {
-                    // Step4: トークン検証してユーザー名取得
-                    var (ok, userName) = await GitHubAuthService.VerifyTokenAsync(result.AccessToken);
-                    var config = ConfigService.Load();
-                    config.GitHubToken       = result.AccessToken;
-                    config.GitHubLoginMethod = "device";
-                    config.GitHubUserName    = ok ? userName : "";
-                    ConfigService.Save(config);
-                    RefreshGitHubStatus();
-                    LogService.Info("SetupPage", $"GitHub ログイン成功: {config.GitHubUserName}");
-                }
-                else
+            _githubDeviceFlowCts = new CancellationTokenSource();
+            var result = await GitHubDeviceFlowService.PollForTokenAsync(
+                codeRes.device_code, codeRes.interval, _githubDeviceFlowCts.Token);
+
+            GitHubDeviceCodePanel.Visibility = Visibility.Collapsed;
+            GitHubCancelBtn.Visibility = Visibility.Collapsed;
+            GitHubLoginBtn.IsEnabled = true;
+
+            if (result.Success)
+            {
+                var (ok, userName) = await GitHubAuthService.VerifyTokenAsync(result.AccessToken);
+                var config = ConfigService.Load();
+                config.GitHubToken = result.AccessToken;
+                config.GitHubLoginMethod = "device";
+                config.GitHubUserName = ok ? userName : "";
+                ConfigService.Save(config);
+                RefreshGitHubStatus();
+                LogService.Info("SetupPage", $"GitHub ログイン成功: {config.GitHubUserName}");
+            }
+            else
+            {
+                if (!result.Error.Contains("キャンセル"))
                 {
                     GitHubStatusText.Text = $"❌ 連携失敗: {result.Error}";
                     LogService.Warn("SetupPage", $"GitHub ログイン失敗: {result.Error}");
                 }
             }
-            catch (Exception ex)
-            {
-                GitHubStatusText.Text = $"❌ エラー: {ex.Message}";
-                LogService.Error("SetupPage", "GitHub ログイン例外", ex);
-            }
-            finally
-            {
-                GitHubLoginBtn.IsEnabled = true;
-            }
         }
 
-        // ─── フォルダ検出 ─────────────────────────────────────────────
+        private void GitHubCancelFlow_Click(object sender, RoutedEventArgs e)
+        {
+            _githubDeviceFlowCts?.Cancel();
+            GitHubDeviceCodePanel.Visibility = Visibility.Collapsed;
+            GitHubCancelBtn.Visibility = Visibility.Collapsed;
+            GitHubLoginBtn.IsEnabled = true;
+            GitHubDeviceFlowStatusText.Text = "";
+        }
+
+        private void GitHubCopyCode_Click(object sender, RoutedEventArgs e)
+        {
+            var dp = new DataPackage();
+            dp.SetText(_githubDeviceUserCode);
+            Clipboard.SetContent(dp);
+            GitHubCopyCodeBtn.Content = "✅ コピー済み";
+        }
+
+        private void OpenGitHubBrowser_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(_githubDeviceVerificationUri) { UseShellExecute = true });
+        }
+
         private void AutoDetectButton_Click(object sender, RoutedEventArgs e)
         {
             LogService.Info("SetupPage", $"自動検出開始: {_selectedPlatformTag}");
@@ -217,11 +310,11 @@ namespace AmongUsModManager.Pages
 
             string? path = _selectedPlatformTag switch
             {
-                "Steam"   => AUFileDetector.GetSteamPath(),
-                "Epic"    => AUFileDetector.GetEpicPath(),
+                "Steam" => AUFileDetector.GetSteamPath(),
+                "Epic" => AUFileDetector.GetEpicPath(),
                 "MSStore" => AUFileDetector.GetMicrosoftStorePath(),
-                "Itch"    => AUFileDetector.GetItchPath(),
-                _         => null,
+                "Itch" => AUFileDetector.GetItchPath(),
+                _ => null,
             };
 
             if (path != null)
@@ -264,7 +357,6 @@ namespace AmongUsModManager.Pages
             {
                 SetValidation(true, $"✔  Among Us.exe を確認しました：{path}");
                 NotFoundPanel.Visibility = Visibility.Collapsed;
-                // パスが確定したらインストール済みModを検出
                 DetectExistingMods(path);
             }
             else
@@ -277,46 +369,33 @@ namespace AmongUsModManager.Pages
             FinishButton.IsEnabled = valid;
         }
 
-        // ─── インストール済みMod 検出 ─────────────────────────────────
         private void DetectExistingMods(string gamePath)
         {
             _detectedExistingMods.Clear();
 
-            // ゲームフォルダ内の BepInEx/plugins を走査
             string bepInExPlugins = Path.Combine(gamePath, "BepInEx", "plugins");
             if (Directory.Exists(bepInExPlugins))
-            {
-                var dirs = Directory.GetDirectories(bepInExPlugins);
-                _detectedExistingMods.AddRange(dirs);
-            }
+                _detectedExistingMods.AddRange(Directory.GetDirectories(bepInExPlugins));
 
-            // ゲームフォルダの隣（ModDataPath = 親フォルダ）も走査
             string? parentPath = Path.GetDirectoryName(gamePath);
             if (parentPath != null)
             {
                 string siblingPlugins = Path.Combine(parentPath, "BepInEx", "plugins");
                 if (Directory.Exists(siblingPlugins) && siblingPlugins != bepInExPlugins)
-                {
-                    var dirs = Directory.GetDirectories(siblingPlugins);
-                    _detectedExistingMods.AddRange(dirs);
-                }
+                    _detectedExistingMods.AddRange(Directory.GetDirectories(siblingPlugins));
             }
 
-            // 重複除去
             _detectedExistingMods = _detectedExistingMods.Distinct().ToList();
 
             if (_detectedExistingMods.Count > 0)
             {
                 LogService.Info("SetupPage", $"インストール済みMod検出: {_detectedExistingMods.Count}件");
-                var names = _detectedExistingMods
-                    .Select(d => Path.GetFileName(d))
-                    .Take(5)
-                    .ToList();
+                var names = _detectedExistingMods.Select(d => Path.GetFileName(d)).Take(5).ToList();
                 string preview = string.Join("、", names);
                 if (_detectedExistingMods.Count > 5) preview += $" ほか{_detectedExistingMods.Count - 5}件";
 
                 ExistingModTitle.Text = $"インストール済みModが {_detectedExistingMods.Count} 件見つかりました";
-                ExistingModDesc.Text  = $"見つかったフォルダ: {preview}\n\nこれらをアプリに登録しますか？";
+                ExistingModDesc.Text = $"見つかったフォルダ: {preview}\n\nこれらをアプリに登録しますか？";
                 ExistingModPanel.Visibility = Visibility.Visible;
                 ExistingModInfoBar.IsOpen = false;
             }
@@ -331,8 +410,7 @@ namespace AmongUsModManager.Pages
         {
             int count = 0;
             var config = ConfigService.Load();
-            if (config.VanillaPaths == null)
-                config.VanillaPaths = new List<VanillaPathInfo>();
+            config.VanillaPaths ??= new List<VanillaPathInfo>();
 
             foreach (var modDir in _detectedExistingMods)
             {
@@ -341,7 +419,6 @@ namespace AmongUsModManager.Pages
 
                 var info = new VanillaPathInfo { Name = name, Path = modDir };
 
-                // 名前がSupportedModsと一致すれば自動GitHub連携
                 var preset = ModInstallPage.SupportedMods.FirstOrDefault(p =>
                     name.Equals(p.Name, StringComparison.OrdinalIgnoreCase)
                     || name.Contains(p.Name, StringComparison.OrdinalIgnoreCase)
@@ -350,7 +427,7 @@ namespace AmongUsModManager.Pages
                 if (preset != null)
                 {
                     info.GitHubOwner = preset.Owner;
-                    info.GitHubRepo  = preset.Repository;
+                    info.GitHubRepo = preset.Repository;
                     LogService.Info("SetupPage", $"自動GitHub連携: {name} → {preset.Owner}/{preset.Repository}");
                 }
 
@@ -361,8 +438,8 @@ namespace AmongUsModManager.Pages
             LogService.Info("SetupPage", $"既存Mod登録: {count}件");
 
             ExistingModInfoBar.Severity = InfoBarSeverity.Success;
-            ExistingModInfoBar.Message  = $"{count} 件のModを登録しました。";
-            ExistingModInfoBar.IsOpen   = true;
+            ExistingModInfoBar.Message = $"{count} 件のModを登録しました。";
+            ExistingModInfoBar.IsOpen = true;
             RegisterExistingModBtn.IsEnabled = false;
         }
 
@@ -372,7 +449,6 @@ namespace AmongUsModManager.Pages
             ExistingModPanel.Visibility = Visibility.Collapsed;
         }
 
-        // ─── その他ボタン ─────────────────────────────────────────────
         private void SetValidation(bool success, string message)
         {
             if (string.IsNullOrEmpty(message))
@@ -381,21 +457,24 @@ namespace AmongUsModManager.Pages
                 return;
             }
             ValidateInfoBar.Severity = success ? InfoBarSeverity.Success : InfoBarSeverity.Error;
-            ValidateInfoBar.Message  = message;
-            ValidateInfoBar.IsOpen   = true;
+            ValidateInfoBar.Message = message;
+            ValidateInfoBar.IsOpen = true;
         }
 
         private void OpenSteamStore_Click(object sender, RoutedEventArgs e)
             => Process.Start(new ProcessStartInfo(
-                "https://store.steampowered.com/app/945360/Among_Us/") { UseShellExecute = true });
+                "https://store.steampowered.com/app/945360/Among_Us/")
+            { UseShellExecute = true });
 
         private void OpenEpicStore_Click(object sender, RoutedEventArgs e)
             => Process.Start(new ProcessStartInfo(
-                "https://store.epicgames.com/ja/p/among-us") { UseShellExecute = true });
+                "https://store.epicgames.com/ja/p/among-us")
+            { UseShellExecute = true });
 
         private void OpenItchStore_Click(object sender, RoutedEventArgs e)
             => Process.Start(new ProcessStartInfo(
-                "https://innersloth.itch.io/among-us") { UseShellExecute = true });
+                "https://innersloth.itch.io/among-us")
+            { UseShellExecute = true });
 
         private void OpenDiscordSupport_Click(object sender, RoutedEventArgs e)
         {
@@ -403,26 +482,21 @@ namespace AmongUsModManager.Pages
             Process.Start(new ProcessStartInfo(DiscordSupportUrl) { UseShellExecute = true });
         }
 
-        // ─── セットアップ完了 ─────────────────────────────────────────
         private void FinishButton_Click(object sender, RoutedEventArgs e)
         {
-            string gamePath    = PathTextBox.Text;
+            string gamePath = PathTextBox.Text;
             string? parentPath = Path.GetDirectoryName(gamePath);
 
             LogService.Info("SetupPage", $"セットアップ完了: platform={_selectedPlatformTag}, path={gamePath}");
 
-            // 既存設定があれば引き継ぐ（GitHubトークンなど）
             var config = ConfigService.Load();
-
-            config.GameInstallPath       = gamePath;
-            config.ModDataPath           = parentPath ?? gamePath;
-            config.Platform              = _selectedPlatformTag;
-            config.MainPlatform          = _selectedPlatformTag;   // メインプラットフォームとして確定
+            config.GameInstallPath = gamePath;
+            config.ModDataPath = parentPath ?? gamePath;
+            config.Platform = _selectedPlatformTag;
+            config.MainPlatform = _selectedPlatformTag;
             config.EpicLaunchViaLauncher = _selectedPlatformTag == "Epic";
 
-            // バニラパスが未設定なら追加
-            if (config.VanillaPaths == null)
-                config.VanillaPaths = new List<VanillaPathInfo>();
+            config.VanillaPaths ??= new List<VanillaPathInfo>();
             if (!config.VanillaPaths.Any(v => v.Path == gamePath))
                 config.VanillaPaths.Insert(0, new VanillaPathInfo { Name = "バニラ（Modなし）", Path = gamePath });
 
@@ -433,6 +507,17 @@ namespace AmongUsModManager.Pages
                 mw.SetNavigationUI(true);
                 mw.NavigateToPage("Home");
             }
+        }
+
+        private async Task ShowDialog(string title, string message)
+        {
+            await new ContentDialog
+            {
+                Title = title,
+                Content = message,
+                CloseButtonText = "OK",
+                XamlRoot = this.XamlRoot
+            }.ShowAsync();
         }
     }
 }
