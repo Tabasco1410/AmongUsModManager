@@ -1,4 +1,4 @@
-﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using System;
 using System.Collections.Generic;
@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
-using AmongUsModManager.Services;
-using AmongUsModManager.Models;
 using AmongUsModManager.Models.Services;
+using AmongUsModManager.Models;
 
 namespace AmongUsModManager.Pages
 {
@@ -21,11 +20,164 @@ namespace AmongUsModManager.Pages
         public ObservableCollection<string> DetectedPaths { get; } = new ObservableCollection<string>();
 
         private string _pendingTag = "";
+        private bool _languageComboBoxReady = false;
+        private bool _hasChanges = false;
+        private bool _bulkSelectorReady = false;
+        private int _pendingLanguageId = -1;
+        private int _savedLanguageId = -1;
 
         public SettingsPage()
         {
-            this.InitializeComponent();
-            LoadCurrentSettings();
+            try
+            {
+                LogService.Info("SettingsPage", "コンストラクタ開始");
+                this.InitializeComponent();
+                LogService.Info("SettingsPage", "InitializeComponent完了");
+                PopulateLanguageComboBox();
+                LogService.Info("SettingsPage", "PopulateLanguageComboBox完了");
+                LoadCurrentSettings();
+                LogService.Info("SettingsPage", "LoadCurrentSettings完了");
+                ApplyStrings();
+                LogService.Info("SettingsPage", "ApplyStrings完了");
+                LocalizationService.LanguageChanged += ApplyStrings;
+                this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
+                LogService.Info("SettingsPage", "コンストラクタ完了");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error("SettingsPage", $"コンストラクタで例外が発生しました (HResult=0x{ex.HResult:X8})", ex);
+                throw;
+            }
+        }
+
+        private void ApplyStrings()
+        {
+            SettingsPageTitle.Text     = LocalizationService.Get("Settings_Title");
+            UnsavedChangesBar.Title   = LocalizationService.Get("Settings_UnsavedTitle");
+            UnsavedChangesBar.Message = LocalizationService.Get("Settings_UnsavedMessage");
+            SaveAndExitButton.Content = LocalizationService.Get("Settings_SaveAndMove");
+
+            TabAppearanceLabel.Text = LocalizationService.Get("Settings_TabAppearance");
+            TabGameLabel.Text       = LocalizationService.Get("Settings_TabGame");
+            TabSystemLabel.Text     = LocalizationService.Get("Settings_TabSystem");
+            TabNotifLabel.Text      = LocalizationService.Get("Settings_TabNotif");
+            LangPendingBar.Message  = LocalizationService.Get("Settings_LangPendingNotice");
+
+            GameFolderSectionTitle.Text    = LocalizationService.Get("Settings_GameFolder");
+            GameFolderSectionDesc.Text     = LocalizationService.Get("Settings_GameFolderDesc");
+            SelectedFolderCountLabel.Text  = LocalizationService.Get("Settings_SelectedCount");
+            BulkChangeLabel.Text           = LocalizationService.Get("Settings_BulkChange");
+            PlatformSelectPlaceholder.Content = LocalizationService.Get("Settings_SelectPlatform");
+            ManualPlatformItem.Content     = LocalizationService.Get("Settings_Manual");
+            AutoDetectExpander.Header      = LocalizationService.Get("Settings_AutoDetect");
+            AutoDetectDesc.Text            = LocalizationService.Get("Settings_AutoDetectDesc");
+            ScanTargetTextBox.PlaceholderText = LocalizationService.Get("Settings_SelectScanFolder");
+            SelectScanTargetBtn.Content    = LocalizationService.Get("Settings_SelectLocation");
+            StartScanBtn.Content           = LocalizationService.Get("Settings_StartScan");
+            ClearPathBtn.Content           = LocalizationService.Get("Settings_ClearPath");
+            AddAllButton.Content           = LocalizationService.Get("Settings_AddAll");
+
+            MainPlatformSectionTitle.Text  = LocalizationService.Get("Settings_MainPlatform");
+            MainPlatformSectionDesc.Text   = LocalizationService.Get("Settings_MainPlatformDesc");
+            CurrentMainPlatformLabel.Text  = LocalizationService.Get("Settings_CurrentMainPlatform");
+            PlatformSwitchHint.Text        = LocalizationService.Get("Settings_MultipleFoldersHint");
+
+            ModFolderSectionTitle.Text     = LocalizationService.Get("Settings_ModFolder");
+            ModFolderSectionDesc.Text      = LocalizationService.Get("Settings_ModFolderDesc");
+            ChangeModPathBtn.Content       = LocalizationService.Get("Settings_Change");
+
+            LaunchSectionTitle.Text        = LocalizationService.Get("Settings_LaunchResidency");
+            StartWithWindowsToggle.Header  = LocalizationService.Get("Settings_StartWithWindows");
+            StartMinimizedToggle.Header    = LocalizationService.Get("Settings_StartMinimized");
+            MinimizeToTrayToggle.Header    = LocalizationService.Get("Settings_MinimizeToTray");
+            TrayHintText.Text              = LocalizationService.Get("Settings_TrayHint");
+            AlwaysRunAsAdminToggle.Header  = LocalizationService.Get("Settings_AlwaysAdmin");
+            AlwaysAdminHintText.Text       = LocalizationService.Get("Settings_AlwaysAdminHint");
+
+            EpicSectionTitle.Text          = LocalizationService.Get("Settings_EpicSettings");
+            EpicOpenLauncherBtn.Content    = LocalizationService.Get("Settings_OpenEpicLauncher");
+            EpicRecheckBtn.Content         = LocalizationService.Get("Settings_RecheckStatus");
+            EpicLaunchViaLauncherToggle.Header = LocalizationService.Get("Settings_EpicLaunchViaLauncher");
+            EpicLauncherDesc.Text          = LocalizationService.Get("Settings_EpicLauncherDesc");
+
+            LogSectionTitle.Text           = LocalizationService.Get("Settings_Log");
+            LogSectionDesc.Text            = LocalizationService.Get("Settings_LogDesc");
+            LogModeLabel.Text              = LocalizationService.Get("Settings_LogMode");
+            LogOverwriteRadio.Content      = LocalizationService.Get("Settings_LogOverwrite");
+            LogNewFileRadio.Content        = LocalizationService.Get("Settings_LogNewFile");
+
+            NotifSectionTitle.Text         = LocalizationService.Get("Settings_Notification");
+            NotifSectionDesc.Text          = LocalizationService.Get("Settings_NotificationDesc");
+            NotifyModUpdateToggle.Header   = LocalizationService.Get("Settings_NotifyModUpdate");
+            NotifyAppUpdateToggle.Header   = LocalizationService.Get("Settings_NotifyAppUpdate");
+            NotifyNewsToggle.Header        = LocalizationService.Get("Settings_NotifyNews");
+
+            AppearanceSectionTitle.Text    = LocalizationService.Get("Settings_Appearance");
+            ThemeLabel.Text                = LocalizationService.Get("Settings_Theme");
+            ThemeDefaultRadio.Content      = LocalizationService.Get("Settings_ThemeDefault");
+            ThemeDarkRadio.Content         = LocalizationService.Get("Settings_ThemeDark");
+            ThemeLightRadio.Content        = LocalizationService.Get("Settings_ThemeLight");
+            LanguageSectionLabel.Text      = LocalizationService.Get("Settings_Language");
+
+            SaveButton.Content = LocalizationService.Get("Settings_Save");
+        }
+
+        private void SetHasChanges(bool value)
+        {
+            _hasChanges = value;
+            if (SaveBar != null)
+                SaveBar.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void TabNav_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (AppearanceContent == null) return;
+
+            int idx = TabNavList.SelectedIndex;
+            AppearanceContent.Visibility = idx == 0 ? Visibility.Visible : Visibility.Collapsed;
+            GameContent.Visibility       = idx == 1 ? Visibility.Visible : Visibility.Collapsed;
+            SystemContent.Visibility     = idx == 2 ? Visibility.Visible : Visibility.Collapsed;
+            NotifContent.Visibility      = idx == 3 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void PopulateLanguageComboBox()
+        {
+            _languageComboBoxReady = false;
+            LanguageComboBox.Items.Clear();
+            foreach (var id in LocalizationService.AvailableLanguageIds)
+            {
+                LanguageComboBox.Items.Add(new ComboBoxItem
+                {
+                    Content = LocalizationService.GetLanguageName(id),
+                    Tag = id
+                });
+            }
+            _languageComboBoxReady = true;
+        }
+
+        private void SelectCurrentLanguageInComboBox(int langId)
+        {
+            _languageComboBoxReady = false;
+            foreach (var item in LanguageComboBox.Items)
+            {
+                if (item is ComboBoxItem cbi && cbi.Tag is int id && id == langId)
+                {
+                    LanguageComboBox.SelectedItem = cbi;
+                    break;
+                }
+            }
+            _languageComboBoxReady = true;
+        }
+
+        private void LanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!_languageComboBoxReady) return;
+            if (LanguageComboBox.SelectedItem is ComboBoxItem cbi && cbi.Tag is int langId)
+            {
+                _pendingLanguageId = langId;
+                LangPendingBar.IsOpen = langId != _savedLanguageId;
+                SetHasChanges(true);
+            }
         }
 
         private void LoadCurrentSettings()
@@ -37,9 +189,9 @@ namespace AmongUsModManager.Pages
                 if (config.VanillaPaths != null)
                 {
                     foreach (var info in config.VanillaPaths)
-                        VanillaPaths.Add(new VanillaPathInfo 
-                        { 
-                            Name = info.Name, 
+                        VanillaPaths.Add(new VanillaPathInfo
+                        {
+                            Name = info.Name,
                             Path = info.Path,
                             Platform = info.Platform,
                             CurrentVersion = info.CurrentVersion,
@@ -52,17 +204,15 @@ namespace AmongUsModManager.Pages
                 ModDataPathTextBox.Text = config.ModDataPath ?? string.Empty;
                 StartWithWindowsToggle.IsOn = config.StartWithWindows;
                 StartMinimizedToggle.IsOn = config.StartMinimized;
+                StartMinimizedToggle.IsEnabled = config.StartWithWindows;
                 MinimizeToTrayToggle.IsOn = config.MinimizeToTray;
+                TrayHintText.Visibility = config.MinimizeToTray ? Visibility.Visible : Visibility.Collapsed;
 
-                // ログモード（RadioButton）
-                // LogAppendMode=false → 上書き or 新ファイル は LogNewFile フラグで判断
-                // 後方互換: LogAppendMode=true の場合は上書き扱いにする
                 if (config.LogAppendMode)
                     LogOverwriteRadio.IsChecked = true;
                 else
                     LogNewFileRadio.IsChecked = true;
 
-                // テーマ（RadioButton）
                 switch (config.Theme)
                 {
                     case "Dark":  ThemeDarkRadio.IsChecked  = true; break;
@@ -70,11 +220,13 @@ namespace AmongUsModManager.Pages
                     default:      ThemeDefaultRadio.IsChecked = true; break;
                 }
 
-                // 通知設定
                 NotifyModUpdateToggle.IsOn  = config.NotifyModUpdate;
                 NotifyAppUpdateToggle.IsOn  = config.NotifyAppUpdate;
                 NotifyNewsToggle.IsOn       = config.NotifyNews;
 
+                SelectCurrentLanguageInComboBox(config.Language);
+                _pendingLanguageId = config.Language;
+                _savedLanguageId   = config.Language;
 
                 string platformLabel = config.Platform switch
                 {
@@ -82,10 +234,10 @@ namespace AmongUsModManager.Pages
                     "Steam"   => "Steam",
                     "MSStore" => "Microsoft Store",
                     "Itch"    => "itch.io",
-                    "Manual"  => "手動指定",
-                    _         => "未設定"
+                    "Manual"  => LocalizationService.Get("Settings_Manual"),
+                    _         => LocalizationService.Get("Settings_NotSet")
                 };
-                CurrentPlatformText.Text = $"現在のプラットフォーム: {platformLabel}";
+                CurrentPlatformText.Text = $"{LocalizationService.Get("Settings_CurrentPlatform")} {platformLabel}";
 
                 bool isEpic = config.Platform == "Epic";
                 EpicSettingsSection.Visibility   = isEpic ? Visibility.Visible : Visibility.Collapsed;
@@ -93,6 +245,9 @@ namespace AmongUsModManager.Pages
 
                 if (isEpic) RefreshEpicStatus();
 
+                AlwaysRunAsAdminToggle.IsOn = config.AlwaysRunAsAdmin;
+
+                _bulkSelectorReady = true;
                 LoadMainPlatformUI(config);
             }
         }
@@ -102,13 +257,14 @@ namespace AmongUsModManager.Pages
             int count = VanillaPathListView.SelectedItems.Count;
             SelectedFolderCountText.Text = count.ToString();
             if (count > 0)
-                StatusMessage.Text = $"📋 {count}個のフォルダを選択中...";
+                StatusMessage.Text = $"📋 {count}{LocalizationService.Get("Settings_SelectedCount")}...";
             else
                 StatusMessage.Text = "";
         }
 
         private void BulkPlatformSelector_Changed(object sender, SelectionChangedEventArgs e)
         {
+            if (!_bulkSelectorReady) return;
             if (sender is not ComboBox cmb) return;
             string selectedTag = (cmb.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "";
 
@@ -117,7 +273,7 @@ namespace AmongUsModManager.Pages
             int selectedCount = VanillaPathListView.SelectedItems.Count;
             if (selectedCount == 0)
             {
-                StatusMessage.Text = "❌ フォルダが選択されていません";
+                StatusMessage.Text = "❌ " + LocalizationService.Get("Settings_SelectPlatform");
                 StatusMessage.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 192, 0, 0));
                 cmb.SelectedIndex = 0;
                 return;
@@ -128,21 +284,19 @@ namespace AmongUsModManager.Pages
                 item.Platform = selectedTag;
             }
 
-            // 設定を即座に保存
             ExecuteSave();
 
-            // プラットフォーム名を表示
             string platformLabel = selectedTag switch
             {
                 "Steam" => "Steam",
                 "Epic" => "Epic Games",
                 "MSStore" => "Microsoft Store",
                 "Itch" => "itch.io",
-                "Manual" => "手動指定",
+                "Manual" => LocalizationService.Get("Settings_Manual"),
                 _ => selectedTag
             };
 
-            StatusMessage.Text = $"✅ {selectedCount}個のフォルダを「{platformLabel}」に設定しました";
+            StatusMessage.Text = $"✅ {selectedCount}{LocalizationService.Get("Settings_SelectedCount")}「{platformLabel}」";
             StatusMessage.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 128, 0));
 
             cmb.SelectedIndex = 0;
@@ -150,31 +304,28 @@ namespace AmongUsModManager.Pages
             SelectedFolderCountText.Text = "0";
         }
 
-        // ComboBox での個別プラットフォーム変更時に即座に保存
         private void PlatformComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is not ComboBox cmb) return;
 
-            // DataContextから対応する VanillaPathInfo を取得
-            if (cmb.DataContext is VanillaPathInfo mod && cmb.SelectedItem is string platform)
+            string platform = (cmb.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "";
+            if (cmb.DataContext is VanillaPathInfo mod)
             {
                 mod.Platform = platform;
 
-                // 即座に設定を保存
                 ExecuteSave();
 
-                // ステータスを表示
                 string platformLabel = platform switch
                 {
                     "Steam" => "Steam",
                     "Epic" => "Epic Games",
                     "MSStore" => "Microsoft Store",
                     "Itch" => "itch.io",
-                    "Manual" => "手動指定",
-                    _ => "なし"
+                    "Manual" => LocalizationService.Get("Settings_Manual"),
+                    _ => LocalizationService.Get("Settings_NotSet")
                 };
 
-                StatusMessage.Text = $"✅ 「{mod.Name}」のプラットフォームを「{platformLabel}」に設定しました";
+                StatusMessage.Text = $"✅ 「{mod.Name}」→「{platformLabel}」";
                 StatusMessage.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 128, 0));
             }
         }
@@ -197,9 +348,9 @@ namespace AmongUsModManager.Pages
                 "Epic"    => "Epic Games",
                 "MSStore" => "Microsoft Store",
                 "Itch"    => "itch.io",
-                _         => "未設定"
+                _         => LocalizationService.Get("Settings_NotSet")
             };
-            MainPlatformIcon.Glyph = current == "Epic" ? "\uE83B" : "\uE7FC";
+            MainPlatformIcon.Glyph = current == "Epic" ? "" : "";
 
             PlatformSwitchPanel.Children.Clear();
             PlatformSwitchHint.Visibility = Visibility.Collapsed;
@@ -209,7 +360,9 @@ namespace AmongUsModManager.Pages
                 bool isCurrent = tag == current;
                 var btn = new Button
                 {
-                    Content = isCurrent ? $"✅ {label}（現在）" : $"{label} に変更",
+                    Content = isCurrent
+                        ? string.Format(LocalizationService.Get("Settings_CurrentPlatformBtn"), label)
+                        : string.Format(LocalizationService.Get("Settings_SwitchPlatformBtn"), label),
                     IsEnabled = !isCurrent,
                     Tag = tag,
                     Padding = new Microsoft.UI.Xaml.Thickness(14, 8, 14, 8),
@@ -234,7 +387,6 @@ namespace AmongUsModManager.Pages
             ConfigService.Save(config);
             LogService.Info("SettingsPage", $"メインプラットフォーム切り替え: {tag}");
 
-            // Epic設定セクションの表示を更新
             EpicSettingsSection.Visibility = tag == "Epic" ? Visibility.Visible : Visibility.Collapsed;
             if (tag == "Epic") RefreshEpicStatus();
 
@@ -249,14 +401,14 @@ namespace AmongUsModManager.Pages
 
             if (loggedIn)
             {
-                EpicStatusText.Text      = $"✅ ログイン済み — {config.EpicDisplayName}（Epic Games Launcher 不要）";
-                EpicStatusIcon.Glyph     = "\uE73E";
+                EpicStatusText.Text      = "✅ " + string.Format(LocalizationService.Get("Account_EpicLoggedIn"), config.EpicDisplayName) + " " + LocalizationService.Get("Settings_EpicNoLauncherNeeded");
+                EpicStatusIcon.Glyph     = "";
                 EpicStatusIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.SeaGreen);
             }
             else
             {
-                EpicStatusText.Text      = "❌ 未ログイン — アカウントページでログインしてください";
-                EpicStatusIcon.Glyph     = "\uE711";
+                EpicStatusText.Text      = "❌ " + LocalizationService.Get("Account_EpicNotLoggedIn");
+                EpicStatusIcon.Glyph     = "";
                 EpicStatusIcon.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Tomato);
             }
         }
@@ -282,6 +434,14 @@ namespace AmongUsModManager.Pages
             LogService.Info("SettingsPage", $"EpicLaunchViaLauncher: {config.EpicLaunchViaLauncher}");
         }
 
+        private void AlwaysRunAsAdminToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            var config = ConfigService.Load();
+            config.AlwaysRunAsAdmin = AlwaysRunAsAdminToggle.IsOn;
+            ConfigService.Save(config);
+            LogService.Info("SettingsPage", $"AlwaysRunAsAdmin: {config.AlwaysRunAsAdmin}");
+        }
+
         public bool HasUnsavedChanges()
         {
             var config = ConfigService.Load();
@@ -298,7 +458,7 @@ namespace AmongUsModManager.Pages
 
             if (ModDataPathTextBox.Text != (config.ModDataPath ?? string.Empty)) return true;
 
-            return false;
+            return _hasChanges;
         }
 
         public void ShowUnsavedWarning(string tag)
@@ -318,8 +478,9 @@ namespace AmongUsModManager.Pages
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             ExecuteSave();
-            StatusMessage.Text = "✅ 設定を保存しました！";
+            StatusMessage.Text = LocalizationService.Get("Settings_Saved");
             StatusMessage.Foreground = new Microsoft.UI.Xaml.Media.SolidColorBrush(Windows.UI.Color.FromArgb(255, 0, 128, 0));
+            SetHasChanges(false);
         }
 
         private void ExecuteSave()
@@ -332,24 +493,27 @@ namespace AmongUsModManager.Pages
             config.StartMinimized   = StartMinimizedToggle.IsOn;
             config.MinimizeToTray   = MinimizeToTrayToggle.IsOn;
 
-            // ログモード: 上書き=false(追記OFF)、新ファイル=false+LogNewFile
-            // LogAppendMode は廃止方向だが後方互換で上書き時true/新ファイル時false
             config.LogAppendMode = LogOverwriteRadio.IsChecked == true;
 
-            // テーマ
             config.Theme = ThemeDarkRadio.IsChecked  == true ? "Dark"
                          : ThemeLightRadio.IsChecked == true ? "Light"
                          : "Default";
 
-            // 通知設定
             config.NotifyModUpdate = NotifyModUpdateToggle.IsOn;
             config.NotifyAppUpdate = NotifyAppUpdateToggle.IsOn;
             config.NotifyNews      = NotifyNewsToggle.IsOn;
 
+            if (_pendingLanguageId >= 0)
+            {
+                config.Language  = _pendingLanguageId;
+                _savedLanguageId = _pendingLanguageId;
+                LocalizationService.SetLanguage(_pendingLanguageId);
+                LangPendingBar.IsOpen = false;
+            }
+
             ConfigService.Save(config);
             ApplyStartupSetting(config.StartWithWindows);
 
-            // テーマをリアルタイム反映
             if (App.MainWindowInstance is MainWindow mw)
                 mw.ReapplyTheme();
 
@@ -376,7 +540,16 @@ namespace AmongUsModManager.Pages
             catch { }
         }
 
-        private void StartWithWindowsToggle_Toggled(object sender, RoutedEventArgs e) { }
+        private void StartWithWindowsToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            StartMinimizedToggle.IsEnabled = StartWithWindowsToggle.IsOn;
+            SetHasChanges(true);
+        }
+
+        private void StartMinimizedToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            SetHasChanges(true);
+        }
 
         private async Task<StorageFolder?> SelectFolder()
         {
@@ -399,7 +572,7 @@ namespace AmongUsModManager.Pages
         {
             DetectedPaths.Clear();
             AddAllButton.IsEnabled = false;
-            StatusMessage.Text = "スキャン中...";
+            StatusMessage.Text = LocalizationService.Get("Common_Loading");
             string targetPath = ScanTargetTextBox.Text;
 
             var foundPaths = await Task.Run(() =>
@@ -420,7 +593,7 @@ namespace AmongUsModManager.Pages
                 if (!VanillaPaths.Any(v => v.Path.Equals(path, StringComparison.OrdinalIgnoreCase)))
                     DetectedPaths.Add(path);
             }
-            StatusMessage.Text = $"{DetectedPaths.Count} 件見つかりました。";
+            StatusMessage.Text = $"{DetectedPaths.Count} " + LocalizationService.Get("Common_Success");
             AddAllButton.IsEnabled = DetectedPaths.Count > 0;
         }
 
@@ -446,6 +619,7 @@ namespace AmongUsModManager.Pages
                 VanillaPaths.Add(new VanillaPathInfo { Name = Path.GetFileName(path), Path = path });
                 DetectedPaths.Remove(path);
                 AddAllButton.IsEnabled = DetectedPaths.Count > 0;
+                SetHasChanges(true);
             }
         }
 
@@ -455,24 +629,39 @@ namespace AmongUsModManager.Pages
                 VanillaPaths.Add(new VanillaPathInfo { Name = Path.GetFileName(path), Path = path });
             DetectedPaths.Clear();
             AddAllButton.IsEnabled = false;
+            SetHasChanges(true);
         }
 
         private void RemovePath_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button btn && btn.DataContext is VanillaPathInfo info)
+            {
                 VanillaPaths.Remove(info);
+                SetHasChanges(true);
+            }
         }
 
-        private void LogMode_Checked(object sender, RoutedEventArgs e) { }
-        private void Theme_Checked(object sender, RoutedEventArgs e) { }
-        private void NotifyToggle_Toggled(object sender, RoutedEventArgs e) { }
+        private void LogMode_Checked(object sender, RoutedEventArgs e)
+        {
+            SetHasChanges(true);
+        }
+
+        private void Theme_Checked(object sender, RoutedEventArgs e)
+        {
+            SetHasChanges(true);
+        }
+
+        private void NotifyToggle_Toggled(object sender, RoutedEventArgs e)
+        {
+            SetHasChanges(true);
+        }
 
         private void MinimizeToTrayToggle_Toggled(object sender, RoutedEventArgs e)
         {
+            TrayHintText.Visibility = MinimizeToTrayToggle.IsOn ? Visibility.Visible : Visibility.Collapsed;
             var config = ConfigService.Load();
             config.MinimizeToTray = MinimizeToTrayToggle.IsOn;
             ConfigService.Save(config);
-            // MainWindowにトレイ設定を通知
             if (App.MainWindowInstance is MainWindow mw)
                 mw.UpdateTrayBehavior(MinimizeToTrayToggle.IsOn);
         }
@@ -480,9 +669,11 @@ namespace AmongUsModManager.Pages
         private async void ChangeModPath_Click(object sender, RoutedEventArgs e)
         {
             var folder = await SelectFolder();
-            if (folder != null) ModDataPathTextBox.Text = folder.Path;
+            if (folder != null)
+            {
+                ModDataPathTextBox.Text = folder.Path;
+                SetHasChanges(true);
+            }
         }
-
-       
     }
 }
