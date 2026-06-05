@@ -1,6 +1,5 @@
 ﻿using AmongUsModManager.Models;
 using AmongUsModManager.Models.Services;
-using AmongUsModManager.Services;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -11,6 +10,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using Windows.Storage.Pickers;
 
@@ -173,7 +174,15 @@ namespace AmongUsModManager.Pages
             this.InitializeComponent();
             _httpClient.DefaultRequestHeaders.Add("User-Agent", "AmongUsModManager-App");
             ModGridView.ItemsSource = SupportedMods;
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
             LogService.Info("ModInstallPage", "ページ初期化完了");
+        }
+
+        private void ApplyStrings()
+        {
+            ModInstallPageTitle.Text = LocalizationService.Get("Nav_ModInstall");
         }
 
         private void LayoutToggle_Checked(object sender, RoutedEventArgs e)
@@ -562,6 +571,7 @@ namespace AmongUsModManager.Pages
                 string targetDir = Path.Combine(config.ModDataPath, InstallFolderName.Text);
                 if (Directory.Exists(targetDir)) Directory.Delete(targetDir, true);
                 Directory.CreateDirectory(targetDir);
+                GrantUsersFullControl(targetDir);
 
                 ShowStatus("本体をコピー中...");
                 await Task.Run(() => CopyDirectory(config.GameInstallPath, targetDir));
@@ -611,9 +621,58 @@ namespace AmongUsModManager.Pages
                 _installProgressDialog.Hide();
                 await ShowPostInstallSetup(newMod, shareCode);
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                LogService.Error("ModInstallPage", "インストール中にエラー発生", ex);
+                _installProgressDialog?.Hide();
+                ShowStatus($"エラー: 管理者権限が必要です");
+
+                var alwaysCheck = new CheckBox
+                {
+                    Content = "常に管理者として起動する",
+                    IsChecked = false,
+                    Margin = new Microsoft.UI.Xaml.Thickness(0, 12, 0, 0),
+                };
+                var panel = new StackPanel();
+                panel.Children.Add(new TextBlock
+                {
+                    Text = $"インストール先 ({config.ModDataPath}) への書き込みには管理者権限が必要です。\n\n管理者として再起動しますか？",
+                    TextWrapping = Microsoft.UI.Xaml.TextWrapping.Wrap,
+                });
+                panel.Children.Add(alwaysCheck);
+
+                var dialog = new ContentDialog
+                {
+                    Title = "管理者権限が必要です",
+                    Content = panel,
+                    PrimaryButtonText = "再起動する",
+                    CloseButtonText = "キャンセル",
+                    DefaultButton = ContentDialogButton.Primary,
+                    XamlRoot = this.XamlRoot,
+                };
+                if (await dialog.ShowAsync() == ContentDialogResult.Primary)
+                {
+                    if (alwaysCheck.IsChecked == true)
+                    {
+                        var cfg = ConfigService.Load();
+                        cfg.AlwaysRunAsAdmin = true;
+                        ConfigService.Save(cfg);
+                    }
+                    var psi = new System.Diagnostics.ProcessStartInfo(
+                        System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName)
+                    {
+                        UseShellExecute = true,
+                        Verb = "runas",
+                    };
+                    try { System.Diagnostics.Process.Start(psi); }
+                    catch { return; }
+                    Application.Current.Exit();
+                }
+            }
             catch (Exception ex)
             {
                 LogService.Error("ModInstallPage", "インストール中にエラー発生", ex);
+                _installProgressDialog?.Hide();
                 ShowStatus($"エラー: {ex.Message}");
             }
         }
@@ -942,6 +1001,34 @@ namespace AmongUsModManager.Pages
         {
             LogService.Warn("ModInstallPage", $"エラーダイアログ表示: {msg}");
             await new ContentDialog { Title = "エラー", Content = msg, CloseButtonText = "OK", XamlRoot = this.XamlRoot }.ShowAsync();
+        }
+
+        /// <summary>
+        /// Program Files 等の管理者作成フォルダに対して、
+        /// Usersグループへのフルコントロールを付与する（サブフォルダ・ファイル含む）。
+        /// BepInEx が非管理者プロセスとして起動した際にログを書けるようにするため必要。
+        /// </summary>
+        internal static void GrantUsersFullControl(string dirPath)
+        {
+            try
+            {
+                var dirInfo = new DirectoryInfo(dirPath);
+                var acl = dirInfo.GetAccessControl();
+                var usersSid = new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null);
+                var rule = new FileSystemAccessRule(
+                    usersSid,
+                    FileSystemRights.FullControl,
+                    InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
+                    PropagationFlags.None,
+                    AccessControlType.Allow);
+                acl.AddAccessRule(rule);
+                dirInfo.SetAccessControl(acl);
+                LogService.Info("ModInstallPage", $"Usersグループにフルコントロールを付与: {dirPath}");
+            }
+            catch (Exception ex)
+            {
+                LogService.Warn("ModInstallPage", $"ACL設定失敗（管理者でない場合は正常）: {ex.Message}");
+            }
         }
 
         private void CopyDirectory(string source, string dest)

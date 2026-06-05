@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="AmongUsModManager.Pages.ModInstallPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -23,7 +23,7 @@
 
         <StackPanel Spacing="10" Margin="0,0,0,16">
             <Grid>
-                <TextBlock Text="Modインストール" FontSize="24" FontWeight="Bold"
+                <TextBlock x:Name="ModInstallPageTitle" Text="Modインストール" FontSize="24" FontWeight="Bold"
                            VerticalAlignment="Center"/>
                 <StackPanel Orientation="Horizontal" Spacing="6"
                             HorizontalAlignment="Right" VerticalAlignment="Center">
