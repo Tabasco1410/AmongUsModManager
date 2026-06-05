@@ -13,7 +13,6 @@ using Microsoft.UI.Xaml.Media;
 using Windows.Storage.Pickers;
 using AmongUsModManager.Models;
 using AmongUsModManager.Models.Services;
-using AmongUsModManager.Services;
 
 namespace AmongUsModManager.Pages
 {
@@ -50,6 +49,9 @@ namespace AmongUsModManager.Pages
         public HomePage()
         {
             this.InitializeComponent();
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
             LogService.Debug("HomePage", "ホームページを初期化しています");
 
 
@@ -59,6 +61,85 @@ namespace AmongUsModManager.Pages
                 UpdateCacheStatusUI();
                 UpdateReleaseInfoCacheUI();
             };
+        }
+
+        private void ApplyStrings()
+        {
+            HomePageTitle.Text            = LocalizationService.Get("Home_Title");
+            RateLimitBar.Title            = LocalizationService.Get("Home_RateLimitTitle");
+            RateLimitDesc1.Text           = LocalizationService.Get("Home_RateLimitDesc1");
+            RateLimitDesc2.Text           = LocalizationService.Get("Home_RateLimitDesc2");
+            LocalInfoBar.Title            = LocalizationService.Get("Home_LocalInfoBarTitle");
+            LocalInfoBarButton.Content    = LocalizationService.Get("Home_LocalInfoBarRegister");
+            LaunchSectionTitle.Text       = LocalizationService.Get("Home_LaunchTitle");
+            ModSelector.PlaceholderText   = LocalizationService.Get("Home_ModSelectorPlaceholder");
+            OpenFolderBtn.Content         = LocalizationService.Get("Home_OpenFolder");
+            LaunchBtn.Content             = LocalizationService.Get("Home_LaunchBtn");
+            ReleaseSectionTitle.Text      = LocalizationService.Get("Home_ReleaseSectionTitle");
+            ReleaseInfoRefreshBtn.Content = LocalizationService.Get("Home_ForceRefresh");
+            ToolTipService.SetToolTip(ReleaseInfoRefreshBtn, LocalizationService.Get("Home_ForceRefreshTooltip"));
+            ReleaseEmptyText.Text         = LocalizationService.Get("Home_ReleaseEmpty");
+            AllReleaseSectionTitle.Text   = LocalizationService.Get("Home_AllReleaseSectionTitle");
+            AllReleaseRefreshBtn.Content  = LocalizationService.Get("Home_ForceRefresh");
+            ToolTipService.SetToolTip(AllReleaseRefreshBtn, LocalizationService.Get("Home_AllForceRefreshTooltip"));
+            AllReleaseModFilter.PlaceholderText  = LocalizationService.Get("Home_FilterByMod");
+            AllReleaseLatestOnly.Content         = LocalizationService.Get("Home_LatestOnly");
+            AllReleasePeriodFilter.PlaceholderText = LocalizationService.Get("Home_FilterByPeriod");
+            PageSizeLabel.Text            = LocalizationService.Get("Home_PageSizeLabel");
+            AllReleaseEmptyText.Text      = LocalizationService.Get("Home_AllReleaseLoading");
+            HomeNewsSectionTitle.Text     = LocalizationService.Get("Home_NewsSectionTitle");
+            HomeNewsSubtitle.Text         = LocalizationService.Get("Home_NewsSubtitle");
+            MarkAllReadBtn.Content        = LocalizationService.Get("Home_MarkAllRead");
+            NewsEmptyText.Text            = LocalizationService.Get("Home_NewsEmpty");
+            QuickInstallTitle.Text        = LocalizationService.Get("Home_QuickInstallTitle");
+            QuickInstallSubtitle.Text     = LocalizationService.Get("Home_QuickInstallSubtitle");
+            FromFileText.Text             = LocalizationService.Get("Home_FromFile");
+            FromCodeText.Text             = LocalizationService.Get("Home_FromCode");
+            LastMethodText.Text           = LocalizationService.Get("Home_LastMethod");
+            UpdateProgressDialog.CloseButtonText = LocalizationService.Get("Common_Close");
+            ShareCodeDialog.Title             = LocalizationService.Get("Home_ShareCodeDialogTitle");
+            ShareCodeDialog.PrimaryButtonText = LocalizationService.Get("Library_Install");
+            ShareCodeDialog.CloseButtonText   = LocalizationService.Get("Common_Cancel");
+            ShareCodeDesc.Text                = LocalizationService.Get("Home_ShareCodeDesc");
+            ShareCodeBox.Header               = LocalizationService.Get("Home_ShareCodeHeader");
+            ShareCodeBox.PlaceholderText      = LocalizationService.Get("Home_ShareCodePlaceholder");
+            AppUpdateDialog.Title                  = LocalizationService.Get("Home_AppUpdateTitle");
+            AppUpdateDialog.PrimaryButtonText      = LocalizationService.Get("Home_AppUpdateDownload");
+            AppUpdateDialog.SecondaryButtonText    = LocalizationService.Get("Home_AppUpdateSkip");
+            AppUpdateDialog.CloseButtonText        = LocalizationService.Get("Home_AppUpdateLater");
+            AppUpdateChangelogBar.Title   = LocalizationService.Get("Home_AppUpdateChangelog");
+            AppUpdateChangelogBar.Message = LocalizationService.Get("Home_AppUpdateChangelogMsg");
+            RefreshFilterComboBoxes();
+        }
+
+        private void RefreshFilterComboBoxes()
+        {
+            int sortSel = AllReleaseSortFilter.SelectedIndex;
+            AllReleaseSortFilter.Items.Clear();
+            AllReleaseSortFilter.Items.Add(new ComboBoxItem { Content = LocalizationService.Get("Home_SortNewest"), Tag = "newest" });
+            AllReleaseSortFilter.Items.Add(new ComboBoxItem { Content = LocalizationService.Get("Home_SortOldest"), Tag = "oldest" });
+            AllReleaseSortFilter.Items.Add(new ComboBoxItem { Content = LocalizationService.Get("Home_SortByName"), Tag = "name" });
+            AllReleaseSortFilter.SelectedIndex = sortSel >= 0 ? sortSel : 0;
+
+            int periodSel = AllReleasePeriodFilter.SelectedIndex;
+            AllReleasePeriodFilter.Items.Clear();
+            AllReleasePeriodFilter.Items.Add(new ComboBoxItem { Content = LocalizationService.Get("Home_PeriodAll"),      Tag = "all",     IsSelected = true });
+            AllReleasePeriodFilter.Items.Add(new ComboBoxItem { Content = LocalizationService.Get("Home_PeriodToday"),    Tag = "today" });
+            AllReleasePeriodFilter.Items.Add(new ComboBoxItem { Content = LocalizationService.Get("Home_PeriodWeek"),     Tag = "week" });
+            AllReleasePeriodFilter.Items.Add(new ComboBoxItem { Content = LocalizationService.Get("Home_PeriodMonth"),    Tag = "month" });
+            AllReleasePeriodFilter.Items.Add(new ComboBoxItem { Content = LocalizationService.Get("Home_Period3Months"),  Tag = "3months" });
+            AllReleasePeriodFilter.Items.Add(new ComboBoxItem { Content = LocalizationService.Get("Home_Period6Months"),  Tag = "6months" });
+            AllReleasePeriodFilter.Items.Add(new ComboBoxItem { Content = LocalizationService.Get("Home_Period1Year"),    Tag = "1year" });
+            AllReleasePeriodFilter.SelectedIndex = periodSel >= 0 ? periodSel : 0;
+
+            int pageSel = AllReleasePageSizeFilter.SelectedIndex;
+            AllReleasePageSizeFilter.Items.Clear();
+            AllReleasePageSizeFilter.Items.Add(new ComboBoxItem { Content = string.Format(LocalizationService.Get("Home_ItemCount"), 10),  Tag = "10",  IsSelected = true });
+            AllReleasePageSizeFilter.Items.Add(new ComboBoxItem { Content = string.Format(LocalizationService.Get("Home_ItemCount"), 20),  Tag = "20" });
+            AllReleasePageSizeFilter.Items.Add(new ComboBoxItem { Content = string.Format(LocalizationService.Get("Home_ItemCount"), 50),  Tag = "50" });
+            AllReleasePageSizeFilter.Items.Add(new ComboBoxItem { Content = string.Format(LocalizationService.Get("Home_ItemCount"), 100), Tag = "100" });
+            AllReleasePageSizeFilter.Items.Add(new ComboBoxItem { Content = LocalizationService.Get("Home_PeriodAll"), Tag = "all" });
+            AllReleasePageSizeFilter.SelectedIndex = pageSel >= 0 ? pageSel : 0;
         }
 
         protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
@@ -85,6 +166,11 @@ namespace AmongUsModManager.Pages
         private async Task InitializeAsync()
         {
             LogService.Debug("HomePage", "初期化処理を開始しています");
+
+            var cfg = ConfigService.Load();
+            if (!string.IsNullOrEmpty(cfg?.ModDataPath))
+                FolderSwapService.RecoverIfNeeded(cfg.ModDataPath);
+
             LoadModSelector();
             LoadLastMethod();
             await CheckAppUpdatePopupAsync();
@@ -103,8 +189,24 @@ namespace AmongUsModManager.Pages
             ModSelector.Items.Clear();
             if (config?.VanillaPaths != null)
                 foreach (var info in config.VanillaPaths)
-                    ModSelector.Items.Add(new ComboBoxItem { Content = info.Name, Tag = info });
-            if (ModSelector.Items.Count > 0) ModSelector.SelectedIndex = 0;
+                    ModSelector.Items.Add(MakeModSelectorItem(info, config.Platform));
+
+            bool restored = false;
+            if (!string.IsNullOrEmpty(config?.LastLaunchModPath))
+            {
+                for (int i = 0; i < ModSelector.Items.Count; i++)
+                {
+                    if (ModSelector.Items[i] is ComboBoxItem ci &&
+                        ci.Tag is VanillaPathInfo vi &&
+                        string.Equals(vi.Path, config.LastLaunchModPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        ModSelector.SelectedIndex = i;
+                        restored = true;
+                        break;
+                    }
+                }
+            }
+            if (!restored && ModSelector.Items.Count > 0) ModSelector.SelectedIndex = 0;
 
             _unregisteredFolders.Clear();
             if (!string.IsNullOrEmpty(config?.ModDataPath) && Directory.Exists(config.ModDataPath))
@@ -150,16 +252,80 @@ namespace AmongUsModManager.Pages
 
 
         private System.Diagnostics.Process? _gameProcess;
-
+        private FolderSwapState?            _currentSwapState;
 
         private const string SteamAppId = "945360";
         private const string SteamAppIdFileName = "steam_appid.txt";
+
+        private static bool HasBepInEx(string path) =>
+            File.Exists(Path.Combine(path, "BepInEx", "core", "BepInEx.Unity.IL2CPP.dll"));
+
+        private static string? FindVanillaFolder(AppConfig config, string modPath)
+        {
+            if (!string.IsNullOrEmpty(config.GameInstallPath)
+                && Directory.Exists(config.GameInstallPath)
+                && !string.Equals(config.GameInstallPath, modPath, StringComparison.OrdinalIgnoreCase)
+                && !HasBepInEx(config.GameInstallPath))
+                return config.GameInstallPath;
+
+            foreach (var v in config.VanillaPaths ?? new())
+            {
+                if (string.Equals(v.Path, modPath, StringComparison.OrdinalIgnoreCase)) continue;
+                if (!Directory.Exists(v.Path)) continue;
+                if (!File.Exists(Path.Combine(v.Path, "Among Us.exe"))) continue;
+                if (!HasBepInEx(v.Path)) return v.Path;
+            }
+            return null;
+        }
+
+        private static bool SameParentDir(string a, string b)
+        {
+            var pa = Path.GetDirectoryName(Path.GetFullPath(a));
+            var pb = Path.GetDirectoryName(Path.GetFullPath(b));
+            return string.Equals(pa, pb, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private void TryRestoreSwap()
+        {
+            if (_currentSwapState == null) return;
+            try   { FolderSwapService.RestoreFolders(_currentSwapState); }
+            catch (Exception ex) { LogService.Error("HomePage", "フォルダ復元に失敗", ex); }
+            _currentSwapState = null;
+        }
+
+        private static async Task<bool> GrantSwapPermissionsAsync(string dirPath)
+        {
+            try
+            {
+                LogService.Info("HomePage", $"icacls でアクセス権付与: {dirPath}");
+                var psi = new ProcessStartInfo
+                {
+                    FileName        = "icacls",
+                    Arguments       = $"\"{dirPath}\" /grant *S-1-5-32-545:(OI)(CI)F /T /C",
+                    UseShellExecute = true,
+                    Verb            = "runas",
+                    WindowStyle     = ProcessWindowStyle.Hidden
+                };
+                var proc = Process.Start(psi);
+                if (proc != null)
+                {
+                    await Task.Run(() => proc.WaitForExit(30000));
+                    bool ok = proc.ExitCode == 0;
+                    LogService.Info("HomePage", $"icacls 完了: ExitCode={proc.ExitCode}, 成功={ok}");
+                    return ok;
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.Warn("HomePage", $"アクセス権設定キャンセルまたは失敗: {ex.Message}");
+            }
+            return false;
+        }
 
         private async void LaunchButton_Click(object sender, RoutedEventArgs e)
         {
             if (ModSelector.SelectedItem is not ComboBoxItem item) return;
 
-            // Tag に VanillaPathInfo を持たせているので取り出す
             var selectedInfo = item.Tag as AmongUsModManager.Models.VanillaPathInfo;
             string path = selectedInfo?.Path ?? item.Tag?.ToString() ?? "";
             string exe = Path.Combine(path, "Among Us.exe");
@@ -171,7 +337,40 @@ namespace AmongUsModManager.Pages
                 return;
             }
 
-            // 選択フォルダの Platform を優先、未設定ならメインプラットフォームにフォールバック
+            if (selectedInfo != null &&
+                !string.IsNullOrEmpty(selectedInfo.GitHubOwner) &&
+                _releaseInfoCache != null)
+            {
+                var releaseItem = _releaseInfoCache.FirstOrDefault(r =>
+                    r.OriginalMod != null &&
+                    string.Equals(r.OriginalMod.Path, selectedInfo.Path, StringComparison.OrdinalIgnoreCase));
+                if (releaseItem?.CanUpdate == true)
+                {
+                    LogService.Info("HomePage", $"起動前更新確認: {selectedInfo.Name} → {releaseItem.LatestTag}");
+                    var updateDlg = new ContentDialog
+                    {
+                        Title   = LocalizationService.Get("Home_LaunchUpdateTitle"),
+                        Content = string.Format(LocalizationService.Get("Home_LaunchUpdateContent"),
+                                                selectedInfo.Name, releaseItem.LatestTag),
+                        PrimaryButtonText   = LocalizationService.Get("Home_DetailUpdate"),
+                        SecondaryButtonText = LocalizationService.Get("Home_LaunchAnyway"),
+                        CloseButtonText     = LocalizationService.Get("Common_Cancel"),
+                        DefaultButton       = ContentDialogButton.Primary,
+                        XamlRoot            = this.XamlRoot
+                    };
+                    var updateResult = await updateDlg.ShowAsync();
+                    if (updateResult == ContentDialogResult.Primary)
+                    {
+                        await PerformUpdateAsync(releaseItem);
+                        return;
+                    }
+                    else if (updateResult == ContentDialogResult.None)
+                    {
+                        return;
+                    }
+                }
+            }
+
             var config = ConfigService.Load();
             string folderPlatform = !string.IsNullOrEmpty(selectedInfo?.Platform)
                 ? selectedInfo.Platform
@@ -221,10 +420,11 @@ namespace AmongUsModManager.Pages
             LaunchBtn.Content = "⏳  起動中...";
 
 
-            string modName = item.Content?.ToString() ?? "Unknown";
+            string modName = (item.Tag as VanillaPathInfo)?.Name ?? item.Content?.ToString() ?? "Unknown";
             LaunchHistoryService.Add(modName);
             var launchConfig = ConfigService.Load();
             launchConfig.LastLaunchTime = DateTime.Now;
+            launchConfig.LastLaunchModPath = path;
             ConfigService.Save(launchConfig);
             LogService.Info("HomePage", $"起動履歴記録: {modName}");
 
@@ -232,8 +432,6 @@ namespace AmongUsModManager.Pages
             {
                 if (folderPlatform == "Epic")
                 {
-                    // ── Epic 直接起動（Rust の launch 相当）──────────────────────────
-                    // 未ログインならその場でログインを促す
                     if (!EpicLoginService.IsLoggedIn())
                     {
                         LogService.Info("HomePage", "Epic未ログイン。ログインダイアログを表示します");
@@ -287,11 +485,101 @@ namespace AmongUsModManager.Pages
                         LogService.Info("HomePage", $"Epic ログイン成功: {loginResult.DisplayName}");
                     }
 
-                    // exchange_code を取得して直接 exe に渡す（Rust と同じフロー）
+                    if (HasBepInEx(path))
+                    {
+                        string? vanillaPath = FindVanillaFolder(config, path);
+                        if (vanillaPath != null && SameParentDir(vanillaPath, path))
+                        {
+                            try
+                            {
+                                LaunchBtn.Content = "🔄  フォルダを準備中...";
+                                LogService.Info("HomePage",
+                                    $"フォルダスワップ: vanilla={vanillaPath}, mod={path}");
+                                _currentSwapState = FolderSwapService.SwapFolders(vanillaPath, path);
+                                path = _currentSwapState.SwappedModPath;
+                                exe  = Path.Combine(path, "Among Us.exe");
+                                LogService.Info("HomePage", $"スワップ後の起動パス: {path}");
+                            }
+                            catch (Exception swapEx)
+                            {
+                                LogService.Error("HomePage", "フォルダスワップ失敗", swapEx);
+                                TryRestoreSwap();
+
+                                bool isAccessDenied = swapEx is UnauthorizedAccessException
+                                    || swapEx.Message.Contains("denied", StringComparison.OrdinalIgnoreCase)
+                                    || swapEx.Message.Contains("Access", StringComparison.OrdinalIgnoreCase);
+
+                                if (isAccessDenied)
+                                {
+                                                    var permDlg = new ContentDialog
+                                    {
+                                        Title   = "フォルダの入れ替えに管理者権限が必要です",
+                                        Content = $"「{Path.GetDirectoryName(vanillaPath)}」 の操作にアクセス権が必要です。\n\n" +
+                                                  "「アクセス権を設定」を選ぶと管理者権限ダイアログが表示され、\n一度だけ権限を付与します（次回以降は不要）。\n\n" +
+                                                  "「このまま起動」はフォルダ入れ替えなしで起動します。",
+                                        PrimaryButtonText   = "アクセス権を設定",
+                                        SecondaryButtonText = "このまま起動",
+                                        CloseButtonText     = "キャンセル",
+                                        DefaultButton       = ContentDialogButton.Primary,
+                                        XamlRoot            = this.XamlRoot
+                                    };
+                                    var choice = await permDlg.ShowAsync();
+
+                                    if (choice == ContentDialogResult.Primary)
+                                    {
+                                        bool granted = await GrantSwapPermissionsAsync(Path.GetDirectoryName(vanillaPath)!);
+                                        if (granted)
+                                        {
+                                            try
+                                            {
+                                                LaunchBtn.Content = "🔄  フォルダを準備中...";
+                                                _currentSwapState = FolderSwapService.SwapFolders(vanillaPath, path);
+                                                path = _currentSwapState.SwappedModPath;
+                                                exe  = Path.Combine(path, "Among Us.exe");
+                                                LogService.Info("HomePage", $"権限付与後スワップ成功: {path}");
+                                            }
+                                            catch (Exception retryEx)
+                                            {
+                                                LogService.Error("HomePage", "権限付与後もスワップ失敗", retryEx);
+                                                TryRestoreSwap();
+                                            }
+                                        }
+                                    }
+                                    else if (choice == ContentDialogResult.None)
+                                    {
+                                        ResetLaunchButton();
+                                        return;
+                                    }
+                                }
+                                else
+                                {
+                                    ResetLaunchButton();
+                                    await new ContentDialog
+                                    {
+                                        Title           = "フォルダの準備に失敗",
+                                        Content         = $"ゲームフォルダの入れ替えに失敗しました。\n{swapEx.Message}",
+                                        CloseButtonText = "OK",
+                                        XamlRoot        = this.XamlRoot
+                                    }.ShowAsync();
+                                    return;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            LogService.Info("HomePage",
+                                vanillaPath == null
+                                    ? "バニラフォルダが見つからないためスワップをスキップ"
+                                    : "バニラとModが別フォルダ階層のためスワップをスキップ");
+                        }
+                    }
+
+                    ModInstallPage.GrantUsersFullControl(path);
                     var epicResult = await EpicLoginService.LaunchDirectAsync(exe, path);
                     if (!epicResult.Success)
                     {
                         LogService.Warn("HomePage", $"Epic 直接起動失敗: {epicResult.Error}");
+                        TryRestoreSwap();   // 起動失敗時もスワップを復元
                         ResetLaunchButton();
                         await new ContentDialog
                         {
@@ -307,8 +595,32 @@ namespace AmongUsModManager.Pages
                 }
                 else
                 {
-                    _gameProcess = Process.Start(new ProcessStartInfo(exe)
-                    { WorkingDirectory = path, UseShellExecute = true });
+                    string bepinexDll2  = Path.Combine(path, "BepInEx", "core", "BepInEx.Unity.IL2CPP.dll");
+                    string dotnetDir2   = Path.Combine(path, "dotnet");
+                    string coreclrPath2 = Path.Combine(path, "dotnet", "coreclr.dll");
+
+                    var argParts2 = new List<string>();
+                    if (File.Exists(bepinexDll2))
+                    {
+                        EpicLoginService.EnsureDoorstopIgnoreSwitch(path);
+                        argParts2.Add("--doorstop-enabled");
+                        argParts2.Add("true");
+                        argParts2.Add("--doorstop-target-assembly");
+                        argParts2.Add(EpicLoginService.QuoteArgPublic(bepinexDll2));
+                        argParts2.Add("--doorstop-clr-corlib-dir");
+                        argParts2.Add(EpicLoginService.QuoteArgPublic(dotnetDir2));
+                        argParts2.Add("--doorstop-clr-runtime-coreclr-path");
+                        argParts2.Add(EpicLoginService.QuoteArgPublic(coreclrPath2));
+                        LogService.Info("HomePage", $"Doorstop 引数を追加: {bepinexDll2}");
+                    }
+
+                    var psi = new ProcessStartInfo(exe)
+                    {
+                        WorkingDirectory = path,
+                        UseShellExecute = true,
+                        Arguments = argParts2.Count > 0 ? string.Join(" ", argParts2) : ""
+                    };
+                    _gameProcess = Process.Start(psi);
                     LogService.Info("HomePage", $"Among Us プロセス起動 PID={_gameProcess?.Id}");
                 }
 
@@ -317,38 +629,95 @@ namespace AmongUsModManager.Pages
                 if (_gameProcess != null && !_gameProcess.HasExited)
                 {
                     LaunchBtn.Content = "🎮  プレイ中";
-
-                    _ = WatchGameProcessAsync(_gameProcess);
+                    _ = WatchGameProcessAsync(_gameProcess, _currentSwapState);
                 }
                 else
                 {
-
+                    TryRestoreSwap();
                     ResetLaunchButton();
                 }
             }
             catch (Exception ex)
             {
                 LogService.Error("HomePage", "ゲーム起動エラー", ex);
+                TryRestoreSwap();
                 ResetLaunchButton();
             }
         }
 
-        private async Task WatchGameProcessAsync(System.Diagnostics.Process proc)
+        private async Task WatchGameProcessAsync(
+            System.Diagnostics.Process proc,
+            FolderSwapState? swapState = null)
         {
             try
             {
                 await Task.Run(() => proc.WaitForExit());
                 LogService.Info("HomePage", $"Among Us プロセス終了 ExitCode={proc.ExitCode}");
             }
-            catch { }
-            DispatcherQueue.TryEnqueue(ResetLaunchButton);
+            catch (Exception ex)
+            {
+                LogService.Warn("HomePage", $"プロセス監視エラー: {ex.Message}");
+            }
+            finally
+            {
+                if (swapState != null && !swapState.IsRestored)
+                {
+                    try
+                    {
+                        FolderSwapService.RestoreFolders(swapState);
+                        LogService.Info("HomePage", "ゲーム終了後にフォルダを復元しました");
+                    }
+                    catch (Exception ex)
+                    {
+                        LogService.Error("HomePage", "ゲーム終了後のフォルダ復元に失敗", ex);
+                    }
+                }
+                DispatcherQueue.TryEnqueue(ResetLaunchButton);
+            }
+        }
+
+        private static ComboBoxItem MakeModSelectorItem(VanillaPathInfo info, string fallbackPlatform)
+        {
+            string plat = !string.IsNullOrEmpty(info.Platform) ? info.Platform : fallbackPlatform;
+            string platLabel = plat switch
+            {
+                "Epic"    => "Epic",
+                "Steam"   => "Steam",
+                "MSStore" => "MS Store",
+                "Itch"    => "itch.io",
+                "Manual"  => "手動",
+                _         => ""
+            };
+
+            var nameBlock = new TextBlock
+            {
+                Text              = info.Name,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            if (string.IsNullOrEmpty(platLabel))
+                return new ComboBoxItem { Content = nameBlock, Tag = info };
+
+            var platBlock = new TextBlock
+            {
+                Text              = platLabel,
+                FontSize          = 11,
+                Opacity           = 0.5,
+                VerticalAlignment = VerticalAlignment.Center,
+                Margin            = new Microsoft.UI.Xaml.Thickness(6, 0, 0, 0)
+            };
+            var panel = new StackPanel { Orientation = Orientation.Horizontal };
+            panel.Children.Add(nameBlock);
+            panel.Children.Add(platBlock);
+            return new ComboBoxItem { Content = panel, Tag = info };
         }
 
         private void ResetLaunchButton()
         {
             LaunchBtn.IsEnabled = true;
             LaunchBtn.Content = "▶  ゲームを起動";
-            _gameProcess = null;
+            _gameProcess      = null;
+            _currentSwapState = null;
         }
 
         private async void OpenFolderButton_Click(object sender, RoutedEventArgs e)
@@ -470,11 +839,11 @@ namespace AmongUsModManager.Pages
         {
             if (_releaseInfoCachedAt == DateTime.MinValue)
             {
-                ReleaseLastUpdatedText.Text = "最終確認: --";
+                ReleaseLastUpdatedText.Text = LocalizationService.Get("Home_LastChecked");
                 ReleaseCacheStatusText.Text = "";
                 return;
             }
-            ReleaseLastUpdatedText.Text = "最終確認: " + _releaseInfoCachedAt.ToString("HH:mm:ss");
+            ReleaseLastUpdatedText.Text = string.Format(LocalizationService.Get("Home_LastCheckedAt"), _releaseInfoCachedAt.ToString("HH:mm:ss"));
             if (CacheTtl == TimeSpan.Zero)
             {
                 ReleaseCacheStatusText.Text = "（GitHub連携中・毎回更新）";
@@ -545,8 +914,9 @@ namespace AmongUsModManager.Pages
             string mdHtml = MarkdownHelper.ToHtml(item.ReleaseBody, isDark);
             await DetailBodyWebView.EnsureCoreWebView2Async();
             DetailBodyWebView.NavigateToString(mdHtml);
-            ReleaseDetailDialog.PrimaryButtonText = item.CanUpdate ? "更新する" : "";
-            ReleaseDetailDialog.SecondaryButtonText = item.CanInstall ? "インストール" : "ファイルをDL";
+            ReleaseDetailDialog.PrimaryButtonText = item.CanUpdate ? LocalizationService.Get("Home_DetailUpdate") : "";
+            ReleaseDetailDialog.SecondaryButtonText = item.CanInstall ? LocalizationService.Get("Home_DetailInstall") : LocalizationService.Get("Home_DetailFileDL");
+            ReleaseDetailDialog.CloseButtonText = LocalizationService.Get("Common_Close");
             ReleaseDetailDialog.XamlRoot = this.XamlRoot;
 
             var result = await ReleaseDetailDialog.ShowAsync();
@@ -565,8 +935,8 @@ namespace AmongUsModManager.Pages
 
         private async Task PerformUpdateAsync(ReleaseItem item)
         {
-            UpdateProgressDialog.Title = $"{item.ModName} をアップデート中";
-            UpdateStatusText.Text = "準備中...";
+            UpdateProgressDialog.Title = string.Format(LocalizationService.Get("Home_UpdatingMod"), item.ModName);
+            UpdateStatusText.Text = LocalizationService.Get("Home_UpdateReady");
             UpdateProgressBar.IsIndeterminate = true;
             UpdateProgressDialog.XamlRoot = this.XamlRoot;
             _ = UpdateProgressDialog.ShowAsync();
@@ -580,7 +950,7 @@ namespace AmongUsModManager.Pages
                 if (target != null) { target.CurrentVersion = item.LatestTag; ConfigService.Save(config); }
                 NotificationService.Push($"{item.ModName} を更新しました", $"{item.CurrentVersion} → {item.LatestTag}", NotificationKind.Update, "Library");
                 LogService.Info("HomePage", $"アップデート完了: {item.ModName}");
-                UpdateStatusText.Text = "完了しました！";
+                UpdateStatusText.Text = LocalizationService.Get("Home_UpdateDone");
                 await Task.Delay(800);
             }
             catch (Exception ex)
@@ -733,12 +1103,12 @@ namespace AmongUsModManager.Pages
         {
             if (_allReleaseCachedAt == DateTime.MinValue)
             {
-                AllReleaseLastUpdatedText.Text = "最終確認: --";
+                AllReleaseLastUpdatedText.Text = LocalizationService.Get("Home_LastChecked");
                 AllReleaseCacheStatusText.Text = "";
                 return;
             }
 
-            AllReleaseLastUpdatedText.Text = "最終確認: " + _allReleaseCachedAt.ToString("HH:mm:ss");
+            AllReleaseLastUpdatedText.Text = string.Format(LocalizationService.Get("Home_LastCheckedAt"), _allReleaseCachedAt.ToString("HH:mm:ss"));
 
             if (CacheTtl == TimeSpan.Zero)
             {
@@ -816,8 +1186,8 @@ namespace AmongUsModManager.Pages
 
             AllReleaseListView.ItemsSource = result;
             AllReleaseTotalText.Text = total == result.Count
-                ? $"全{total}件"
-                : $"{result.Count}件表示 / 全{total}件";
+                ? string.Format(LocalizationService.Get("Home_TotalCount"), total)
+                : string.Format(LocalizationService.Get("Home_TotalCountFiltered"), result.Count, total);
             AllReleaseEmptyText.Visibility = result.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
             AllReleaseEmptyText.Text = result.Count == 0 ? "該当するリリースが見つかりませんでした" : "";
         }
