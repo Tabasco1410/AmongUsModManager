@@ -87,6 +87,9 @@ namespace AmongUsModManager.Pages
             AllReleasePeriodFilter.PlaceholderText = LocalizationService.Get("Home_FilterByPeriod");
             PageSizeLabel.Text            = LocalizationService.Get("Home_PageSizeLabel");
             AllReleaseEmptyText.Text      = LocalizationService.Get("Home_AllReleaseLoading");
+            UrgentNewsBanner.Title        = LocalizationService.Get("Home_UrgentNewsTitle");
+            UrgentNewsBtn.Content         = LocalizationService.Get("Home_NewsUnreadBtn");
+            NewsUnreadBtn.Content         = LocalizationService.Get("Home_NewsUnreadBtn");
             HomeNewsSectionTitle.Text     = LocalizationService.Get("Home_NewsSectionTitle");
             HomeNewsSubtitle.Text         = LocalizationService.Get("Home_NewsSubtitle");
             MarkAllReadBtn.Content        = LocalizationService.Get("Home_MarkAllRead");
@@ -1252,24 +1255,32 @@ namespace AmongUsModManager.Pages
                 var rawList = await _http.GetFromJsonAsync<List<NewsItem>>(NewsUrl);
                 if (rawList == null) { SetNewsEmpty("お知らせはありません"); return; }
 
-                _newsItems = rawList.Select(n =>
-                {
-                    string id = string.IsNullOrEmpty(n.Id) ? $"{n.Title}_{n.Date}" : n.Id;
-                    return new NewsDisplayItem
+                _newsItems = rawList
+                    .OrderByDescending(n => n.Priority)
+                    .ThenByDescending(n => n.IsUrgent)
+                    .Select(n =>
                     {
-                        Id = id,
-                        Title = n.Title,
-                        Content = n.Content,
-                        Date = n.Date,
-                        Url = n.Url,
-                        IsRead = readIds.Contains(id),
-                        OriginalItem = n
-                    };
-                }).ToList();
+                        string id = string.IsNullOrEmpty(n.Id) ? $"{n.Title}_{n.Date}" : n.Id;
+                        return new NewsDisplayItem
+                        {
+                            Id          = id,
+                            Title       = n.Title,
+                            Content     = n.Content,
+                            Date        = n.Date,
+                            Url         = n.Url,
+                            IsRead      = readIds.Contains(id),
+                            OriginalItem = n
+                        };
+                    }).ToList();
+
+                int unreadCount  = _newsItems.Count(n => !n.IsRead);
+                int urgentUnread = _newsItems.Count(n => !n.IsRead && n.OriginalItem?.IsUrgent == true);
 
                 NewsListView.ItemsSource = _newsItems;
                 NewsEmptyText.Visibility = _newsItems.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-                LogService.Info("HomePage", $"お知らせ取得完了: {_newsItems.Count} 件, 未読: {_newsItems.Count(n => !n.IsRead)} 件");
+                LogService.Info("HomePage", $"お知らせ取得完了: {_newsItems.Count} 件, 未読: {unreadCount} 件");
+
+                ShowNewsUnreadBanners(unreadCount, urgentUnread);
             }
             catch (Exception ex)
             {
@@ -1285,6 +1296,47 @@ namespace AmongUsModManager.Pages
             NewsEmptyText.Text = message;
             NewsEmptyText.Visibility = Visibility.Visible;
         }
+
+        private void ShowNewsUnreadBanners(int unreadCount, int urgentUnread)
+        {
+            if (urgentUnread > 0)
+            {
+                var urgentItem = _newsItems.FirstOrDefault(n => !n.IsRead && n.OriginalItem?.IsUrgent == true);
+                UrgentNewsBanner.Title   = LocalizationService.Get("Home_UrgentNewsTitle");
+                UrgentNewsBanner.Message = urgentItem?.Title ?? "";
+                UrgentNewsBtn.Content    = LocalizationService.Get("Home_NewsUnreadBtn");
+                UrgentNewsBanner.IsOpen  = true;
+            }
+            else
+            {
+                UrgentNewsBanner.IsOpen = false;
+            }
+
+            bool hasRegularUnread = (unreadCount - urgentUnread) > 0;
+            if (hasRegularUnread)
+            {
+                int regularUnread = unreadCount - urgentUnread;
+                NewsUnreadBanner.Title   = string.Format(LocalizationService.Get("Home_NewsUnreadTitle"), regularUnread);
+                NewsUnreadBanner.Message = LocalizationService.Get("Home_NewsUnreadMessage");
+                NewsUnreadBtn.Content    = LocalizationService.Get("Home_NewsUnreadBtn");
+                NewsUnreadBanner.IsOpen  = true;
+            }
+            else
+            {
+                NewsUnreadBanner.IsOpen = false;
+            }
+        }
+
+        private void NewsUnreadBanner_Click(object sender, RoutedEventArgs e)
+        {
+            UrgentNewsBanner.IsOpen  = false;
+            NewsUnreadBanner.IsOpen  = false;
+            if (App.MainWindowInstance is MainWindow mw)
+                mw.NavigateToPendingPage("Notification");
+        }
+
+        private void UrgentNewsBanner_Close(InfoBar sender, object args)  => UrgentNewsBanner.IsOpen  = false;
+        private void NewsUnreadBanner_Close(InfoBar sender, object args)   => NewsUnreadBanner.IsOpen  = false;
 
 
 

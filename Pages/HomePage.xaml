@@ -53,6 +53,29 @@
                     </InfoBar.ActionButton>
                 </InfoBar>
 
+                <!-- 重要なお知らせバナー -->
+                <InfoBar x:Name="UrgentNewsBanner"
+                         IsOpen="False" IsClosable="True"
+                         Severity="Warning"
+                         CloseButtonClick="UrgentNewsBanner_Close">
+                    <InfoBar.ActionButton>
+                        <Button x:Name="UrgentNewsBtn"
+                                Click="NewsUnreadBanner_Click"
+                                Style="{StaticResource AccentButtonStyle}"/>
+                    </InfoBar.ActionButton>
+                </InfoBar>
+
+                <!-- 通常の未読お知らせバナー -->
+                <InfoBar x:Name="NewsUnreadBanner"
+                         IsOpen="False" IsClosable="True"
+                         Severity="Informational"
+                         CloseButtonClick="NewsUnreadBanner_Close">
+                    <InfoBar.ActionButton>
+                        <Button x:Name="NewsUnreadBtn"
+                                Click="NewsUnreadBanner_Click"/>
+                    </InfoBar.ActionButton>
+                </InfoBar>
+
                 
                 <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"

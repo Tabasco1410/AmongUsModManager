@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="AmongUsModManager.Pages.NotificationPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -14,19 +14,19 @@
         <models:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
     </Page.Resources>
 
-    <Grid Padding="28,20,28,28">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        
-        <Grid Grid.Row="0" Margin="0,0,0,16">
+        <!-- ヘッダー -->
+        <Grid Grid.Row="0" Padding="28,20,28,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Spacing="4">
+            <StackPanel Spacing="2">
                 <TextBlock x:Name="NotificationPageTitle" FontSize="26" FontWeight="SemiBold"/>
                 <TextBlock x:Name="SubtitleText"
                            FontSize="12"
@@ -39,90 +39,165 @@
             </StackPanel>
         </Grid>
 
-        
+        <!-- タブ -->
         <TabView Grid.Row="1"
                  TabWidthMode="Equal"
-                 IsAddTabButtonVisible="False">
+                 IsAddTabButtonVisible="False"
+                 Padding="28,8,28,28">
 
-            
+            <!-- ── お知らせタブ ── -->
             <TabViewItem x:Name="NewsTabItem" IsClosable="False">
-                <Grid>
-                    <ListView x:Name="NewsListView"
-                              SelectionMode="None"
-                              IsItemClickEnabled="True"
-                              ItemClick="NewsItem_Click">
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                <Setter Property="Padding" Value="0"/>
-                                <Setter Property="Margin" Value="0,3"/>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="local:NotificationNewsItem">
-                                <Border Padding="16,14" CornerRadius="8"
-                                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
-                                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
-                                        BorderThickness="1">
-                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Spacing="0" Padding="0,4,0,8">
 
-                                        
-                                        <Ellipse Width="9" Height="9" VerticalAlignment="Top" Margin="0,5,0,0"
-                                                 Fill="{x:Bind UnreadDotColor}"/>
+                        <!-- 重要なお知らせセクション -->
+                        <StackPanel x:Name="UrgentSection" Spacing="6" Margin="0,0,0,16">
+                            <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,4">
+                                <FontIcon Glyph="&#xE814;" FontSize="14"
+                                          Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                          VerticalAlignment="Center"/>
+                                <TextBlock x:Name="UrgentSectionLabel"
+                                           FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                           VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <ListView x:Name="UrgentNewsListView"
+                                      SelectionMode="None"
+                                      IsItemClickEnabled="True"
+                                      ItemClick="NewsItem_Click">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                        <Setter Property="Padding" Value="0"/>
+                                        <Setter Property="Margin" Value="0,3"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate x:DataType="local:NotificationNewsItem">
+                                        <Border Padding="16,14" CornerRadius="8"
+                                                Background="{ThemeResource SystemFillColorCriticalBackgroundBrush}"
+                                                BorderBrush="{ThemeResource SystemFillColorCriticalBrush}"
+                                                BorderThickness="1">
+                                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+                                                <FontIcon Glyph="&#xE814;" FontSize="18"
+                                                          Foreground="{ThemeResource SystemFillColorCriticalBrush}"
+                                                          VerticalAlignment="Top" Margin="0,2,0,0"/>
+                                                <StackPanel Grid.Column="1" Spacing="5">
+                                                    <StackPanel Orientation="Horizontal" Spacing="8">
+                                                        <TextBlock Text="{x:Bind Title}"
+                                                                   FontSize="15" FontWeight="SemiBold"
+                                                                   TextWrapping="Wrap"/>
+                                                        <Border Background="DodgerBlue" CornerRadius="8" Padding="6,1"
+                                                                Visibility="{x:Bind IsUnread, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                                VerticalAlignment="Center">
+                                                            <TextBlock Text="NEW" FontSize="10" Foreground="White" FontWeight="Bold"/>
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{x:Bind PreviewContent}"
+                                                               FontSize="13"
+                                                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                               TextWrapping="Wrap" MaxLines="2"/>
+                                                    <TextBlock Text="{x:Bind DateLabel}"
+                                                               FontSize="12"
+                                                               Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2" Spacing="6" VerticalAlignment="Center">
+                                                    <Button Content="{Binding [Notification_ViewDetail], Source={StaticResource Strings}}"
+                                                            Click="ViewDetail_Click" Tag="{x:Bind}"
+                                                            Style="{StaticResource AccentButtonStyle}"
+                                                            FontSize="13" Padding="12,6"/>
+                                                    <Button Content="{Binding [Notification_MarkRead], Source={StaticResource Strings}}"
+                                                            Click="MarkReadBtn_Click" Tag="{x:Bind}"
+                                                            FontSize="13" Padding="12,6"
+                                                            Visibility="{x:Bind IsUnread, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
 
-                                        
-                                        <StackPanel Grid.Column="1" Spacing="5">
-                                            <StackPanel Orientation="Horizontal" Spacing="8" FlowDirection="LeftToRight">
-                                                <TextBlock Text="{x:Bind Title}"
-                                                           FontSize="16" FontWeight="SemiBold"
-                                                           TextWrapping="Wrap"/>
-                                                <Border Background="DodgerBlue" CornerRadius="8" Padding="6,1"
-                                                        Visibility="{x:Bind IsUnread, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                        VerticalAlignment="Center">
-                                                    <TextBlock Text="NEW" FontSize="10" Foreground="White" FontWeight="Bold"/>
-                                                </Border>
-                                                <Border Background="SeaGreen" CornerRadius="8" Padding="6,1"
-                                                        Visibility="{x:Bind HasImages, Converter={StaticResource BoolToVisibilityConverter}}"
-                                                        VerticalAlignment="Center">
-                                                    <TextBlock Text="{Binding [Notification_HasImages], Source={StaticResource Strings}}" FontSize="10" Foreground="White"/>
-                                                </Border>
+                        <!-- 通常お知らせリスト -->
+                        <ListView x:Name="NewsListView"
+                                  SelectionMode="None"
+                                  IsItemClickEnabled="True"
+                                  ItemClick="NewsItem_Click">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    <Setter Property="Padding" Value="0"/>
+                                    <Setter Property="Margin" Value="0,3"/>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate x:DataType="local:NotificationNewsItem">
+                                    <Border Padding="16,14" CornerRadius="8"
+                                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1">
+                                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+
+                                            <Ellipse Width="9" Height="9" VerticalAlignment="Top" Margin="0,5,0,0"
+                                                     Fill="{x:Bind UnreadDotColor}"/>
+
+                                            <StackPanel Grid.Column="1" Spacing="5">
+                                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                                    <TextBlock Text="{x:Bind CategoryIcon}"
+                                                               FontSize="16" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{x:Bind Title}"
+                                                               FontSize="15" FontWeight="SemiBold"
+                                                               TextWrapping="Wrap"/>
+                                                    <Border Background="DodgerBlue" CornerRadius="8" Padding="6,1"
+                                                            Visibility="{x:Bind IsUnread, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                            VerticalAlignment="Center">
+                                                        <TextBlock Text="NEW" FontSize="10" Foreground="White" FontWeight="Bold"/>
+                                                    </Border>
+                                                    <Border Background="SeaGreen" CornerRadius="8" Padding="6,1"
+                                                            Visibility="{x:Bind HasImages, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                            VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding [Notification_HasImages], Source={StaticResource Strings}}"
+                                                                   FontSize="10" Foreground="White"/>
+                                                    </Border>
+                                                </StackPanel>
+                                                <TextBlock Text="{x:Bind PreviewContent}"
+                                                           FontSize="13"
+                                                           Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                                           TextWrapping="Wrap" MaxLines="2"
+                                                           Opacity="{x:Bind ContentOpacity}"/>
+                                                <TextBlock Text="{x:Bind DateLabel}"
+                                                           FontSize="12"
+                                                           Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
                                             </StackPanel>
-                                            <TextBlock Text="{x:Bind PreviewContent}"
-                                                       FontSize="13"
-                                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                                                       TextWrapping="Wrap" MaxLines="2"
-                                                       Opacity="{x:Bind ContentOpacity}"/>
-                                            <TextBlock Text="{x:Bind Date}"
-                                                       FontSize="12"
-                                                       Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
-                                        </StackPanel>
 
-                                        
-                                        <StackPanel Grid.Column="2" Spacing="6" VerticalAlignment="Center">
-                                            <Button Content="{Binding [Notification_ViewDetail], Source={StaticResource Strings}}"
-                                                    Click="ViewDetail_Click" Tag="{x:Bind}"
-                                                    Style="{StaticResource AccentButtonStyle}"
-                                                    FontSize="13" Padding="12,6"/>
-                                            <Button Content="{Binding [Notification_MarkRead], Source={StaticResource Strings}}"
-                                                    Click="MarkReadBtn_Click" Tag="{x:Bind}"
-                                                    FontSize="13" Padding="12,6"
-                                                    Visibility="{x:Bind IsUnread, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                                            <StackPanel Grid.Column="2" Spacing="6" VerticalAlignment="Center">
+                                                <Button Content="{Binding [Notification_ViewDetail], Source={StaticResource Strings}}"
+                                                        Click="ViewDetail_Click" Tag="{x:Bind}"
+                                                        Style="{StaticResource AccentButtonStyle}"
+                                                        FontSize="13" Padding="12,6"/>
+                                                <Button Content="{Binding [Notification_MarkRead], Source={StaticResource Strings}}"
+                                                        Click="MarkReadBtn_Click" Tag="{x:Bind}"
+                                                        FontSize="13" Padding="12,6"
+                                                        Visibility="{x:Bind IsUnread, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
 
-                    <TextBlock x:Name="NewsEmptyText"
-                               FontSize="14"
-                               Foreground="{ThemeResource TextFillColorSecondaryBrush}"
-                               HorizontalAlignment="Center" VerticalAlignment="Center"
-                               Visibility="Collapsed"/>
-                </Grid>
+                        <TextBlock x:Name="NewsEmptyText"
+                                   FontSize="14"
+                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,40,0,0"
+                                   Visibility="Collapsed"/>
+                    </StackPanel>
+                </ScrollViewer>
             </TabViewItem>
 
-            
+            <!-- ── アプリ通知タブ ── -->
             <TabViewItem IsClosable="False">
                 <TabViewItem.Header>
                     <StackPanel Orientation="Horizontal" Spacing="6">
@@ -153,7 +228,6 @@
                                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                         BorderThickness="1">
                                     <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
-                                        
                                         <Border Width="40" Height="40" CornerRadius="20"
                                                 Background="{x:Bind KindColor}"
                                                 VerticalAlignment="Center">
@@ -162,7 +236,6 @@
                                                        HorizontalAlignment="Center"
                                                        VerticalAlignment="Center"/>
                                         </Border>
-
                                         <StackPanel Grid.Column="1" Spacing="3" VerticalAlignment="Center">
                                             <TextBlock Text="{x:Bind Title}"
                                                        FontSize="13" FontWeight="SemiBold"
@@ -175,7 +248,6 @@
                                                        FontSize="11"
                                                        Foreground="{ThemeResource TextFillColorTertiaryBrush}"/>
                                         </StackPanel>
-
                                         <Ellipse Grid.Column="2" Width="8" Height="8"
                                                  Fill="{x:Bind UnreadDotColor}"
                                                  VerticalAlignment="Center"/>
