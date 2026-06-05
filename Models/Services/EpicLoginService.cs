@@ -9,7 +9,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using AmongUsModManager.Models;
-using AmongUsModManager.Services;
+using AmongUsModManager.Models.Services;
 using Windows.Security.Credentials;
 
 namespace AmongUsModManager.Models.Services
@@ -76,8 +76,6 @@ namespace AmongUsModManager.Models.Services
         public const string LauncherClientSecret = "daafbccc737745039dffe53d94fc76cf";
 
         public const string EpicAppId = "Hemomancer";
-        private const string EpicSandboxId = "0a18471f93d448e897a7f7de9e39ae8e";
-        private const string EpicDeploymentId = "a5aa686defa64131b1edc48c31b40d1a";
 
         private const string UserAgent =
             "UELauncher/11.0.1-14907503+++Portal+Release-Live Windows/10.0.19041.1.256.64bit";
@@ -303,26 +301,62 @@ namespace AmongUsModManager.Models.Services
             if (string.IsNullOrEmpty(exchangeCode))
                 return LaunchResult.Fail("exchange_code の取得に失敗しました。\n再ログインしてください。");
 
-            var session = LoadSession()!;
-            string[] argParts =
-            {
-                $"-epicapp={EpicAppId}", "-epicenv=Prod", "-EpicPortal",
-                $"-epicusername={Quote(session.DisplayName ?? "")}",
-                $"-epicuserid={session.AccountId}",
-                "-epiclocale=ja",
-                $"-epicsandboxid={EpicSandboxId}",
-                $"-epicdeploymentid={EpicDeploymentId}",
-                "-AUTH_LOGIN=unused",
-                $"-AUTH_PASSWORD={exchangeCode}",
-                "-AUTH_TYPE=exchangecode",
-            };
-            string args = string.Join(" ", argParts);
-            LogService.Info("EpicLoginService",
-                $"Epic 直接起動: {exePath}\n引数(exchange_code 省略): " + args.Replace(exchangeCode, "***"));
+            LogService.Info("EpicLoginService", $"Epic 起動: {exePath}");
             try
             {
-                var proc = Process.Start(new ProcessStartInfo(exePath, args)
-                { WorkingDirectory = workDir, UseShellExecute = false });
+                var session2 = LoadSession()!;
+
+                // BepInEx/Doorstop パス
+                string bepinexDll  = Path.Combine(workDir, "BepInEx", "core", "BepInEx.Unity.IL2CPP.dll");
+                string dotnetDir   = Path.Combine(workDir, "dotnet");
+                string coreclrPath = Path.Combine(workDir, "dotnet", "coreclr.dll");
+
+                // UseShellExecute=true でシェル経由起動
+                // → MSIX パッケージコンテキストを子プロセスに継承させず、
+                //   winhttp.dll (Doorstop プロキシ) が確実にゲームフォルダから読み込まれるようにする
+                var argParts = new List<string>
+                {
+                    "-AUTH_LOGIN=unused",
+                    $"-AUTH_PASSWORD={exchangeCode}",
+                    "-AUTH_TYPE=exchangecode",
+                    $"-epicapp={EpicAppId}",
+                    "-epicenv=Prod",
+                    BuildArg("-epicusername=", session2.DisplayName ?? ""),
+                    $"-epicuserid={session2.AccountId}",
+                    "-epiclocale=ja"
+                };
+
+                if (File.Exists(bepinexDll))
+                {
+                    // doorstop_config.ini の ignore_disable_switch を true にして BepInEx を確実に有効化
+                    EnsureDoorstopIgnoreSwitch(workDir);
+
+                    argParts.Add("--doorstop-enabled");
+                    argParts.Add("true");
+                    argParts.Add("--doorstop-target-assembly");
+                    argParts.Add(QuoteArg(bepinexDll));
+                    argParts.Add("--doorstop-clr-corlib-dir");
+                    argParts.Add(QuoteArg(dotnetDir));
+                    argParts.Add("--doorstop-clr-runtime-coreclr-path");
+                    argParts.Add(QuoteArg(coreclrPath));
+                    LogService.Info("EpicLoginService", $"Doorstop 引数を追加: {bepinexDll}");
+                }
+                else
+                {
+                    LogService.Warn("EpicLoginService", $"BepInEx が見つかりません（Doorstop 引数なし）: {bepinexDll}");
+                }
+
+                string arguments = string.Join(" ", argParts);
+                LogService.Info("EpicLoginService", $"起動コマンドライン引数: {arguments}");
+
+                var psi = new ProcessStartInfo(exePath)
+                {
+                    WorkingDirectory = workDir,
+                    UseShellExecute = true,
+                    Arguments = arguments
+                };
+
+                var proc = Process.Start(psi);
                 return LaunchResult.Ok(proc);
             }
             catch (Exception ex)
@@ -330,6 +364,20 @@ namespace AmongUsModManager.Models.Services
                 LogService.Error("EpicLoginService", "Among Us 起動エラー", ex);
                 return LaunchResult.Fail($"起動に失敗しました: {ex.Message}");
             }
+        }
+
+        /// <summary>スペースを含む場合にダブルクォートで囲む（外部からも使用可能）</summary>
+        public static string QuoteArgPublic(string s) => QuoteArg(s);
+
+        /// <summary>スペースを含む場合にダブルクォートで囲む</summary>
+        private static string QuoteArg(string s)
+            => s.Contains(' ') ? $"\"{s}\"" : s;
+
+        /// <summary>"-flag=value" 形式で、value にスペースがあれば全体をクォートする</summary>
+        private static string BuildArg(string flag, string value)
+        {
+            string combined = flag + value;
+            return combined.Contains(' ') ? $"\"{combined}\"" : combined;
         }
 
         // ─── ログアウト ───────────────────────────────────────────────────
@@ -408,6 +456,36 @@ namespace AmongUsModManager.Models.Services
             };
         }
 
+        /// <summary>
+        /// doorstop_config.ini の ignore_disable_switch を true にして
+        /// DOORSTOP_DISABLE 環境変数があっても BepInEx が必ず起動するよう設定する。
+        /// </summary>
+        internal static void EnsureDoorstopIgnoreSwitch(string gameDir)
+        {
+            string iniPath = Path.Combine(gameDir, "doorstop_config.ini");
+            if (!File.Exists(iniPath)) return;
+            try
+            {
+                string content = File.ReadAllText(iniPath);
+                // 大文字小文字を問わず false → true に書き換える
+                string updated = System.Text.RegularExpressions.Regex.Replace(
+                    content,
+                    @"ignore_disable_switch\s*=\s*false",
+                    "ignore_disable_switch = true",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                if (updated != content)
+                {
+                    File.WriteAllText(iniPath, updated, Encoding.UTF8);
+                    LogService.Info("EpicLoginService",
+                        $"doorstop_config.ini: ignore_disable_switch → true ({iniPath})");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService.Warn("EpicLoginService", $"doorstop_config.ini 更新失敗: {ex.Message}");
+            }
+        }
+
         private static void TrySaveFileOnly(EpicSession session)
         {
             try
@@ -420,7 +498,6 @@ namespace AmongUsModManager.Models.Services
             catch { }
         }
 
-        private static string Quote(string s) => s.Contains(' ') ? $"\"{s}\"" : s;
     }
 
     public class EpicLoginResult
