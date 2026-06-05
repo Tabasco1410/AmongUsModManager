@@ -29,6 +29,8 @@ namespace AmongUsModManager.Pages
 
         private const string DiscordSupportUrl = "https://discord.gg/nFhkYmf9At";
 
+        private bool _langComboReady = false;
+
         private static readonly Dictionary<string, string> PlatformHints = new()
         {
             ["Steam"] = "Steam の「ライブラリ」→「Among Us」を右クリック →「管理」→「ローカルファイルを閲覧」でフォルダを確認できます。",
@@ -41,7 +43,68 @@ namespace AmongUsModManager.Pages
         public SetupPage()
         {
             this.InitializeComponent();
+            PopulateSetupLanguageComboBox();
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
             LogService.Info("SetupPage", "セットアップページ初期化");
+        }
+
+        private void ApplyStrings()
+        {
+            WelcomeTitle.Text    = LocalizationService.Get("Setup_Welcome");
+            WelcomeSubtitle.Text = LocalizationService.Get("Setup_Subtitle");
+            LangStepLabel.Text   = LocalizationService.Get("Setup_LangStep");
+            PlatformStepLabel.Text = LocalizationService.Get("Setup_PlatformStep");
+            FolderStepLabel.Text   = LocalizationService.Get("Setup_FolderStep");
+
+            AutoDetectButton.Content      = LocalizationService.Get("Setup_AutoDetect");
+            EpicLoginInSetupBtn.Content   = LocalizationService.Get("Setup_EpicLogin");
+            GitHubLoginBtn.Content        = LocalizationService.Get("Setup_GitHubLogin");
+            GitHubCancelBtn.Content       = LocalizationService.Get("Setup_Cancel");
+            GitHubCopyCodeBtn.Content     = LocalizationService.Get("Setup_CopyCode");
+            RegisterExistingModBtn.Content = LocalizationService.Get("Setup_RegisterExisting");
+        }
+
+        private void PopulateSetupLanguageComboBox()
+        {
+            _langComboReady = false;
+            SetupLanguageComboBox.Items.Clear();
+
+            var config = ConfigService.Load();
+            int currentLang = config.Language;
+
+            foreach (var id in LocalizationService.AvailableLanguageIds)
+            {
+                var item = new ComboBoxItem
+                {
+                    Content = LocalizationService.GetLanguageName(id),
+                    Tag = id
+                };
+                SetupLanguageComboBox.Items.Add(item);
+                if (id == currentLang)
+                    SetupLanguageComboBox.SelectedItem = item;
+            }
+
+            if (SetupLanguageComboBox.SelectedIndex < 0 && SetupLanguageComboBox.Items.Count > 0)
+                SetupLanguageComboBox.SelectedIndex = 0;
+
+            _langComboReady = true;
+        }
+
+        private void SetupLanguageComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!_langComboReady) return;
+            if (SetupLanguageComboBox.SelectedItem is not ComboBoxItem item) return;
+            if (item.Tag is not int langId) return;
+
+            var config = ConfigService.Load();
+            config.Language = langId;
+            ConfigService.Save(config);
+
+            LocalizationService.SetLanguage(langId);
+
+            LogService.Info("SetupPage", $"言語変更: {LocalizationService.GetLanguageName(langId)}");
         }
 
         private void PlatformCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)

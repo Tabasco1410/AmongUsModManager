@@ -18,11 +18,13 @@
                         Spacing="20" Width="520" Margin="0,40,0,24">
 
                 <StackPanel Spacing="8" HorizontalAlignment="Center">
-                    <Image Source="/Resource/Icon.png" Width="56" Height="56"
+                    <Image Source="/Resources/Icon.png" Width="56" Height="56"
                            HorizontalAlignment="Center"/>
-                    <TextBlock Text="AmongUsModManager へようこそ"
+                    <TextBlock x:Name="WelcomeTitle"
+                               Text="AmongUsModManager へようこそ"
                                FontSize="26" FontWeight="Bold" HorizontalAlignment="Center"/>
-                    <TextBlock Text="はじめに Among Us のインストールフォルダを指定してください"
+                    <TextBlock x:Name="WelcomeSubtitle"
+                               Text="はじめに Among Us のインストールフォルダを指定してください"
                                FontSize="13" HorizontalAlignment="Center"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                TextAlignment="Center" TextWrapping="Wrap"/>
@@ -32,7 +34,26 @@
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16">
                     <StackPanel Spacing="12">
-                        <TextBlock Text="① 購入・プレイしたプラットフォームを選択"
+                        <StackPanel Orientation="Horizontal" Spacing="10">
+                            <FontIcon Glyph="&#xF2B7;" FontSize="18"
+                                      Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"
+                                      VerticalAlignment="Center"/>
+                            <TextBlock x:Name="LangStepLabel"
+                                       Text="① 言語を選択 / Select Language"
+                                       FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <ComboBox x:Name="SetupLanguageComboBox"
+                                  HorizontalAlignment="Stretch"
+                                  SelectionChanged="SetupLanguageComboBox_SelectionChanged"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1" CornerRadius="8" Padding="20,16">
+                    <StackPanel Spacing="12">
+                        <TextBlock x:Name="PlatformStepLabel"
+                                   Text="② 購入・プレイしたプラットフォームを選択"
                                    FontSize="13" FontWeight="SemiBold"/>
                         <ComboBox x:Name="PlatformCombo"
                                   PlaceholderText="プラットフォームを選択してください"
@@ -57,7 +78,8 @@
                         BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1" CornerRadius="8" Padding="20,16">
                     <StackPanel Spacing="12">
-                        <TextBlock Text="② Among Us のインストールフォルダを指定"
+                        <TextBlock x:Name="FolderStepLabel"
+                                   Text="③ Among Us のインストールフォルダを指定"
                                    FontSize="13" FontWeight="SemiBold"/>
                         <TextBlock FontSize="12"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -91,7 +113,7 @@
                         BorderThickness="1" CornerRadius="8" Padding="20,16"
                         Visibility="Collapsed">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="③ Epic Games アカウントにログイン"
+                        <TextBlock Text="④ Epic Games アカウントにログイン"
                                    FontSize="13" FontWeight="SemiBold"/>
                         <TextBlock FontSize="12" TextWrapping="Wrap"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}">
@@ -123,7 +145,7 @@
                         BorderThickness="1" CornerRadius="8" Padding="20,16"
                         Visibility="Collapsed">
                     <StackPanel Spacing="10">
-                        <TextBlock Text="④ GitHub アカウントと連携（省略可）"
+                        <TextBlock Text="⑤ GitHub アカウントと連携（省略可）"
                                    FontSize="13" FontWeight="SemiBold"/>
                         <TextBlock FontSize="12" TextWrapping="Wrap"
                                    Foreground="{ThemeResource TextFillColorSecondaryBrush}">
