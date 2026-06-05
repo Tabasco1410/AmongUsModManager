@@ -9,7 +9,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using AmongUsModManager.Models;
 using AmongUsModManager.Models.Services;
-using AmongUsModManager.Services;
 
 namespace AmongUsModManager.Pages
 {
@@ -28,12 +27,23 @@ namespace AmongUsModManager.Pages
         public ConflictCheckPage()
         {
             this.InitializeComponent();
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
+        }
+
+        private void ApplyStrings()
+        {
+            ConflictCheckPageTitle.Text = LocalizationService.Get("ConflictCheck_Title");
+            ConflictCheckSubtitle.Text  = LocalizationService.Get("ConflictCheck_Subtitle");
+            ConflictCheckStartBtn.Content = LocalizationService.Get("ConflictCheck_StartBtn");
+            ConflictCheckEmptyLabel.Text  = LocalizationService.Get("ConflictCheck_EmptyLabel");
         }
 
         private async void StartCheck_Click(object sender, RoutedEventArgs e)
         {
             CheckingRing.IsActive = true;
-            SummaryText.Text = "チェック中...";
+            SummaryText.Text = LocalizationService.Get("ConflictCheck_Checking");
 
             var toRemove = ResultPanel.Children
                 .Where(c => c != EmptyState)
@@ -100,14 +110,14 @@ namespace AmongUsModManager.Pages
         {
             if (results.Count == 0)
             {
-                SummaryText.Text = "✅ 競合は見つかりませんでした";
+                SummaryText.Text = LocalizationService.Get("ConflictCheck_NoConflicts");
                 EmptyState.Visibility = Visibility.Visible;
                 if (EmptyState.Children[1] is TextBlock tb)
-                    tb.Text = "✅ 競合は見つかりませんでした";
+                    tb.Text = LocalizationService.Get("ConflictCheck_NoConflicts");
                 return;
             }
 
-            SummaryText.Text = $"⚠️ {results.Count} 件の競合が見つかりました";
+            SummaryText.Text = string.Format(LocalizationService.Get("ConflictCheck_ConflictsFound"), results.Count);
 
             foreach (var conflict in results)
             {

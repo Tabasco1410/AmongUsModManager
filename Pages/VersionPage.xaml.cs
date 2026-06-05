@@ -12,11 +12,20 @@ namespace AmongUsModManager.Pages
         public VersionPage()
         {
             this.InitializeComponent();
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
             this.Loaded += (s, e) => _ = LoadVersionsAsync();
         }
 
         public static Visibility BoolToVisibility(bool value)
             => value ? Visibility.Visible : Visibility.Collapsed;
+
+        private void ApplyStrings()
+        {
+            VersionPageTitle.Text = LocalizationService.Get("Version_Title");
+            VersionSubtitle.Text  = LocalizationService.Get("Version_Subtitle");
+        }
 
         private async System.Threading.Tasks.Task LoadVersionsAsync()
         {
@@ -62,7 +71,7 @@ namespace AmongUsModManager.Pages
             if (sender is Button btn && btn.Tag is UpdateResult result)
             {
                 string raw = string.IsNullOrWhiteSpace(result.ReleaseNotes)
-                    ? "リリースノートはありません。"
+                    ? LocalizationService.Get("Version_NoNotes")
                     : result.ReleaseNotes;
 
                 string plain;
@@ -88,10 +97,10 @@ namespace AmongUsModManager.Pages
 
                 ContentDialog dialog = new ContentDialog
                 {
-                    Title = $"{result.LatestTag} リリースノート",
+                    Title = string.Format(LocalizationService.Get("Version_ReleaseNotesTitle"), result.LatestTag),
                     Content = scrollViewer,
-                    CloseButtonText = "閉じる",
-                    SecondaryButtonText = "GitHubで開く",
+                    CloseButtonText = LocalizationService.Get("Common_Close"),
+                    SecondaryButtonText = LocalizationService.Get("Version_OpenGitHub"),
                     XamlRoot = this.XamlRoot
                 };
 
@@ -114,10 +123,10 @@ namespace AmongUsModManager.Pages
 
                 ContentDialog dialog = new ContentDialog
                 {
-                    Title = "バージョンの適用",
-                    Content = $"{result.LatestTag} をダウンロードして適用します。完了後にアプリは再起動します。よろしいですか？",
-                    PrimaryButtonText = "はい",
-                    CloseButtonText = "キャンセル",
+                    Title = LocalizationService.Get("Version_ApplyTitle"),
+                    Content = string.Format(LocalizationService.Get("Version_ApplyContent"), result.LatestTag),
+                    PrimaryButtonText = LocalizationService.Get("Common_Yes"),
+                    CloseButtonText = LocalizationService.Get("Common_Cancel"),
                     XamlRoot = this.XamlRoot
                 };
 
