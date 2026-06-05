@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using AmongUsModManager.Models;
-using AmongUsModManager.Services;
+using AmongUsModManager.Models.Services;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 

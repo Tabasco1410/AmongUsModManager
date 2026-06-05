@@ -3,7 +3,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AmongUsModManager.Models;
-using AmongUsModManager.Services;
+using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager.Models.Services
 {

@@ -2,7 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
-using AmongUsModManager.Services;
+using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager.Models.Services
 {

@@ -5,7 +5,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using AmongUsModManager.Services;
+using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager.Models.Services
 {

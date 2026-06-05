@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 
-namespace AmongUsModManager.Services
+namespace AmongUsModManager.Models. Services
 {
     public enum LogLevel
     {
