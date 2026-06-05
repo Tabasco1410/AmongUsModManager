@@ -9,7 +9,6 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using AmongUsModManager.Models.Services;
-using AmongUsModManager.Services;
 using Windows.ApplicationModel.DataTransfer;
 
 namespace AmongUsModManager.Pages
@@ -24,6 +23,36 @@ namespace AmongUsModManager.Pages
         {
             this.InitializeComponent();
             this.Loaded += AccountPage_Loaded;
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
+        }
+
+        private void ApplyStrings()
+        {
+            AccountPageTitle.Text    = LocalizationService.Get("Account_Title");
+            AccountPageSubtitle.Text = LocalizationService.Get("Account_Subtitle");
+
+            StartDeviceFlowBtn.Content    = LocalizationService.Get("Account_StartDeviceFlow");
+            CancelDeviceFlowBtn.Content   = LocalizationService.Get("Account_CancelFlow");
+            GitHubConnectBtn.Content      = LocalizationService.Get("Account_GitHubConnect");
+            GitHubDisconnectBtn.Content   = LocalizationService.Get("Account_GitHubDisconnectBtn");
+            GitHubDisconnectMainBtn.Content = LocalizationService.Get("Account_GitHubDisconnectMainBtn");
+
+            SteamLoginBtn.Content      = LocalizationService.Get("Account_SteamLoginBtn");
+            SteamCancelBtn.Content     = LocalizationService.Get("Account_CancelFlow");
+            SteamDisconnectBtn.Content = LocalizationService.Get("Account_SteamDisconnectBtn");
+
+            EpicLoginBtn.Content  = LocalizationService.Get("Account_EpicLoginBtn");
+            EpicLogoutBtn.Content = LocalizationService.Get("Account_EpicLogoutBtn");
+
+            EpicNotApplicableBar.Title   = LocalizationService.Get("Account_EpicNotApplicableTitle");
+            EpicNotApplicableBar.Message = LocalizationService.Get("Account_EpicNotApplicableMsg");
+
+            ApiRateLimitTitle.Text         = LocalizationService.Get("Account_ApiRateLimitTitle");
+            ApiRateLimitRemainingLabel.Text = LocalizationService.Get("Account_ApiRateLimitRemaining");
+            ApiRateLimitMaxLabel.Text       = LocalizationService.Get("Account_ApiRateLimitMax");
+            CheckRateLimitBtn.Content       = LocalizationService.Get("Account_CheckRateLimit");
         }
 
         private void AccountPage_Loaded(object sender, RoutedEventArgs e)
@@ -44,10 +73,10 @@ namespace AmongUsModManager.Pages
 
             if (hasToken)
             {
-                string label = config.GitHubLoginMethod == "device"
-                    ? $"接続済み: @{config.GitHubUserName}（5,000回/時間）"
-                    : $"接続済み: {config.GitHubToken[..Math.Min(4, config.GitHubToken.Length)]}****（5,000回/時間）";
-                SetGitHubConnected(label);
+                string name = config.GitHubLoginMethod == "device"
+                    ? $"@{config.GitHubUserName}"
+                    : $"{config.GitHubToken[..Math.Min(4, config.GitHubToken.Length)]}****";
+                SetGitHubConnected(string.Format(LocalizationService.Get("Account_ConnectedGH"), name));
             }
             else
             {
@@ -78,7 +107,7 @@ namespace AmongUsModManager.Pages
         {
             GitHubStatusIcon.Glyph = "\uE711";
             GitHubStatusIcon.Foreground = new SolidColorBrush(Colors.Tomato);
-            GitHubStatusText.Text = "未接続（レートリミット：60回/時間）";
+            GitHubStatusText.Text = LocalizationService.Get("Account_NotConnectedGH");
             GitHubStatusBadge.Background =
                 (SolidColorBrush)Application.Current.Resources["SystemFillColorNeutralBackgroundBrush"];
 
@@ -94,15 +123,15 @@ namespace AmongUsModManager.Pages
         private async void StartDeviceFlow_Click(object sender, RoutedEventArgs e)
         {
             StartDeviceFlowBtn.IsEnabled = false;
-            StartDeviceFlowBtn.Content = "取得中...";
+            StartDeviceFlowBtn.Content = LocalizationService.Get("Account_Fetching");
 
             var codeRes = await GitHubDeviceFlowService.RequestDeviceCodeAsync();
 
             if (codeRes == null)
             {
                 StartDeviceFlowBtn.IsEnabled = true;
-                StartDeviceFlowBtn.Content = "🔑 GitHubでログイン";
-                await ShowDialog("エラー", "デバイスコードの取得に失敗しました。\nネットワーク接続を確認してください。");
+                StartDeviceFlowBtn.Content = LocalizationService.Get("Account_StartDeviceFlow");
+                await ShowDialog(LocalizationService.Get("Common_Error"), LocalizationService.Get("Account_DeviceCodeFailed"));
                 return;
             }
 
@@ -110,7 +139,7 @@ namespace AmongUsModManager.Pages
             _deviceVerificationUri = codeRes.verification_uri;
             _deviceUserCode = codeRes.user_code;
             DeviceUserCodeText.Text = codeRes.user_code;
-            CopyDeviceCodeBtn.Content = "📋 コピー";   // 前回の「コピー済み」表示をリセット
+            CopyDeviceCodeBtn.Content = LocalizationService.Get("Account_CopyCode");
             DeviceCodePanel.Visibility = Visibility.Visible;
             CancelDeviceFlowBtn.Visibility = Visibility.Visible;
             StartDeviceFlowBtn.Visibility = Visibility.Collapsed;
@@ -120,7 +149,7 @@ namespace AmongUsModManager.Pages
 
 
             _deviceFlowCts = new CancellationTokenSource();
-            DeviceFlowStatusText.Text = "認証を待っています...";
+            DeviceFlowStatusText.Text = LocalizationService.Get("Account_WaitingAuth");
             DeviceFlowProgress.IsActive = true;
 
             var result = await GitHubDeviceFlowService.PollForTokenAsync(
@@ -137,7 +166,7 @@ namespace AmongUsModManager.Pages
                 ConfigService.Save(config);
 
                 LogService.Info("AccountPage", $"GitHub Device Flow ログイン成功: @{config.GitHubUserName}");
-                SetGitHubConnected($"接続済み: @{config.GitHubUserName}（5,000回/時間）");
+                SetGitHubConnected(string.Format(LocalizationService.Get("Account_ConnectedGH"), $"@{config.GitHubUserName}"));
             }
             else
             {
@@ -145,11 +174,11 @@ namespace AmongUsModManager.Pages
                 DeviceCodePanel.Visibility = Visibility.Collapsed;
                 StartDeviceFlowBtn.Visibility = Visibility.Visible;
                 StartDeviceFlowBtn.IsEnabled = true;
-                StartDeviceFlowBtn.Content = "🔑 GitHubでログイン";
+                StartDeviceFlowBtn.Content = LocalizationService.Get("Account_StartDeviceFlow");
                 CancelDeviceFlowBtn.Visibility = Visibility.Collapsed;
 
                 if (!result.Error.Contains("キャンセル"))
-                    await ShowDialog("ログイン失敗", result.Error);
+                    await ShowDialog(LocalizationService.Get("Account_LoginFailed"), result.Error);
             }
         }
 
@@ -159,7 +188,7 @@ namespace AmongUsModManager.Pages
             DeviceCodePanel.Visibility = Visibility.Collapsed;
             StartDeviceFlowBtn.Visibility = Visibility.Visible;
             StartDeviceFlowBtn.IsEnabled = true;
-            StartDeviceFlowBtn.Content = "🔑 GitHubでログイン";
+            StartDeviceFlowBtn.Content = LocalizationService.Get("Account_StartDeviceFlow");
             CancelDeviceFlowBtn.Visibility = Visibility.Collapsed;
             DeviceFlowStatusText.Text = "";
         }
@@ -169,7 +198,7 @@ namespace AmongUsModManager.Pages
             var dp = new DataPackage();
             dp.SetText(_deviceUserCode);
             Clipboard.SetContent(dp);
-            CopyDeviceCodeBtn.Content = "✅ コピー済み";
+            CopyDeviceCodeBtn.Content = LocalizationService.Get("Account_CopiedCode");
         }
 
         private void OpenGitHubBrowser_Click(object sender, RoutedEventArgs e)
@@ -184,12 +213,12 @@ namespace AmongUsModManager.Pages
             string token = GitHubTokenBox.Password.Trim();
             if (string.IsNullOrEmpty(token))
             {
-                await ShowDialog("入力エラー", "Personal Access Token を入力してください。");
+                await ShowDialog(LocalizationService.Get("Account_InputError"), LocalizationService.Get("Account_TokenRequired"));
                 return;
             }
 
             GitHubConnectBtn.IsEnabled = false;
-            GitHubConnectBtn.Content = "確認中...";
+            GitHubConnectBtn.Content = LocalizationService.Get("Account_Verifying");
 
             var (ok, result) = await GitHubAuthService.VerifyTokenAsync(token);
 
@@ -201,14 +230,14 @@ namespace AmongUsModManager.Pages
                 config.GitHubUserName = result;
                 ConfigService.Save(config);
                 LogService.Info("AccountPage", $"GitHub PAT 接続成功: @{result}");
-                SetGitHubConnected($"接続済み: @{result}（5,000回/時間）");
+                SetGitHubConnected(string.Format(LocalizationService.Get("Account_ConnectedGH"), $"@{result}"));
             }
             else
             {
                 LogService.Warn("AccountPage", $"GitHub PAT 接続失敗: {result}");
                 GitHubConnectBtn.IsEnabled = true;
-                GitHubConnectBtn.Content = "接続";
-                await ShowDialog("接続失敗", result);
+                GitHubConnectBtn.Content = LocalizationService.Get("Account_GitHubConnect");
+                await ShowDialog(LocalizationService.Get("Account_ConnectFailed"), result);
             }
         }
 
@@ -216,10 +245,10 @@ namespace AmongUsModManager.Pages
         {
             var dlg = new ContentDialog
             {
-                Title = "GitHub との接続を切断",
-                Content = "接続を解除してもよいですか？\nAPI 制限が 60回/時間 に戻ります。",
-                PrimaryButtonText = "切断する",
-                CloseButtonText = "キャンセル",
+                Title = LocalizationService.Get("Account_GitHubDisconnectTitle"),
+                Content = LocalizationService.Get("Account_GitHubDisconnectContent"),
+                PrimaryButtonText = LocalizationService.Get("Account_GitHubDisconnectPrimary"),
+                CloseButtonText = LocalizationService.Get("Common_Cancel"),
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = this.XamlRoot
             };
@@ -253,7 +282,7 @@ namespace AmongUsModManager.Pages
         {
             SteamStatusIcon.Glyph = "\uE73E";
             SteamStatusIcon.Foreground = new SolidColorBrush(Colors.SeaGreen);
-            SteamStatusText.Text = $"接続済み: {userName}";
+            SteamStatusText.Text = string.Format(LocalizationService.Get("Account_ConnectedSteam"), userName);
             SteamStatusBadge.Background =
                 (SolidColorBrush)Application.Current.Resources["SystemFillColorSuccessBackgroundBrush"];
 
@@ -270,7 +299,7 @@ namespace AmongUsModManager.Pages
         {
             SteamStatusIcon.Glyph = "\uE711";
             SteamStatusIcon.Foreground = new SolidColorBrush(Colors.Tomato);
-            SteamStatusText.Text = "未接続";
+            SteamStatusText.Text = LocalizationService.Get("Account_NotConnectedSteam");
             SteamStatusBadge.Background =
                 (SolidColorBrush)Application.Current.Resources["SystemFillColorNeutralBackgroundBrush"];
 
@@ -281,13 +310,13 @@ namespace AmongUsModManager.Pages
             SteamCancelBtn.Visibility = Visibility.Collapsed;
             SteamWaitingPanel.Visibility = Visibility.Collapsed;
             SteamLoginBtn.IsEnabled = true;
-            SteamLoginBtn.Content = "🎮 Steamでログイン";
+            SteamLoginBtn.Content = LocalizationService.Get("Account_SteamLoginBtn");
         }
 
         private async void SteamLogin_Click(object sender, RoutedEventArgs e)
         {
             SteamLoginBtn.IsEnabled = false;
-            SteamLoginBtn.Content = "ブラウザを開いています...";
+            SteamLoginBtn.Content = LocalizationService.Get("Account_SteamOpeningBrowser");
             SteamWaitingPanel.Visibility = Visibility.Visible;
             SteamCancelBtn.Visibility = Visibility.Visible;
 
@@ -296,7 +325,7 @@ namespace AmongUsModManager.Pages
 
             if (result.Success)
             {
-                SteamStatusText.Text = "ユーザー名を取得しています...";
+                SteamStatusText.Text = LocalizationService.Get("Account_SteamFetchingName");
                 string userName = await SteamOpenIdService.FetchUserNameAsync(result.SteamId);
 
                 var config = ConfigService.Load();
@@ -311,7 +340,7 @@ namespace AmongUsModManager.Pages
             {
                 SetSteamDisconnected();
                 if (!result.Error.Contains("キャンセル"))
-                    await ShowDialog("ログイン失敗", result.Error);
+                    await ShowDialog(LocalizationService.Get("Account_LoginFailed"), result.Error);
             }
         }
 
@@ -325,10 +354,10 @@ namespace AmongUsModManager.Pages
         {
             var dlg = new ContentDialog
             {
-                Title = "Steam との接続を解除",
-                Content = "Steam アカウントの連携を解除してもよいですか？",
-                PrimaryButtonText = "解除する",
-                CloseButtonText = "キャンセル",
+                Title = LocalizationService.Get("Account_SteamDisconnectTitle"),
+                Content = LocalizationService.Get("Account_SteamDisconnectContent"),
+                PrimaryButtonText = LocalizationService.Get("Account_SteamDisconnectPrimary"),
+                CloseButtonText = LocalizationService.Get("Common_Cancel"),
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = this.XamlRoot
             };
@@ -369,7 +398,7 @@ namespace AmongUsModManager.Pages
         {
             EpicStatusIcon.Glyph = "\uE73E";
             EpicStatusIcon.Foreground = new SolidColorBrush(Colors.SeaGreen);
-            EpicStatusText.Text = $"ログイン済み — {displayName}";
+            EpicStatusText.Text = string.Format(LocalizationService.Get("Account_EpicLoggedIn"), displayName);
             EpicStatusBadge.Background =
                 (SolidColorBrush)Application.Current.Resources["SystemFillColorSuccessBackgroundBrush"];
 
@@ -385,7 +414,7 @@ namespace AmongUsModManager.Pages
         {
             EpicStatusIcon.Glyph = "\uE711";
             EpicStatusIcon.Foreground = new SolidColorBrush(Colors.Tomato);
-            EpicStatusText.Text = "未ログイン";
+            EpicStatusText.Text = LocalizationService.Get("Account_EpicNotLoggedIn");
             EpicStatusBadge.Background =
                 (SolidColorBrush)Application.Current.Resources["SystemFillColorNeutralBackgroundBrush"];
 
@@ -395,7 +424,7 @@ namespace AmongUsModManager.Pages
             EpicLoginProgressPanel.Visibility = Visibility.Collapsed;
             EpicLoginBtn.Visibility = Visibility.Visible;
             EpicLoginBtn.IsEnabled = true;
-            EpicLoginBtn.Content = "🎮 Epic でログイン";
+            EpicLoginBtn.Content = LocalizationService.Get("Account_EpicLoginBtn");
         }
 
         private async void EpicLogin_Click(object sender, RoutedEventArgs e)
@@ -512,10 +541,10 @@ namespace AmongUsModManager.Pages
         {
             var dlg = new ContentDialog
             {
-                Title = "Epic Games ログアウト",
-                Content = "ログアウトすると、次回起動時に再度ログインが必要になります。",
-                PrimaryButtonText = "ログアウト",
-                CloseButtonText = "キャンセル",
+                Title = LocalizationService.Get("Account_EpicLogoutTitle"),
+                Content = LocalizationService.Get("Account_EpicLogoutContent"),
+                PrimaryButtonText = LocalizationService.Get("Account_EpicLogoutPrimary"),
+                CloseButtonText = LocalizationService.Get("Common_Cancel"),
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = this.XamlRoot
             };
@@ -532,8 +561,8 @@ namespace AmongUsModManager.Pages
 
         private async void CheckRateLimit_Click(object sender, RoutedEventArgs e)
         {
-            RateLimitRemaining.Text = "取得中...";
-            RateLimitMax.Text = "取得中...";
+            RateLimitRemaining.Text = LocalizationService.Get("Account_RateLimitFetching");
+            RateLimitMax.Text = LocalizationService.Get("Account_RateLimitFetching");
             RateLimitResetText.Text = "";
 
             try
@@ -542,7 +571,7 @@ namespace AmongUsModManager.Pages
                 var response = await client.GetAsync("https://api.github.com/rate_limit");
                 if (!response.IsSuccessStatusCode)
                 {
-                    RateLimitRemaining.Text = "エラー";
+                    RateLimitRemaining.Text = LocalizationService.Get("Account_RateLimitError");
                     RateLimitMax.Text = "--";
                     return;
                 }
@@ -560,13 +589,13 @@ namespace AmongUsModManager.Pages
                 RateLimitBar.Value = remaining;
 
                 var resetTime = DateTimeOffset.FromUnixTimeSeconds(reset).ToLocalTime();
-                RateLimitResetText.Text = $"リセット時刻: {resetTime:HH:mm:ss}";
+                RateLimitResetText.Text = string.Format(LocalizationService.Get("Account_RateLimitReset"), resetTime.ToString("HH:mm:ss"));
 
                 LogService.Info("AccountPage", $"GitHub API 残り: {remaining}/{limit}, リセット: {resetTime:HH:mm}");
             }
             catch (Exception ex)
             {
-                RateLimitRemaining.Text = "エラー";
+                RateLimitRemaining.Text = LocalizationService.Get("Account_RateLimitError");
                 RateLimitMax.Text = "--";
                 LogService.Error("AccountPage", "レートリミット確認エラー", ex);
             }
