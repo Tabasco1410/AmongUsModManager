@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Json;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
@@ -16,7 +13,6 @@ using Microsoft.UI.Xaml.Input;
 using AmongUsModManager.Models;
 using AmongUsModManager.Models.Services;
 using AmongUsModManager.Pages;
-using AmongUsModManager.Services;
 using Windows.Graphics;
 using Windows.System;
 
@@ -24,7 +20,6 @@ namespace AmongUsModManager
 {
     public sealed partial class MainWindow : Window
     {
-        public Dictionary<string, string> LocalizedStrings { get; private set; } = new();
         private string _appUpdateUrl = "";
         private TrayIcon? _trayIcon;
         private bool _minimizeToTray = false;
@@ -40,7 +35,8 @@ namespace AmongUsModManager
             SetWindowIcon();
             SetVersionInTitle();
             ApplyTheme();
-            LoadLocalizedStrings();
+            ApplyNavStrings();
+            LocalizationService.LanguageChanged += () => DispatcherQueue.TryEnqueue(ApplyNavStrings);
             RestoreWindowSize();
 
             UpdateNotificationBadge();
@@ -153,15 +149,15 @@ namespace AmongUsModManager
                 Path.Combine(base_, "icon.ico"),
                 Path.Combine(base_, "Icon.ico"),
                 // Resource サブフォルダ
-                Path.Combine(base_, "Resource", "icon.ico"),
-                Path.Combine(base_, "Resource", "Icon.ico"),
+                Path.Combine(base_, "Resources", "icon.ico"),
+                Path.Combine(base_, "Resources", "Icon.ico"),
                 // Assets サブフォルダ
                 Path.Combine(base_, "Assets", "icon.ico"),
                 Path.Combine(base_, "Assets", "Icon.ico"),
                 // 発行後の自己完結フォルダ内
                 Path.Combine(base_, "..", "icon.ico"),
                 Path.Combine(base_, "..", "Icon.ico"),
-                Path.Combine(base_, "..", "Resource", "icon.ico"),
+                Path.Combine(base_, "..", "Resources", "icon.ico"),
             };
             foreach (var p in candidates)
             {
@@ -402,24 +398,24 @@ namespace AmongUsModManager
             }
         }
 
-        private void LoadLocalizedStrings()
+        private void ApplyNavStrings()
         {
-            string culture = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
-            var assembly = Assembly.GetExecutingAssembly();
-            const string rn = "AmongUsModManager.Resources.strings.csv";
             try
             {
-                using var stream = assembly.GetManifestResourceStream(rn);
-                if (stream == null) return;
-                using var reader = new StreamReader(stream, Encoding.UTF8);
-                foreach (var line in reader.ReadToEnd().Split(Environment.NewLine).Skip(1))
-                {
-                    var parts = line.Split(',');
-                    if (parts.Length >= 3)
-                        LocalizedStrings[parts[0].Trim()] = culture == "ja" ? parts[2].Trim() : parts[1].Trim();
-                }
+                HomeItem.Content             = LocalizationService.Get("Nav_Home");
+                ModInstallItem.Content       = LocalizationService.Get("Nav_ModInstall");
+                LibraryItem.Content          = LocalizationService.Get("Nav_Library");
+                NotifNavLabel.Text           = LocalizationService.Get("Nav_Notification");
+                ContactNavItem.Content       = LocalizationService.Get("Nav_Contact");
+                ChatBotNavItem.Content       = LocalizationService.Get("Nav_ChatBot");
+                VersionNavItem.Content       = LocalizationService.Get("Nav_Version");
+                DataManagementNavItem.Content = LocalizationService.Get("Nav_DataManagement");
+                ConflictCheckNavItem.Content = LocalizationService.Get("Nav_ConflictCheck");
+                AboutNavItem.Content         = LocalizationService.Get("Nav_About");
+                AccountNavItem.Content       = LocalizationService.Get("Nav_Account");
+                SettingsNavItem.Content      = LocalizationService.Get("Nav_Settings");
             }
-            catch (Exception ex) { LogService.Error("MainWindow", "ローカライズ読み込みエラー", ex); }
+            catch (Exception ex) { LogService.Error("MainWindow", "ナビゲーションラベル更新エラー", ex); }
         }
 
         private void NavView_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)

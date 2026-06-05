@@ -84,24 +84,23 @@
             </NavigationView.PaneHeader>
 
             <NavigationView.MenuItems>
-                <NavigationViewItem x:Name="HomeItem" Content="ホーム" Tag="Home">
+                <NavigationViewItem x:Name="HomeItem" Tag="Home">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE80F;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem x:Name="ModInstallItem" Content="インストール" Tag="ModInstall">
+                <NavigationViewItem x:Name="ModInstallItem" Tag="ModInstall">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE7BF;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem x:Name="LibraryItem" Content="Modライブラリ" Tag="Library">
+                <NavigationViewItem x:Name="LibraryItem" Tag="Library">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE8B1;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <!-- お知らせ（バッジ付き） -->
-                <NavigationViewItem Tag="Notification">
+                <NavigationViewItem x:Name="NotificationNavItem" Tag="Notification">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xEA8F;"/></NavigationViewItem.Icon>
                     <NavigationViewItem.Content>
                         <Grid>
-                            <TextBlock Text="お知らせ" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="NotifNavLabel" VerticalAlignment="Center"/>
                             <Border x:Name="NotifSidebarBadge"
                                     Background="Red" CornerRadius="8"
                                     MinWidth="16" Height="16"
@@ -116,11 +115,11 @@
                     </NavigationViewItem.Content>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="問い合わせ" Tag="Contact">
+                <NavigationViewItem x:Name="ContactNavItem" Tag="Contact">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE939;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="サポート" Tag="ChatBot">
+                <NavigationViewItem x:Name="ChatBotNavItem" Tag="ChatBot">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE8F2;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
@@ -135,31 +134,30 @@
 
                 <NavigationViewItemSeparator x:Name="NavSeparator"/>
 
-                <NavigationViewItem Content="バージョン管理" Tag="Version">
+                <NavigationViewItem x:Name="VersionNavItem" Tag="Version">
                     <NavigationViewItem.Icon>
                         <FontIcon Glyph="&#xE81C;"/>
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="データ管理" Tag="DataManagement">
+                <NavigationViewItem x:Name="DataManagementNavItem" Tag="DataManagement">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE9F5;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <!-- 競合チェック -->
-                <NavigationViewItem Content="競合チェック" Tag="ConflictCheck">
+                <NavigationViewItem x:Name="ConflictCheckNavItem" Tag="ConflictCheck">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE9CE;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
 
-                <NavigationViewItem Content="アプリについて" Tag="About">
+                <NavigationViewItem x:Name="AboutNavItem" Tag="About">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE946;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.MenuItems>
 
             <NavigationView.FooterMenuItems>
-                <NavigationViewItem Content="アカウント" Tag="Account">
+                <NavigationViewItem x:Name="AccountNavItem" Tag="Account">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE77B;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
-                <NavigationViewItem Content="設定" Tag="Settings">
+                <NavigationViewItem x:Name="SettingsNavItem" Tag="Settings">
                     <NavigationViewItem.Icon><FontIcon Glyph="&#xE713;"/></NavigationViewItem.Icon>
                 </NavigationViewItem>
             </NavigationView.FooterMenuItems>

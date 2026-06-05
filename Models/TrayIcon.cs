@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading;
-using AmongUsModManager.Services;
+using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager.Models
 {
