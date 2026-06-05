@@ -61,6 +61,9 @@ namespace AmongUsModManager.Models
         public bool LogAppendMode { get; set; } = false;
 
         public bool MinimizeToTray { get; set; } = false;
+        public bool AlwaysRunAsAdmin { get; set; } = false;
+
+        public string LastLaunchModPath { get; set; } = "";
 
         public string ClaudeApiKey { get; set; } = "";
 
@@ -73,6 +76,8 @@ namespace AmongUsModManager.Models
         public string SteamUserName { get; set; } = "";
 
         public string MainPlatform { get; set; } = "";
+
+        public int Language { get; set; } = 11;
 
         public string? LibraryViewMode { get; set; }
         public double WindowWidth { get; set; } = 1100;
