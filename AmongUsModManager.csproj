@@ -40,8 +40,6 @@
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="Pages\NewsDetailPage.xaml" />
-		<None Remove="Resource\icon.ico" />
-		<None Remove="Resource\Icon.png" />
 	</ItemGroup>
 	<ItemGroup>
 		<Page Remove="Pages\HomePage.xaml" />
@@ -81,7 +79,7 @@
 		<PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
 		<PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
 		<DefaultLanguage>ja-JP</DefaultLanguage>
-		<ApplicationIcon>Resource\icon.ico</ApplicationIcon>
+		<ApplicationIcon>Resources\icon.ico</ApplicationIcon>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<GenerateAppInstallerFile>True</GenerateAppInstallerFile>
 		<AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
@@ -132,13 +130,14 @@
 		<PRIResource Remove="Resources\**" />
 	</ItemGroup>
 	<ItemGroup>
-		<Content Include="Resource\icon.ico">
+		<None Include="Resources\icon.ico" />
+		<None Include="Resources\Icon.png" />
+		<Content Include="Resources\icon.ico" />
+		<Content Include="Resources\string.csv">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 	<ItemGroup>
-	  <EmbeddedResource Include="Resource\Icon.png">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </EmbeddedResource>
+	  <None Include="Resources\Among Us_icon.png" />
 	</ItemGroup>	
 </Project>
