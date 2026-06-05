@@ -1,6 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Security.Principal;
 using Microsoft.UI.Xaml;
-using AmongUsModManager.Services;
 using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager
@@ -22,9 +23,34 @@ namespace AmongUsModManager
             this.InitializeComponent();
         }
 
+        public static bool IsRunningAsAdmin()
+            => new WindowsPrincipal(WindowsIdentity.GetCurrent())
+                .IsInRole(WindowsBuiltInRole.Administrator);
+
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             var config = ConfigService.Load();
+
+            if (config.AlwaysRunAsAdmin && !IsRunningAsAdmin())
+            {
+                try
+                {
+                    var psi = new System.Diagnostics.ProcessStartInfo(
+                        System.Diagnostics.Process.GetCurrentProcess().MainModule!.FileName)
+                    {
+                        UseShellExecute = true,
+                        Verb = "runas",
+                    };
+                    System.Diagnostics.Process.Start(psi);
+                }
+                catch { }
+                Exit();
+                return;
+            }
+
+            var csvPath = Path.Combine(AppContext.BaseDirectory, "Resources", "string.csv");
+            LocalizationService.Load(csvPath);
+            LocalizationService.SetLanguage(config.Language);
 
             // ログ初期化（AppendMode=true→上書き、false→起動ごとに新ファイル）
             LogService.Initialize(config.LogAppendMode);
