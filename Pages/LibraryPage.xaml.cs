@@ -9,10 +9,8 @@ using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
-using AmongUsModManager.Services;
-using AmongUsModManager.Models;
 using AmongUsModManager.Models.Services;
-
+using AmongUsModManager.Models;
 namespace AmongUsModManager.Pages
 {
     public sealed partial class LibraryPage : Page
@@ -29,7 +27,23 @@ namespace AmongUsModManager.Pages
         {
             this.InitializeComponent();
             _http.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "AmongUsModManager-App");
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
             LogService.Info("LibraryPage", "ページ初期化");
+        }
+
+        private void ApplyStrings()
+        {
+            LibraryPageTitle.Text         = LocalizationService.Get("Library_Title");
+            LibrarySubtitle.Text          = LocalizationService.Get("Library_Subtitle");
+            VersionIssueBar.Title         = LocalizationService.Get("Library_VersionIssueTitle");
+            VersionIssueBar.Message       = LocalizationService.Get("Library_VersionIssueMsg");
+            VersionIssueActionBtn.Content = LocalizationService.Get("Library_VersionIssueBtn");
+            ToolTipService.SetToolTip(GridModeBtn, LocalizationService.Get("Library_GridViewTooltip"));
+            ToolTipService.SetToolTip(ListModeBtn, LocalizationService.Get("Library_ListViewTooltip"));
+            UpdateProgressDialog.Title          = LocalizationService.Get("Library_UpdateDialogTitle");
+            UpdateProgressDialog.CloseButtonText = LocalizationService.Get("Common_Close");
         }
 
         protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
@@ -343,13 +357,13 @@ namespace AmongUsModManager.Pages
         private async Task PerformUpdateWithUI(VanillaPathInfo mod, string? tag)
         {
             UpdateProgressDialog.XamlRoot = this.XamlRoot;
-            UpdateStatusText.Text = "ダウンロード中...";
+            UpdateStatusText.Text = LocalizationService.Get("Common_Loading");
             UpdateProgressBar.IsIndeterminate = true;
             _ = UpdateProgressDialog.ShowAsync();
             try
             {
                 await PerformUpdateLogic(mod, tag);
-                UpdateStatusText.Text = "完了しました";
+                UpdateStatusText.Text = LocalizationService.Get("Home_UpdateDone");
                 await Task.Delay(800);
             }
             catch (Exception ex)
