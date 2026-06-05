@@ -9,8 +9,8 @@
     <Grid Padding="32">
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
             <FontIcon Glyph="&#xE9CE;" FontSize="48" Foreground="Gray" HorizontalAlignment="Center"/>
-            <TextBlock Text="FriendPage" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center"/>
-            <TextBlock Text="このページは現在開発中です" Foreground="Gray" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="FriendPageTitle" Text="FriendPage" FontSize="20" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="FriendPageSubtitle" Text="このページは現在開発中です" Foreground="Gray" HorizontalAlignment="Center"/>
         </StackPanel>
     </Grid>
 </Page>

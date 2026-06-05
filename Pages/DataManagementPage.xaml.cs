@@ -23,7 +23,15 @@ namespace AmongUsModManager.Pages
         public DataManagementPage()
         {
             this.InitializeComponent();
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
             LoadData();
+        }
+
+        private void ApplyStrings()
+        {
+            DataManagementPageTitle.Text = LocalizationService.Get("DataManagement_Title");
         }
 
         private void LoadData()

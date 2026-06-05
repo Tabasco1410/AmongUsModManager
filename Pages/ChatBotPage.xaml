@@ -15,15 +15,15 @@
                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                       HorizontalAlignment="Center"/>
 
-            <TextBlock Text="サポート" FontSize="22" FontWeight="SemiBold"
+            <TextBlock x:Name="ChatBotPageTitle" Text="サポート" FontSize="22" FontWeight="SemiBold"
                        HorizontalAlignment="Center"/>
 
             <Border Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
                     CornerRadius="8" Padding="20,16">
                 <StackPanel Spacing="8" HorizontalAlignment="Center">
-                    <TextBlock Text="🚧  開発中" FontSize="16" FontWeight="SemiBold"
+                    <TextBlock x:Name="ChatBotUnderConstructionLabel" Text="🚧  開発中" FontSize="16" FontWeight="SemiBold"
                                HorizontalAlignment="Center"/>
-                    <TextBlock TextWrapping="Wrap" FontSize="13" TextAlignment="Center"
+                    <TextBlock x:Name="ChatBotUnderConstructionDesc" TextWrapping="Wrap" FontSize="13" TextAlignment="Center"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}">
                         現在開発中です。
                     </TextBlock>

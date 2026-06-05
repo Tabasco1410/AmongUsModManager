@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="AmongUsModManager.Pages.ContactPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -15,15 +15,15 @@
                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                       HorizontalAlignment="Center"/>
 
-            <TextBlock Text="問い合わせ" FontSize="22" FontWeight="SemiBold"
+            <TextBlock x:Name="ContactPageTitle" Text="問い合わせ" FontSize="22" FontWeight="SemiBold"
                        HorizontalAlignment="Center"/>
 
             <Border Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
                     CornerRadius="8" Padding="20,16">
                 <StackPanel Spacing="8" HorizontalAlignment="Center">
-                    <TextBlock Text="🚧  開発中" FontSize="16" FontWeight="SemiBold"
+                    <TextBlock x:Name="ContactUnderConstructionLabel" Text="🚧  開発中" FontSize="16" FontWeight="SemiBold"
                                HorizontalAlignment="Center"/>
-                    <TextBlock TextWrapping="Wrap" FontSize="13" TextAlignment="Center"
+                    <TextBlock x:Name="ContactUnderConstructionDesc" TextWrapping="Wrap" FontSize="13" TextAlignment="Center"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}">
                         お問い合わせ機能は現在開発中です。&#x0a;バグ報告・要望・質問は Discord サーバーでお願いします。
                     </TextBlock>
@@ -38,8 +38,8 @@
                         <FontIcon Glyph="&#xE8BD;" FontSize="28"
                                   Foreground="#5865F2" VerticalAlignment="Center"/>
                         <StackPanel Spacing="2" VerticalAlignment="Center">
-                            <TextBlock Text="Discord サーバー" FontSize="15" FontWeight="SemiBold"/>
-                            <TextBlock Text="バグ報告・機能要望・質問はこちら"
+                            <TextBlock x:Name="ContactDiscordLabel" Text="Discord サーバー" FontSize="15" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="ContactDiscordSubLabel" Text="バグ報告・機能要望・質問はこちら"
                                        FontSize="12"
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>

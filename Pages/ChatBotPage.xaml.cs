@@ -6,6 +6,7 @@ using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager.Pages
 {
@@ -14,6 +15,17 @@ namespace AmongUsModManager.Pages
         public ChatBotPage()
         {
             this.InitializeComponent();
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
+        }
+
+        private void ApplyStrings()
+        {
+            ChatBotPageTitle.Text              = LocalizationService.Get("ChatBot_Title");
+            ChatBotUnderConstructionLabel.Text = LocalizationService.Get("Common_UnderConstruction");
+            ChatBotUnderConstructionDesc.Text  = LocalizationService.Get("ChatBot_UnderConstructionDesc");
+        }
             /*AddBubble("assistant",
                 "こんにちは！AmongUsModManager サポートです 👋\n\n" +
                 "下のボタンからご質問の内容を選んでください。");*/
@@ -248,6 +260,5 @@ namespace AmongUsModManager.Pages
                 MessageScrollViewer.ScrollToVerticalOffset(MessageScrollViewer.ScrollableHeight));
         }*/
     }
-}
 
 

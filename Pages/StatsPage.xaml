@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="AmongUsModManager.Pages.StatsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -11,8 +11,8 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="16" Margin="28,20,28,32">
 
-            <TextBlock Text="統計・実績" FontSize="26" FontWeight="SemiBold"/>
-            <TextBlock Text="起動履歴・プレイ統計・アプリ実績"
+            <TextBlock x:Name="StatsPageTitle" FontSize="26" FontWeight="SemiBold"/>
+            <TextBlock x:Name="StatsSubtitle"
                        FontSize="13"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                        Margin="0,-8,0,0"/>
@@ -22,7 +22,7 @@
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1" CornerRadius="8" Padding="24,18">
                 <StackPanel Spacing="14">
-                    <TextBlock Text="起動統計" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="LaunchSectionLabel" FontSize="14" FontWeight="SemiBold"/>
                     <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="12">
                         <Border BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1" CornerRadius="6" Padding="16,12">
@@ -31,7 +31,7 @@
                                           Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                 <TextBlock x:Name="TotalLaunchCount" Text="0"
                                            FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                <TextBlock Text="総起動回数" FontSize="11"
+                                <TextBlock x:Name="TotalLaunchLabel" FontSize="11"
                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                            HorizontalAlignment="Center"/>
                             </StackPanel>
@@ -43,7 +43,7 @@
                                           Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                 <TextBlock x:Name="MonthlyLaunchCount" Text="0"
                                            FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                <TextBlock Text="今月の起動" FontSize="11"
+                                <TextBlock x:Name="MonthlyLaunchLabel" FontSize="11"
                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                            HorizontalAlignment="Center"/>
                             </StackPanel>
@@ -55,7 +55,7 @@
                                           Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                 <TextBlock x:Name="RegisteredModCount" Text="0"
                                            FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                <TextBlock Text="登録Mod数" FontSize="11"
+                                <TextBlock x:Name="RegisteredModLabel" FontSize="11"
                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                            HorizontalAlignment="Center"/>
                             </StackPanel>
@@ -67,7 +67,7 @@
                                           Foreground="{ThemeResource AccentTextFillColorPrimaryBrush}"/>
                                 <TextBlock x:Name="LastLaunchText" Text="--"
                                            FontSize="16" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                <TextBlock Text="最終起動" FontSize="11"
+                                <TextBlock x:Name="LastLaunchLabel" FontSize="11"
                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                            HorizontalAlignment="Center"/>
                             </StackPanel>
@@ -83,14 +83,14 @@
                 <StackPanel Spacing="12">
                     <RelativePanel>
                         <StackPanel Spacing="2">
-                            <TextBlock Text="起動履歴" FontSize="14" FontWeight="SemiBold"/>
-                            <TextBlock Text="最近の起動ログ" FontSize="12"
+                            <TextBlock x:Name="HistorySectionLabel" FontSize="14" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="HistoryDescLabel" FontSize="12"
                                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                         </StackPanel>
-                        <Button Content="履歴をクリア"
+                        <Button x:Name="ClearHistoryBtn"
                                 RelativePanel.AlignRightWithPanel="True"
                                 RelativePanel.AlignVerticalCenterWithPanel="True"
-                                x:Name="ClearHistoryBtn" Click="ClearHistory_Click"/>
+                                Click="ClearHistory_Click"/>
                     </RelativePanel>
                     <ListView x:Name="LaunchHistoryView" SelectionMode="None" MaxHeight="300">
                         <ListView.ItemContainerStyle>
@@ -118,7 +118,6 @@
                         </ListView.ItemTemplate>
                     </ListView>
                     <TextBlock x:Name="HistoryEmptyText"
-                               Text="起動履歴がありません"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                FontSize="13" HorizontalAlignment="Center"
                                Margin="0,12" Visibility="Collapsed"/>
@@ -130,7 +129,7 @@
                     BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1" CornerRadius="8" Padding="24,18">
                 <StackPanel Spacing="12">
-                    <TextBlock Text="実績" FontSize="14" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="AchievementsSectionLabel" FontSize="14" FontWeight="SemiBold"/>
                     <StackPanel HorizontalAlignment="Center" Spacing="12" Padding="0,16">
                         <FontIcon Glyph="&#xE734;" FontSize="40"
                                   Foreground="{ThemeResource TextFillColorSecondaryBrush}"
@@ -138,9 +137,9 @@
                         <Border Background="{ThemeResource SystemFillColorCautionBackgroundBrush}"
                                 CornerRadius="8" Padding="20,12">
                             <StackPanel Spacing="6" HorizontalAlignment="Center">
-                                <TextBlock Text="🚧  開発中" FontSize="14" FontWeight="SemiBold"
+                                <TextBlock x:Name="AchievementsUnderDevLabel" FontSize="14" FontWeight="SemiBold"
                                            HorizontalAlignment="Center"/>
-                                <TextBlock Text="実績機能は現在開発中です。&#x0a;今後のアップデートで追加予定です。"
+                                <TextBlock x:Name="AchievementsPendingText"
                                            TextWrapping="Wrap" FontSize="12" TextAlignment="Center"
                                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
                             </StackPanel>

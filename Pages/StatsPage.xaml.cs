@@ -19,7 +19,28 @@ namespace AmongUsModManager.Pages
         public StatsPage()
         {
             this.InitializeComponent();
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
             LoadStats();
+        }
+
+        private void ApplyStrings()
+        {
+            StatsPageTitle.Text            = LocalizationService.Get("Stats_Title");
+            StatsSubtitle.Text             = LocalizationService.Get("Stats_Subtitle");
+            LaunchSectionLabel.Text        = LocalizationService.Get("Stats_LaunchSection");
+            TotalLaunchLabel.Text          = LocalizationService.Get("Stats_TotalLaunch");
+            MonthlyLaunchLabel.Text        = LocalizationService.Get("Stats_MonthlyLaunch");
+            RegisteredModLabel.Text        = LocalizationService.Get("Stats_RegisteredMods");
+            LastLaunchLabel.Text           = LocalizationService.Get("Stats_LastLaunch");
+            HistorySectionLabel.Text       = LocalizationService.Get("Stats_HistorySection");
+            HistoryDescLabel.Text          = LocalizationService.Get("Stats_HistoryDesc");
+            ClearHistoryBtn.Content        = LocalizationService.Get("Stats_ClearHistory");
+            HistoryEmptyText.Text          = LocalizationService.Get("Stats_HistoryEmpty");
+            AchievementsSectionLabel.Text  = LocalizationService.Get("Stats_AchievementsSection");
+            AchievementsUnderDevLabel.Text = LocalizationService.Get("Common_UnderConstruction");
+            AchievementsPendingText.Text   = LocalizationService.Get("Stats_AchievementsPending");
         }
 
         private void LoadStats()
@@ -51,10 +72,10 @@ namespace AmongUsModManager.Pages
         {
             var dialog = new ContentDialog
             {
-                Title = "履歴のクリア",
-                Content = "起動履歴をすべて削除しますか？",
-                PrimaryButtonText = "削除",
-                CloseButtonText = "キャンセル",
+                Title = LocalizationService.Get("Stats_ClearConfirmTitle"),
+                Content = LocalizationService.Get("Stats_ClearConfirmContent"),
+                PrimaryButtonText = LocalizationService.Get("Common_Delete"),
+                CloseButtonText = LocalizationService.Get("Common_Cancel"),
                 DefaultButton = ContentDialogButton.Close,
                 XamlRoot = this.XamlRoot
             };

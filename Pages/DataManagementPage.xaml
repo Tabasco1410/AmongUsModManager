@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="AmongUsModManager.Pages.DataManagementPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -16,7 +16,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Spacing="16" Margin="28,20,28,32">
 
-            <TextBlock Text="データ管理" FontSize="26" FontWeight="SemiBold"/>
+            <TextBlock x:Name="DataManagementPageTitle" Text="データ管理" FontSize="26" FontWeight="SemiBold"/>
             <TextBlock Text="フレンドコード・バンリストを管理します"
                        FontSize="13"
                        Foreground="{ThemeResource TextFillColorSecondaryBrush}"

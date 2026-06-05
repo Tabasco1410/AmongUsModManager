@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="AmongUsModManager.Pages.NotificationPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -27,16 +27,15 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <StackPanel Spacing="4">
-                <TextBlock Text="お知らせ" FontSize="26" FontWeight="SemiBold"/>
+                <TextBlock x:Name="NotificationPageTitle" FontSize="26" FontWeight="SemiBold"/>
                 <TextBlock x:Name="SubtitleText"
-                           Text="読み込み中..."
                            FontSize="12"
                            Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                 <ProgressRing x:Name="LoadingRing" IsActive="True" Width="20" Height="20"/>
-                <Button Content="更新" Click="Refresh_Click"/>
-                <Button Content="すべて既読" Click="MarkAllNewsRead_Click"/>
+                <Button x:Name="RefreshBtn" Click="Refresh_Click"/>
+                <Button x:Name="MarkAllReadBtn" Click="MarkAllNewsRead_Click"/>
             </StackPanel>
         </Grid>
 
@@ -46,7 +45,7 @@
                  IsAddTabButtonVisible="False">
 
             
-            <TabViewItem Header="📢 アプリからのお知らせ" IsClosable="False">
+            <TabViewItem x:Name="NewsTabItem" IsClosable="False">
                 <Grid>
                     <ListView x:Name="NewsListView"
                               SelectionMode="None"
@@ -85,7 +84,7 @@
                                                 <Border Background="SeaGreen" CornerRadius="8" Padding="6,1"
                                                         Visibility="{x:Bind HasImages, Converter={StaticResource BoolToVisibilityConverter}}"
                                                         VerticalAlignment="Center">
-                                                    <TextBlock Text="📷 画像あり" FontSize="10" Foreground="White"/>
+                                                    <TextBlock Text="{Binding [Notification_HasImages], Source={StaticResource Strings}}" FontSize="10" Foreground="White"/>
                                                 </Border>
                                             </StackPanel>
                                             <TextBlock Text="{x:Bind PreviewContent}"
@@ -100,11 +99,11 @@
 
                                         
                                         <StackPanel Grid.Column="2" Spacing="6" VerticalAlignment="Center">
-                                            <Button Content="詳細を見る"
+                                            <Button Content="{Binding [Notification_ViewDetail], Source={StaticResource Strings}}"
                                                     Click="ViewDetail_Click" Tag="{x:Bind}"
                                                     Style="{StaticResource AccentButtonStyle}"
                                                     FontSize="13" Padding="12,6"/>
-                                            <Button Content="既読にする"
+                                            <Button Content="{Binding [Notification_MarkRead], Source={StaticResource Strings}}"
                                                     Click="MarkReadBtn_Click" Tag="{x:Bind}"
                                                     FontSize="13" Padding="12,6"
                                                     Visibility="{x:Bind IsUnread, Converter={StaticResource BoolToVisibilityConverter}}"/>
@@ -116,7 +115,6 @@
                     </ListView>
 
                     <TextBlock x:Name="NewsEmptyText"
-                               Text="お知らせはありません"
                                FontSize="14"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -128,7 +126,7 @@
             <TabViewItem IsClosable="False">
                 <TabViewItem.Header>
                     <StackPanel Orientation="Horizontal" Spacing="6">
-                        <TextBlock Text="🔔 アプリ内通知" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="AppNotifTabLabel" VerticalAlignment="Center"/>
                         <Border x:Name="AppNotifBadge" Background="Red" CornerRadius="8"
                                 MinWidth="18" Height="18" Padding="3,0"
                                 Visibility="Collapsed" VerticalAlignment="Center">
@@ -188,7 +186,6 @@
                     </ListView>
 
                     <TextBlock x:Name="AppNotifEmptyText"
-                               Text="アプリ内通知はありません"
                                FontSize="14"
                                Foreground="{ThemeResource TextFillColorSecondaryBrush}"
                                HorizontalAlignment="Center" VerticalAlignment="Center"

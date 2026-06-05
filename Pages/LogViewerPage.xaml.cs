@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using AmongUsModManager.Services;
+using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager.Pages
 {
@@ -19,7 +19,19 @@ namespace AmongUsModManager.Pages
         public LogViewerPage()
         {
             this.InitializeComponent();
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
             RefreshFileList();
+        }
+
+        private void ApplyStrings()
+        {
+            LogViewerPageTitle.Text      = LocalizationService.Get("Log_Viewer");
+            LogFileLabel.Text            = LocalizationService.Get("Log_File");
+            LogRefreshBtn.Content        = LocalizationService.Get("Log_Refresh");
+            LogOpenFolderBtn.Content     = LocalizationService.Get("Log_OpenFolder");
+            LogClearBtn.Content          = LocalizationService.Get("Log_Clear");
         }
 
         // ─── ファイルリスト更新 ───────────────────────────────────────
@@ -34,17 +46,15 @@ namespace AmongUsModManager.Pages
 
             if (files.Count == 0)
             {
-                LogText.Text = "ログファイルがまだ存在しません。";
+                LogText.Text = LocalizationService.Get("Log_NoFiles");
                 return;
             }
 
-            // ComboBox に表示名をセット
             LogFileCombo.Items.Clear();
             foreach (var f in files)
             {
                 string label = Path.GetFileName(f);
-                // 最新ファイルには "(最新)" を付ける
-                if (f == files[0]) label += "  （最新）";
+                if (f == files[0]) label += "  " + LocalizationService.Get("Log_Latest");
                 LogFileCombo.Items.Add(new LogFileItem { DisplayName = label, FilePath = f });
             }
             LogFileCombo.SelectedIndex = 0; // 最新を選択（SelectionChangedが発火してLoadLogが呼ばれる）
@@ -55,7 +65,7 @@ namespace AmongUsModManager.Pages
             _currentLogPath = path;
             if (!File.Exists(path))
             {
-                LogText.Text = "ログファイルが見つかりません。";
+                LogText.Text = LocalizationService.Get("Log_NotFound");
                 return;
             }
             try
@@ -101,10 +111,10 @@ namespace AmongUsModManager.Pages
 
             var dialog = new ContentDialog
             {
-                Title = "ログをクリア",
-                Content = $"{Path.GetFileName(_currentLogPath)} の内容を削除しますか？",
-                PrimaryButtonText = "削除",
-                CloseButtonText = "キャンセル",
+                Title = LocalizationService.Get("Log_ClearTitle"),
+                Content = string.Format(LocalizationService.Get("Log_ClearConfirm"), Path.GetFileName(_currentLogPath)),
+                PrimaryButtonText = LocalizationService.Get("Common_Delete"),
+                CloseButtonText = LocalizationService.Get("Common_Cancel"),
                 XamlRoot = this.XamlRoot
             };
             if (await dialog.ShowAsync() == ContentDialogResult.Primary)

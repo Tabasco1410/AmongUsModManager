@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager.Pages
 {
@@ -9,6 +10,23 @@ namespace AmongUsModManager.Pages
         public AboutPage()
         {
             this.InitializeComponent();
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
+        }
+
+        private void ApplyStrings()
+        {
+            AboutPageTitle.Text        = LocalizationService.Get("About_Title");
+            AboutVersionLabel.Text     = LocalizationService.Get("About_VersionLabel");
+            AboutAppDesc.Text          = LocalizationService.Get("About_AppDesc");
+            WebsiteBtn.Content         = LocalizationService.Get("About_Website");
+            GitHubBtn.Content          = "GitHub";
+            ChangelogBtn.Content       = LocalizationService.Get("About_Changelog");
+            AboutLicenseLabel.Text     = LocalizationService.Get("About_License");
+            AboutLibrariesLabel.Text   = LocalizationService.Get("About_Libraries");
+            AboutDisclaimerLabel.Text  = LocalizationService.Get("About_Disclaimer");
+            AboutDisclaimerText.Text   = LocalizationService.Get("About_DisclaimerText");
         }
 
         private void WebsiteBtn_Click(object sender, RoutedEventArgs e)

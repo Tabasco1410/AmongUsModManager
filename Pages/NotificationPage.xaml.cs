@@ -10,7 +10,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.UI;
 using AmongUsModManager.Models;
-using AmongUsModManager.Services;
 using AmongUsModManager.Models.Services;
 
 namespace AmongUsModManager.Pages
@@ -73,9 +72,24 @@ namespace AmongUsModManager.Pages
         {
             this.InitializeComponent();
             _http.DefaultRequestHeaders.Add("User-Agent", "AmongUsModManager-App");
+            ApplyStrings();
+            LocalizationService.LanguageChanged += ApplyStrings;
+            this.Unloaded += (_, _) => LocalizationService.LanguageChanged -= ApplyStrings;
             LogService.Info("NotificationPage", "ページ初期化");
             NotificationService.MarkAllRead();
             _ = LoadAllAsync();
+        }
+
+        private void ApplyStrings()
+        {
+            NotificationPageTitle.Text = LocalizationService.Get("Notification_Title");
+            SubtitleText.Text          = LocalizationService.Get("Common_Loading");
+            RefreshBtn.Content         = LocalizationService.Get("Common_Refresh");
+            MarkAllReadBtn.Content     = LocalizationService.Get("Notification_MarkAllRead");
+            NewsTabItem.Header         = LocalizationService.Get("Notification_NewsTab");
+            AppNotifTabLabel.Text      = LocalizationService.Get("Notification_AppNotifTab");
+            NewsEmptyText.Text         = LocalizationService.Get("Notification_NoNews");
+            AppNotifEmptyText.Text     = LocalizationService.Get("Notification_NoAppNotif");
         }
 
         private async Task LoadAllAsync()
@@ -101,7 +115,7 @@ namespace AmongUsModManager.Pages
                 if (rawList == null)
                 {
                     LogService.Warn("NotificationPage", "お知らせリストがnull");
-                    DispatcherQueue.TryEnqueue(() => SetNewsEmpty("お知らせはありません"));
+                    DispatcherQueue.TryEnqueue(() => SetNewsEmpty(LocalizationService.Get("Notification_NoNews")));
                     return;
                 }
                 LogService.Debug("NotificationPage", $"取得件数: {rawList.Count}");
@@ -113,7 +127,7 @@ namespace AmongUsModManager.Pages
 
                     string dateStr = n.Date;
                     if (DateTime.TryParse(n.Date, out var dt))
-                        dateStr = dt.ToString("yyyy年M月d日");
+                        dateStr = dt.ToString(LocalizationService.Get("Notification_DateFormat"));
 
                     LogService.Trace("NotificationPage",
                         $"  item: id={id}, title={n.Title}, isUnread={isUnread}, hasImages={n.Images?.Count > 0}");
@@ -146,7 +160,7 @@ namespace AmongUsModManager.Pages
             catch (Exception ex)
             {
                 LogService.Error("NotificationPage", "お知らせ取得失敗", ex);
-                DispatcherQueue.TryEnqueue(() => SetNewsEmpty("お知らせの取得に失敗しました"));
+                DispatcherQueue.TryEnqueue(() => SetNewsEmpty(LocalizationService.Get("Notification_LoadFailed")));
             }
         }
 
@@ -270,17 +284,17 @@ namespace AmongUsModManager.Pages
             int total = _newsItems.Count;
             int unread = _newsItems.Count(i => i.IsUnread);
             SubtitleText.Text = unread > 0
-                ? $"{total} 件のお知らせ・未読 {unread} 件"
-                : $"{total} 件のお知らせ（すべて既読）";
+                ? string.Format(LocalizationService.Get("Notification_SubtitleUnread"), total, unread)
+                : string.Format(LocalizationService.Get("Notification_SubtitleAllRead"), total);
         }
 
         private static string FormatRelativeTime(DateTime dt)
         {
             var diff = DateTime.Now - dt;
-            if (diff.TotalMinutes < 1) return "たった今";
-            if (diff.TotalHours < 1) return $"{(int)diff.TotalMinutes} 分前";
-            if (diff.TotalDays < 1) return $"{(int)diff.TotalHours} 時間前";
-            if (diff.TotalDays < 7) return $"{(int)diff.TotalDays} 日前";
+            if (diff.TotalMinutes < 1) return LocalizationService.Get("Notification_JustNow");
+            if (diff.TotalHours   < 1) return string.Format(LocalizationService.Get("Notification_MinutesAgo"), (int)diff.TotalMinutes);
+            if (diff.TotalDays    < 1) return string.Format(LocalizationService.Get("Notification_HoursAgo"),   (int)diff.TotalHours);
+            if (diff.TotalDays    < 7) return string.Format(LocalizationService.Get("Notification_DaysAgo"),    (int)diff.TotalDays);
             return dt.ToString("yyyy/MM/dd");
         }
 
